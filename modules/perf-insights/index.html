@@ -1,0 +1,940 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Workshop and lab content for Amazon Aurora PostgreSQL compatible databases. This code will contain a series of templates, instructional guides and sample code to educate users on how to use Amazon Aurora features.">
+      
+      
+        <link rel="canonical" href="https://awsauroralabsmysql.com/modules/perf-insights/">
+      
+      
+        <meta name="author" content="amazon-aurora-labs-for-mysql@amazon.com">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/aws-favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
+    
+    
+      
+        <title>PostgreSQL Performance Benchmarking - Amazon Aurora Labs for PostgreSQL</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.1b62728e.css">
+      
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.268332fc.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../../assets/css/custom.css">
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#using-performance-insights" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <!--
+  Copyright (c) 2016-2018 Martin Donath <martin.donath@squidfunk.com>
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+-->
+
+<!-- Application header -->
+<header class="md-header" data-md-component="header">
+
+    <!-- Top-level navigation -->
+    <nav class="md-header-nav md-grid">
+      <div class="md-flex">
+
+        <!-- Link to home -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <a href="https://aws.amazon.com/"
+              title="Amazon Web Services"
+              class="md-header-nav__button md-logo">
+            
+              <img src="../../assets/images/aws_smile_logo.png" width="40" height="24" />
+            
+          </a>
+        </div>
+
+        <!-- Button to toggle drawer -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <label class="md-icon md-icon--menu md-header-nav__button"
+              for="__drawer"></label>
+        </div>
+
+        <!-- Header title -->
+        <div class="md-flex__cell md-flex__cell--stretch">
+          <div class="md-flex__ellipsis md-header-nav__title"
+              data-md-component="title">
+            
+              
+                <span class="md-header-nav__topic">
+                  Amazon Aurora Labs for PostgreSQL
+                </span>
+                <span class="md-header-nav__topic">
+                  PostgreSQL Performance Benchmarking
+                </span>
+              
+            
+          </div>
+        </div>
+
+        <!-- Button to open search dialogue -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          
+            
+              <label class="md-icon md-icon--search md-header-nav__button"
+                  for="__search"></label>
+
+              <!-- Search interface -->
+              
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+            
+          
+        </div>
+
+        <!-- Repository containing source -->
+        
+      </div>
+    </nav>
+  </header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../.." class="md-tabs__link">
+        Home
+      </a>
+    
+  </li>
+
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../" class="md-tabs__link">
+        Getting Started
+      </a>
+    
+  </li>
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../prerequisites/" class="md-tabs__link md-tabs__link--active">
+          Modules
+        </a>
+      
+    </li>
+  
+
+      
+        
+      
+        
+      
+    </ul>
+  </div>
+</nav>
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://awsauroralabsmysql.com" title="Amazon Aurora Labs for PostgreSQL" class="md-nav__button md-logo">
+      
+        <img src="../../assets/images/aws_smile_logo.png" width="48" height="48">
+      
+    </a>
+    Amazon Aurora Labs for PostgreSQL
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Getting Started" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Modules
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Modules
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../prerequisites/" title="Prerequisites" class="md-nav__link">
+      Prerequisites
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../create/" title="Creating a New Aurora Cluster" class="md-nav__link">
+      Creating a New Aurora Cluster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect/index.md" title="Connecting, Loading Data and Auto Scaling" class="md-nav__link">
+      Connecting, Loading Data and Auto Scaling
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect/index.md" title="Backup And Restore" class="md-nav__link">
+      Backup And Restore
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../clone/index.md" title="Fast Cloning" class="md-nav__link">
+      Fast Cloning
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../backtrack/index.md" title="Backtracking a Cluster" class="md-nav__link">
+      Backtracking a Cluster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="./" title="Using Performance Insights" class="md-nav__link">
+      Using Performance Insights
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        PostgreSQL Performance Benchmarking
+      </label>
+    
+    <a href="./" title="PostgreSQL Performance Benchmarking" class="md-nav__link md-nav__link--active">
+      PostgreSQL Performance Benchmarking
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-generating-load-on-your-db-cluster" class="md-nav__link">
+    1. Generating load on your DB cluster
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-understanding-the-performance-insights-interface" class="md-nav__link">
+    2. Understanding the Performance Insights interface
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-examining-the-performance-of-your-db-instance" class="md-nav__link">
+    3. Examining the performance of your DB instance
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../create-serverless/index.md" title="Creating a Serverless Aurora Cluster" class="md-nav__link">
+      Creating a Serverless Aurora Cluster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Using Aurora Serverless with Lambda Functions" class="md-nav__link">
+      Using Aurora Serverless with Lambda Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Query Plan Management" class="md-nav__link">
+      Query Plan Management
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Cluster Cache Management" class="md-nav__link">
+      Cluster Cache Management
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Oracle to Aurora PostgreSQL migration using DMS and SCT" class="md-nav__link">
+      Oracle to Aurora PostgreSQL migration using DMS and SCT
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Database Activity Streaming" class="md-nav__link">
+      Database Activity Streaming
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Major Version Upgrad" class="md-nav__link">
+      Major Version Upgrad
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Cross region replication using DMS/logical replication" class="md-nav__link">
+      Cross region replication using DMS/logical replication
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Outbound Logical Replication" class="md-nav__link">
+      Outbound Logical Replication
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Kerberos/AD authentication" class="md-nav__link">
+      Kerberos/AD authentication
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Global Database" class="md-nav__link">
+      Global Database
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Amazon Aurora AI/ML Integration" class="md-nav__link">
+      Amazon Aurora AI/ML Integration
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Amazon Aurora Export to S3" class="md-nav__link">
+      Amazon Aurora Export to S3
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Aurora Postgres Transportable Database" class="md-nav__link">
+      Aurora Postgres Transportable Database
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Rialto GA" class="md-nav__link">
+      Rialto GA
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../contribute/" title="Contributing" class="md-nav__link">
+      Contributing
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-generating-load-on-your-db-cluster" class="md-nav__link">
+    1. Generating load on your DB cluster
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-understanding-the-performance-insights-interface" class="md-nav__link">
+    2. Understanding the Performance Insights interface
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-examining-the-performance-of-your-db-instance" class="md-nav__link">
+    3. Examining the performance of your DB instance
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="using-performance-insights">Using Performance Insights<a class="headerlink" href="#using-performance-insights" title="Permanent link">&para;</a></h1>
+<p>This lab will demonstrate the use of <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html" target="_blank">Amazon RDS Performance Insights</a>. Amazon RDS Performance Insights monitors your Amazon RDS DB instance load so that you can analyze and troubleshoot your database performance.</p>
+<p>This lab contains the following tasks:</p>
+<ol>
+<li>Generating load on your DB cluster</li>
+<li>Understanding the Performance Insights interface</li>
+<li>Examining the performance of your DB instance</li>
+</ol>
+<p>This lab requires the following lab modules to be completed first:</p>
+<ul>
+<li><a href="/modules/prerequisites/">Prerequisites</a></li>
+<li><a href="/modules/create/">Creating a New Aurora Cluster</a> (conditional, if creating a cluster manually)</li>
+<li><a href="/modules/connect/">Connecting, Loading Data and Auto Scaling</a> (connectivity section only)</li>
+</ul>
+<h2 id="1-generating-load-on-your-db-cluster">1. Generating load on your DB cluster<a class="headerlink" href="#1-generating-load-on-your-db-cluster" title="Permanent link">&para;</a></h2>
+<p>You will use Percona's TPCC-like benchmark script based on sysbench to generate load. For simplicity we have packaged the correct set of commands in an <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-ssm-docs.html" target="_blank">AWS Systems Manager Command Document</a>. You will use <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html" target="_blank">AWS Systems Manager Run Command</a> to execute the test.</p>
+<p>On the Session Manager workstation command line <a href="/modules/connect/#1-connecting-to-your-workstation-ec2-instance">see the Connecting, Loading Data and Auto Scaling lab</a>, enter one of the following commands.</p>
+<p>If you have completed the <a href="/modules/create">Creating a New Aurora Cluster</a> lab, and created the Aurora DB cluster manually execute this command:</p>
+<div class="codehilite"><pre><span></span>aws ssm send-command \
+--document-name [loadTestRunDoc] \
+--instance-ids [bastionInstance] \
+--parameters \
+clusterEndpoint=[clusterEndpoint],\
+dbUser=$DBUSER,\
+dbPassword=&quot;$DBPASS&quot;
+</pre></div>
+
+
+<p>If AWS CloudFormation has provisioned the DB cluster on your behalf, and you skipped the <strong>Creating a New Aurora Cluster</strong> lab, you can run this simplified command:</p>
+<div class="codehilite"><pre><span></span>aws ssm send-command \
+--document-name [loadTestRunDoc] \
+--instance-ids [bastionInstance]
+</pre></div>
+
+
+<p><strong>Command parameter values at a glance:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Parameter Placeholder</th>
+<th>Value<br/>DB cluster provisioned by CloudFormation</th>
+<th>Value<br/>DB cluster configured manually</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--document-name</td>
+<td>[loadTestRunDoc]</td>
+<td>See CloudFormation stack output</td>
+<td>See CloudFormation stack output</td>
+<td>The name of the command document to run on your behalf.</td>
+</tr>
+<tr>
+<td>--instance-ids</td>
+<td>[bastionInstance]</td>
+<td>See CloudFormation stack output</td>
+<td>See CloudFormation stack output</td>
+<td>The EC2 instance to execute this command on.</td>
+</tr>
+<tr>
+<td>--parameters</td>
+<td>clusterEndpoint=[clusterEndpoint],dbUser=$DBUSER,dbPassword="$DBPASS"</td>
+<td>N/A</td>
+<td>Substitute the DB cluster endpoint with the values configured manually</td>
+<td>Additional command parameters.</td>
+</tr>
+</tbody>
+</table>
+<p>The command will be sent to the workstation EC2 instance which will prepare the test data set and run the load test. It may take up to a minute for CloudWatch to reflect the additional load in the metrics. You will see a confirmation that the command has been initiated.</p>
+<p><span class="image"><img alt="SSM Command" src="1-ssm-command.png?raw=true" /></span></p>
+<h2 id="2-understanding-the-performance-insights-interface">2. Understanding the Performance Insights interface<a class="headerlink" href="#2-understanding-the-performance-insights-interface" title="Permanent link">&para;</a></h2>
+<p>While the command is running, open the <a href="https://us-west-2.console.aws.amazon.com/rds/home?region=us-west-2" target="_blank">Amazon RDS service console</a> in a new tab, if not already open.</p>
+<div class="admonition warning">
+<p class="admonition-title">Region Check</p>
+<p>Ensure you are still working in the correct region, especially if you are following the links above to open the service console at the right screen.</p>
+</div>
+<p>In the menu on the left hand side, click on the <strong>Performance Insights</strong> menu option.</p>
+<p><span class="image"><img alt="RDS Dashboard" src="2-menu-perf-ins.png?raw=true" /></span></p>
+<p>Next, select the desired <strong>DB instance</strong> to load the performance metrics for. For Aurora DB clusters, performance metrics are exposed on an individual DB instance basis. As the different Db instances comprising a cluster may run different workload patterns, and might not all have Performance Insights enabled. For this lab we are generating load on the <strong>Writer</strong> (master) DB instance only. Select the DB instance where the name either ends in <code>-node-01</code> or <code>-instance-1</code></p>
+<p><span class="image"><img alt="Select DB Instance" src="2-select-instance.png?raw=true" /></span></p>
+<p>Once a DB instance is selected, you will see the main dashboard view of RDS Performance Insights. The dashboard is divided into 3 sections, allowing you to drill down from high level performance indicator metrics down to individual queries, waits, users and hosts generating the load.</p>
+<p><span class="image"><img alt="Performance Insights Dashboard" src="2-pi-dashboard.png?raw=true" /></span></p>
+<p>The performance metrics displayed by the dashboard are a moving time window. You can adjust the size of the time window by clicking the buttons across the top right of the interface (<code>5m</code>, <code>1h</code>, <code>5h</code>, <code>24h</code>, <code>1w</code>, <code>all</code>). You can also zoom into a specific period of time by dragging across the graphs.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All dashboard views are time synchronized. Zooming in will adjust all views, including the detailed drill-down section at the bottom.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Filters</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Counter Metrics</strong></td>
+<td>Click cog icon in top right corner to select additional counters</td>
+<td>This section plots internal database counter metrics over time, such as number of rows read or written, buffer pool hit ratio, etc. These counters are useful to correlate with other metrics, including the database load metrics, to identify causes of abnormal behavior.</td>
+</tr>
+<tr>
+<td><strong>Database load</strong></td>
+<td>Load can be sliced by waits (default), SQL commands, users and hosts</td>
+<td>This metric is design to correlate aggregate load (sliced by the selected dimension) with the available compute capacity on that DB instance (number of vCPUs). Load is aggregated and normalized using the <strong>Average Active Session</strong> (AAS) metric. A number of AAS that exceeds the compute capacity of the DB instance is a leading indicator of performance problems.</td>
+</tr>
+<tr>
+<td>Granular Session Activity</td>
+<td>Sort by <strong>Waits</strong>, <strong>SQL</strong> (default), <strong>Users</strong> and <strong>Hosts</strong></td>
+<td>Drill down capability that allows you to get detailed performance data down to the individual commands.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-examining-the-performance-of-your-db-instance">3. Examining the performance of your DB instance<a class="headerlink" href="#3-examining-the-performance-of-your-db-instance" title="Permanent link">&para;</a></h2>
+<p>After running the load generator workload above, you will see a performance profile similar to the example below in the Performance Insights dashboard. The load generator command will first create an initial data set using <code>sysbench prepare</code>. And then will run an OLTP workload for the duration of 5 minutes, consisting of concurrent transactional reads and writes using 4 parallel threads.</p>
+<p><span class="image"><img alt="Load Test Profile" src="3-load-profile.png?raw=true" /></span></p>
+<p>Amazon Aurora MySQL specific wait events are documented in the <a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.html#AuroraMySQL.Reference.Waitevents" target="_blank">Amazon Aurora MySQL Reference guide</a>. Use the Performance Insights dashboard and the reference guide documentation to evaluate the workload profile of your load test, and answer the following questions:</p>
+<ol>
+<li>Is the database server overloaded at any point during the load test?</li>
+<li>Can you identify any resource bottlenecks during the load test? If so how can they be mitigated?</li>
+<li>What are the most common wait events during the load test?</li>
+<li>Why are the load patterns different between the first and second phase of the load test?</li>
+</ol>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="./" title="Using Performance Insights" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Using Performance Insights
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../../contribute/" title="Contributing" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Contributing
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            &copy; 2019, Amazon Web Services, Inc. or its affiliates. All rights reserved.
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://awsauroralabsmysql.com" class="md-footer-social__link fa fa-home"></a>
+    
+      <a href="https://aws.amazon.com/rds/aurora/details/mysql-details/" class="md-footer-social__link fa fa-amazon"></a>
+    
+      <a href="https://github.com/aws-samples/amazon-aurora-labs-for-mysql" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.8e03edeb.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+    
+  </body>
+</html>
