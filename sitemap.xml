@@ -1,52 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-     <loc>https://awsauroralabsmysql.com/</loc>
+     <loc>https://mylabs.data-builder.com/</loc>
      <lastmod>2019-12-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://awsauroralabsmysql.com/modules/</loc>
+     <loc>https://mylabs.data-builder.com/modules/</loc>
      <lastmod>2019-12-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://awsauroralabsmysql.com/modules/prerequisites/</loc>
+     <loc>https://mylabs.data-builder.com/modules/prerequisites/</loc>
      <lastmod>2019-12-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://awsauroralabsmysql.com/modules/create/</loc>
-     <lastmod>2019-12-09</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc>https://awsauroralabsmysql.com/modules/perf-insights/</loc>
-     <lastmod>2019-12-09</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc>https://awsauroralabsmysql.com/modules/perf-insights/</loc>
+     <loc>https://mylabs.data-builder.com/modules/create/</loc>
      <lastmod>2019-12-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
@@ -71,67 +41,97 @@
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc></loc>
-     
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc>https://awsauroralabsmysql.com/contribute/</loc>
+     <loc>https://mylabs.data-builder.com/modules/perf-insights/</loc>
      <lastmod>2019-12-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://awsauroralabsmysql.com/license/</loc>
+     <loc>https://mylabs.data-builder.com/modules/perf-insights/</loc>
+     <lastmod>2019-12-09</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://mylabs.data-builder.com/contribute/</loc>
+     <lastmod>2019-12-09</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://mylabs.data-builder.com/license/</loc>
      <lastmod>2019-12-09</lastmod>
      <changefreq>daily</changefreq>
     </url>

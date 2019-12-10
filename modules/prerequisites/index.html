@@ -13,7 +13,7 @@
         <meta name="description" content="Workshop and lab content for Amazon Aurora PostgreSQL compatible databases. This code will contain a series of templates, instructional guides and sample code to educate users on how to use Amazon Aurora features.">
       
       
-        <link rel="canonical" href="https://awsauroralabsmysql.com/modules/prerequisites/">
+        <link rel="canonical" href="https://mylabs.data-builder.com/modules/prerequisites/">
       
       
         <meta name="author" content="amazon-aurora-labs-for-mysql@amazon.com">
@@ -252,7 +252,7 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="https://awsauroralabsmysql.com" title="Amazon Aurora Labs for PostgreSQL" class="md-nav__button md-logo">
+    <a href="https://mylabs.data-builder.com/" title="Amazon Aurora Labs for PostgreSQL" class="md-nav__button md-logo">
       
         <img src="../../assets/images/aws_smile_logo.png" width="48" height="48">
       
@@ -718,7 +718,7 @@
 <h2 id="1-signing-in-to-the-aws-management-console">1. Signing in to the AWS Management Console<a class="headerlink" href="#1-signing-in-to-the-aws-management-console" title="Permanent link">&para;</a></h2>
 <p>If you are running these labs in a formal, instructional setting, please use the Console URL, and credentials provided to you to access and log into the AWS Management Console. Otherwise, please use your own credentials. You can access the console at: <a href="https://console.aws.amazon.com/" target="_blank">https://console.aws.amazon.com/</a> or through the Single Sign-On (SSO) mechanism provided by your organization.</p>
 <p><span class="image"><img alt="AWS Management Console Login" src="1-login.png?raw=true" /></span></p>
-<p>If you are running these labs in a formal, instructional setting, please use the AWS region provided. Ensure the correct AWS region is selected in the top right corner, if not use that dropdown to choose the correct region. The labs are designed to work in any of the regions where Amazon Aurora MySQL compatible is available. However, not all features and capabilities of Amazon Aurora may be available in all supported regions at this time.</p>
+<p>If you are running these labs in a formal, instructional setting, please use the AWS region provided. Ensure the correct AWS region is selected in the top right corner, if not use that dropdown to choose the correct region. The labs are designed to work in any of the regions where Amazon Aurora PostgreSQL compatible is available. However, not all features and capabilities of Amazon Aurora may be available in all supported regions at this time.</p>
 <p><span class="image"><img alt="AWS Management Console Region Selection" src="1-region-select.png?raw=true" /></span></p>
 <h2 id="2-creating-a-lab-environment-using-aws-cloudformation">2. Creating a lab environment using AWS CloudFormation<a class="headerlink" href="#2-creating-a-lab-environment-using-aws-cloudformation" title="Permanent link">&para;</a></h2>
 <p>To simplify the getting started experience with the labs, we have created foundational templates for <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> that provision the resources needed for the lab environment. These templates are designed to deploy a consistent networking infrastructure, and client-side experience of software packages and components used in the lab.</p>
@@ -739,13 +739,13 @@
 <tbody>
 <tr>
 <td><strong>I will create the DB cluster manually</strong></td>
-<td><a href="https://[[website]]/templates/lab-no-cluster.yml">lab-no-cluster.yml</a></td>
+<td><a href="https://[[website]]/modules/prerequisites/templates/lab-no-cluster.yml">lab-no-cluster.yml</a></td>
 <td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=labstack&templateURL=https://s3.amazonaws.com/[[bucket]]/templates/lab-no-cluster.yml" target="_blank"><img src="/assets/images/cloudformation-launch-stack.png" alt="Launch Stack"></a></td>
 <td>Use when you wish to provision the initial cluster manually by following <a href="../create/">Lab 1. - Creating a New Aurora Cluster</a></td>
 </tr>
 <tr>
 <td><strong>Provision the DB cluster for me</strong></td>
-<td><a href="https://[[website]]/templates/lab-with-cluster.yml">lab-with-cluster.yml</a></td>
+<td><a href="https://[[website]]/modules/prerequisites/templates/lab-with-cluster.yml">lab-with-cluster.yml</a></td>
 <td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=labstack&templateURL=https://s3.amazonaws.com/[[bucket]]/templates/lab-with-cluster.yml" target="_blank"><img src="/assets/images/cloudformation-launch-stack.png" alt="Launch Stack"></a></td>
 <td>Use when you wish to skip the initial cluster creation lab, and have the DB cluster provisioned for you, so you can continue from <a href="../connect/">Lab 2. - Cluster Endpoints and Read Replica Auto Scaling</a></td>
 </tr>
@@ -845,11 +845,11 @@
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
     
-      <a href="https://awsauroralabsmysql.com" class="md-footer-social__link fa fa-home"></a>
+      <a href="https://mylabs.data-builder.com/" class="md-footer-social__link fa fa-home"></a>
     
-      <a href="https://aws.amazon.com/rds/aurora/details/mysql-details/" class="md-footer-social__link fa fa-amazon"></a>
+      <a href="https://aws.amazon.com/rds/aurora/postgresql-features/" class="md-footer-social__link fa fa-amazon"></a>
     
-      <a href="https://github.com/aws-samples/amazon-aurora-labs-for-mysql" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://mylabs.data-builder.com/" class="md-footer-social__link fa fa-github"></a>
     
   </div>
 
