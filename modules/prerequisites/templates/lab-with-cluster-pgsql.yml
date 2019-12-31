@@ -1,0 +1,1150 @@
+---
+## Amazon Aurora Labs for Postgresql
+## Infrastructure template with an Aurora cluster for lab exercises
+##
+## Changelog:
+## 2019-05-13 - Initial release
+## 2019-05-29 - Changed how AZ selection works
+## 2019-06-12 - Changed template to use Secrets MAnager for DB credentials
+## 2019-06-13 - Preconfigured aws cli
+## 2019-06-14 - Preconfigured DB credentials as ENV variables
+## 2019-06-14 - Fixed issue with Scalable Target and uppercase cluster identifiers
+##
+## Dependencies:
+## none
+##
+## License:
+## This sample code is made available under the MIT-0 license. See the LICENSE file.
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: Amazon Aurora Labs for Aurora Postgresql
+
+## Parameters
+Parameters:
+  vpcAZs:
+    Type: "List<AWS::EC2::AvailabilityZone::Name>"
+    Description: List of Availability Zones to use for the subnets in the VPC. Must pick 3 AZs in regions with 3 or more AZs.
+  ec2KeyPair:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: EC2 key pair for instance access
+  DBEngineVersion:
+    Description: Select Database Engine Version
+    Type: String
+    Default: 10.7
+    AllowedValues:
+      - 10.7
+
+## Conditions
+Conditions:
+  cond3AZs: !Equals [ !FindInMap [ RegionalSettings, !Ref "AWS::Region", azs ], "3" ]
+
+
+## Mappings
+Mappings:
+  RegionalSettings:
+    us-east-1:
+      bastionAmi: ami-035b3c7efe6d061d5
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: Ohio
+      azs: "3"
+    us-east-2:
+      bastionAmi: ami-02f706d959cedf892
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: N. Virginia
+      azs: "3"
+    us-west-1:
+      bastionAmi: ami-0fcdcdb074d2bac5f
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: N. California
+      azs: "2"
+    us-west-2:
+      bastionAmi: ami-0f2176987ee50226e
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: Oregon
+      azs: "3"
+    ca-central-1:
+      bastionAmi: ami-01b60a3259250381b
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: Montreal
+      azs: "2"
+    eu-central-1:
+      bastionAmi: ami-090f10efc254eaf55
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: Frankfurt
+      azs: "3"
+    eu-west-1:
+      bastionAmi: ami-08d658f84a6d84a80
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: Ireland
+      azs: "3"
+    eu-west-2:
+      bastionAmi: ami-07dc734dc14746eab
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: London
+      azs: "3"
+    eu-west-3:
+      bastionAmi: ami-03bca18cb3dc173c9
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: Paris
+      azs: "3"
+    ap-southeast-1:
+      bastionAmi: ami-0dad20bd1b9c8c004
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: Singapore
+      azs: "3"
+    ap-southeast-2:
+      bastionAmi: ami-0b76c3b150c6b1423
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: Sydney
+      azs: "3"
+    ap-south-1:
+      bastionAmi: ami-007d5db58754fa284
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: Mumbai
+      azs: "3"
+    ap-northeast-1:
+      bastionAmi: ami-0eb48a19a8d81e20b
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: Tokyo
+      azs: "3"
+    ap-northeast-2:
+      bastionAmi: ami-078e96948945fc2c9
+      bastionType: m5.large
+      nodeType: db.r5.large
+      name: Seoul
+      azs: "3"
+  NetworkSettings:
+    global:
+      vpcCidr: 10.0.0.0/16
+      subPub1Cidr: 10.0.0.0/24
+      subPub2Cidr: 10.0.1.0/24
+      subPub3Cidr: 10.0.2.0/24
+      subPrv1Cidr: 10.0.10.0/24
+      subPrv2Cidr: 10.0.11.0/24
+      subPrv3Cidr: 10.0.12.0/24
+      sshSourceCidr: 0.0.0.0/0
+  ClusterSettings:
+    global:
+      dbSchema: mylab
+      dbDriver: pgsql
+    scaling:
+      maxCapacity: 2
+      minCapacity: 1
+      cpuLoadTarget: 20
+    sysbench:
+      dbSchema: sbtpcc
+      runTime: '300'
+      numThreads: '4'
+      numTables: '8'
+      numWarehouses: '2'
+
+
+## Resources
+Resources:
+
+## The VPC
+  vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: default
+      CidrBlock: !FindInMap [ NetworkSettings, global, vpcCidr ]
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-vpc
+
+## Create an IGW & attach it to the VPC
+  vpcIgw:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-igw
+  attachIgwVpc:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref vpc
+      InternetGatewayId: !Ref vpcIgw
+
+## Create a public subnet in each AZ
+  sub1Public:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref vpc
+      CidrBlock: !FindInMap [ NetworkSettings, global, subPub1Cidr ]
+      AvailabilityZone: !Select [0, !Ref vpcAZs ]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-pub-sub-1
+  sub2Public:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref vpc
+      CidrBlock: !FindInMap [ NetworkSettings, global, subPub2Cidr ]
+      AvailabilityZone: !Select [1, !Ref vpcAZs ]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-pub-sub-2
+  sub3Public:
+    Type: AWS::EC2::Subnet
+    Condition: cond3AZs
+    Properties:
+      VpcId: !Ref vpc
+      CidrBlock: !FindInMap [ NetworkSettings, global, subPub3Cidr ]
+      AvailabilityZone: !Select [2, !Ref vpcAZs ]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-pub-sub-3
+
+## Associate the public subnets with a public route table
+  rtbPublic:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref vpc
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-public-rtb
+  rteToIgw:
+    Type: AWS::EC2::Route
+    DependsOn: attachIgwVpc
+    Properties:
+      RouteTableId: !Ref rtbPublic
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref vpcIgw
+  srta1Public:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref sub1Public
+      RouteTableId: !Ref rtbPublic
+  srta2Public:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref sub2Public
+      RouteTableId: !Ref rtbPublic
+  srta3Public:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Condition: cond3AZs
+    Properties:
+      SubnetId: !Ref sub3Public
+      RouteTableId: !Ref rtbPublic
+
+## Create a private subnet in each AZ
+  sub1Private:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref vpc
+      CidrBlock: !FindInMap [ NetworkSettings, global, subPrv1Cidr ]
+      AvailabilityZone: !Select [0, !Ref vpcAZs ]
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-prv-sub-1
+  sub2Private:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref vpc
+      CidrBlock: !FindInMap [ NetworkSettings, global, subPrv2Cidr ]
+      AvailabilityZone: !Select [1, !Ref vpcAZs ]
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-prv-sub-2
+  sub3Private:
+    Type: AWS::EC2::Subnet
+    Condition: cond3AZs
+    Properties:
+      VpcId: !Ref vpc
+      CidrBlock: !FindInMap [ NetworkSettings, global, subPrv3Cidr ]
+      AvailabilityZone: !Select [2, !Ref vpcAZs ]
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-prv-sub-3
+
+## Create a NAT Gateway & EIP
+  natEip:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+  vpcNgw:
+    Type: AWS::EC2::NatGateway
+    DependsOn: attachIgwVpc
+    Properties:
+      AllocationId: !GetAtt natEip.AllocationId
+      SubnetId: !Ref sub2Public
+
+## Associate the private subnets with a NATed route table
+  rtbNat:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref vpc
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-nat-rtb
+  rteToNgw:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref rtbNat
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref vpcNgw
+  srta1Ngw:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref sub1Private
+      RouteTableId: !Ref rtbNat
+  srta2Ngw:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref sub2Private
+      RouteTableId: !Ref rtbNat
+  srta3Ngw:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Condition: cond3AZs
+    Properties:
+      SubnetId: !Ref sub3Private
+      RouteTableId: !Ref rtbNat
+
+## Create VPC S3 endpoint
+  s3Enpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref vpc
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
+      RouteTableIds:
+        - !Ref rtbPublic
+        - !Ref rtbNat
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Principal: '*'
+            Effect: 'Allow'
+            Action: 's3:*'
+            Resource: [ 'arn:aws:s3:::*', 'arn:aws:s3:::*/*' ]
+
+## Create DB subnet group
+  dbSubnets:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: !Sub ${AWS::StackName}-db-subnet-group
+      SubnetIds: [ !Ref sub1Private, !Ref sub2Private, !If [ cond3AZs, !Ref sub3Private, !Ref "AWS::NoValue" ] ]
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-db-subnet-group
+
+## Create bastion security group
+  bastionSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref vpc
+      GroupName: !Sub ${AWS::StackName}-bastion-host
+      GroupDescription: Aurora Lab SSH Security Group
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-bastion-host
+      SecurityGroupIngress:
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.46.82.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp:  54.240.217.0/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 177.72.241.160/27 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 72.21.198.64/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.194.0/24 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.222.12.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22' 
+              CidrIp: 54.239.6.0/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 72.21.199.80/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.82.204.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.198.64/26
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.239.116.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.197.0/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.94.86.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 72.21.217.0/24
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.233.32/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.94.38.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 176.32.127.128/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.233.48/29
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.95.24.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 177.72.242.96/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.196.128/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.199.64/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.199.0/26
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.237.112/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.196.0/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.119.146.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.233.160/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.237.0/26
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 177.72.241.96/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.237.176/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.230.128/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 172.31.0.0/24
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.233.176/29
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.27.190.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 64.39.96.0/20
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.234.32/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.239.2.128/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.95.72.0/23
+            - # Amazon corp ip range 
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.239.98.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.222.11.0/24
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.200.0/24
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.198.0/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.222.61.16/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.237.80/28    
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 72.21.196.64/29
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.230.240/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.230.184/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.230.176/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.217.8/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.217.16/29           
+          
+
+## Create DB security group
+  dbSecGroupCluster:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref vpc
+      GroupName: !Sub ${AWS::StackName}-PostgreSQL-internal
+      GroupDescription: Aurora Lab Database Firewall
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-PostgreSQL-internal
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref bastionSecGroup
+          Description: Allows PostgreSQL access from bastion host
+
+## Create enhanced monitoring role
+  roleEnhancedMonitoring:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-monitor-${AWS::Region}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              Service:
+                - monitoring.rds.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole
+
+## Create external integration role
+  roleServiceIntegration:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-integrate-${AWS::Region}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              Service:
+                - rds.amazonaws.com
+      Policies:
+        - PolicyName: inline-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:AbortMultipartUpload
+                  - s3:DeleteObject
+                  - s3:ListMultipartUploadParts
+                  - s3:PutObject
+                Resource:
+                  - arn:aws:s3:::*/*
+                  - arn:aws:s3:::*
+
+## Create role for bastion host
+  roleBastionHost:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-bastion-${AWS::Region}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'sts:AssumeRole'
+            Principal:
+              Service:
+                - 'ec2.amazonaws.com'
+                - 'ssm.amazonaws.com'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM'
+      Policies:
+        - PolicyName: inline-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - rds:*
+                  - s3:*
+                  - ssm:*
+                  - kms:*
+                  - secretsmanager:*
+                  - kinesis:*
+                Resource: "*"
+  profileBastionHost:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - Ref: roleBastionHost
+
+## Create the bastion host
+  bastionHost:
+    Type: AWS::EC2::Instance
+    Properties:
+      SubnetId: !Ref sub1Public
+      InstanceType: !FindInMap [ RegionalSettings, !Ref "AWS::Region", bastionType ]
+      SecurityGroupIds: [ !Ref bastionSecGroup ]
+      KeyName: !Ref ec2KeyPair
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-bastion-host
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            DeleteOnTermination: true
+            Iops: 7500
+            VolumeSize: 150
+            VolumeType: io1
+      ImageId: !FindInMap [ RegionalSettings, !Ref "AWS::Region", bastionAmi ]
+      IamInstanceProfile: !Ref profileBastionHost
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          cd /home/ec2-user/
+          yum -y install autoconf readline-devel gcc zlib-devel
+          wget https://ftp.postgresql.org/pub/source/v10.7/postgresql-10.7.tar.gz
+          tar -xzf postgresql-10.7.tar.gz
+          cd postgresql-10.7
+          wget https://s3.amazonaws.com/aurora-pgbench-patches/pgbench-init-timing.patch
+          yum -y install patch
+          patch -p1 -b  < pgbench-init-timing.patch
+          wget https://s3.amazonaws.com/aurora-pgbench-patches/pgbench10-ppoll.patch
+          patch -p1 -b < pgbench10-ppoll.patch
+          yum -y install autoconf
+          autoconf
+          ./configure
+          make -j 4 all
+          make install
+          cd /home/ec2-user/
+          curl https://codeload.github.com/akopytov/sysbench/tar.gz/b23a7db377916e424cb555108dc5f784f615993b|tar xz
+          mv sysbench-b23a7db377916e424cb555108dc5f784f615993b sysbench
+          cd sysbench
+          yum -y install automake
+          yum -y install libtool
+          ./autogen.sh 
+          CFLAGS="-L/usr/local/pgsql/lib/ -I /usr/local/pgsql/include/" | ./configure --with-pgsql --without-mysql --with-pgsql-includes=/usr/local/pgsql/include/ --with-pgsql-libs=/usr/local/pgsql/lib/
+          make install
+          cd sysbench/tests
+          make install
+          export LD_LIBRARY_PATH=/usr/local/pgsql/lib
+          python get-pip.py --user
+          pip install awscli --upgrade --user
+          pip install boto3
+          pip install aws_encryption_sdk
+          yum install -y jq
+          username=$(aws secretsmanager get-secret-value --secret-id ${secretClusterMasterUser} --query SecretString  --region ${AWS::Region} --output text | jq -r .password)
+          echo "the password is: $username" > /tmp/mypassword
+          export PATH=/home/ec2-user/postgresql-10.7/src/bin/pgbench:$PATH
+          export PATH=/home/ec2-user/postgresql-10.7/src/bin/psql:$PATH
+          echo "export PATH=/home/ec2-user/postgresql-10.7/src/bin/pgbench:$PATH" >> /home/ec2-user/.bash_profile
+          echo "export PATH=/home/ec2-user/postgresql-10.7/src/bin/psql:$PATH" >> /home/ec2-user/.bash_profile
+          curl https://d2yoo9plh0ksz8.cloudfront.net/my_script.py > /home/ec2-user/das-script.py
+          chown ec2-user:ec2-user /home/ec2-user/das-script.py
+          chomod u+x  /home/ec2-user/das-script.py          
+          export username
+          PGPASSWORD=$username
+          export PGPASSWORD
+          cd /home/ec2-user/postgresql-10.7/src/bin/pgbench
+          nohup ./pgbench -i --fillfactor=100 --scale=100 --host=${dbCluster.Endpoint.Address} --username=masteruser mylab &>> /tmp/nohup.out
+    DependsOn: [ dbNodeWriter,dbNodeSecondary ]          
+
+## Create parameter groups for cluster nodes
+  pgNodeParams:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Description: !Sub ${AWS::StackName}-node-params
+      Family: aurora-postgresql10
+      Parameters:
+        log_rotation_age: '1440'
+        log_rotation_size: '102400'
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-node-params
+
+## Create cluster parameter group
+  cpgClusterParams:
+    Type: AWS::RDS::DBClusterParameterGroup
+    Properties:
+      Description: !Sub ${AWS::StackName}-cluster-params
+      Family: aurora-postgresql10
+      Parameters:
+        rds.force_ssl: 0
+        shared_preload_libraries: 'pg_stat_statements,pg_hint_plan'
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-cluster-params
+
+## Create a random generated password and store it as a secret
+  secretClusterMasterUser:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: !Sub "Master user credentials for ${AWS::StackName}-cluster"
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "masteruser"}'
+        GenerateStringKey: 'password'
+        PasswordLength: 10
+        ExcludeCharacters: '"@/\$`&'
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-secret
+
+## Create Aurora cluster
+  dbCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      Engine: aurora-postgresql
+      EngineVersion : !Ref DBEngineVersion
+      Port: 5432
+      DBSubnetGroupName: !Ref dbSubnets
+      DBClusterParameterGroupName: !Ref cpgClusterParams
+      DBClusterIdentifier: !Sub ${AWS::StackName}-cluster
+      BackupRetentionPeriod: 7
+      MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref secretClusterMasterUser, ':SecretString:username}}' ]]
+      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref secretClusterMasterUser, ':SecretString:password}}' ]]
+      DatabaseName: !FindInMap [ ClusterSettings, global, dbSchema ]
+      StorageEncrypted: true
+      VpcSecurityGroupIds: [ !Ref dbSecGroupCluster ]
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-cluster
+
+## Create role for use with role assignment to Aurora cluster and log export via custom resource
+  roleClusterEnhancements:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-change-${AWS::Region}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      Policies:
+        - PolicyName: inline-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
+              - Effect: Allow
+                Action:
+                  - rds:AddRoleToDBCluster
+                  - rds:RemoveRoleFromDBCluster
+                  - rds:DescribeDBClusters
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                  - iam:GetRole
+                Resource: !GetAtt roleServiceIntegration.Arn
+
+## Create Lambda function to implement role assignment and log export for Aurora cluster
+  funcClusterEnhancements:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-cluster-changes
+      Description: Custom Resource to assign the IAM roles to an Aurora cluster, and export logs to CloudWatch Logs, since CloudFormation doesn't do it natively
+      Handler: index.handler
+      Role: !GetAtt roleClusterEnhancements.Arn
+      Runtime: python3.6
+      Timeout: 30
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-cluster-changes
+      Environment:
+        Variables:
+          REGION: !Ref "AWS::Region"
+      Code:
+        ZipFile: |
+          # Dependencies
+          from os import environ
+          import cfnresponse
+          import boto3
+
+          print("[INFO]", "Initialize function")
+
+          session = boto3.session.Session(region_name=environ["REGION"])
+          rds = session.client('rds')
+
+          # Lambda handler function / main function
+          def handler(event, context):
+              print("[INFO]", "Invocation start")
+
+              # globals
+              global rds
+
+              # init response
+              response_status = cfnresponse.FAILED
+              response_data = {}
+              aurora_existing_roles = []
+              aurora_new_roles = []
+
+              # try/catch
+              try:
+                  # get cluster properties
+                  aurora_cluster = event["ResourceProperties"]["Cluster"]
+                  response = rds.describe_db_clusters(DBClusterIdentifier=aurora_cluster)
+                  if "DBClusters" not in response or not response["DBClusters"]:
+                      raise ValueError("Cluster does not exist, or bad API response: %s" % aurora_cluster)
+
+                  # get existing role associations
+                  if "AssociatedRoles" in response["DBClusters"][0]:
+                      for role in response["DBClusters"][0]["AssociatedRoles"]:
+                          aurora_existing_roles.append(role["RoleArn"])
+
+                  # get new roles
+                  if "Role" in event["ResourceProperties"]:
+                      aurora_new_roles.append(event["ResourceProperties"]["Role"])
+
+                  # figure out roles we need to add and delete
+                  roles_to_add = set(aurora_new_roles).difference(aurora_existing_roles)
+                  roles_to_del = set(aurora_existing_roles).difference(aurora_new_roles)
+
+                  # only make changes if changes are needed
+                  if roles_to_add and roles_to_del:
+                      # this is currently not well supported by the RDS API (multiple subsequent calls)
+                      raise ValueError("Cannot make multiple role changes at once on the cluster: %s" % aurora_cluster)
+                  elif len(roles_to_add) > 1 or len(roles_to_del) > 1:
+                      # this is currently not well supported by the RDS API (multiple subsequent calls)
+                      raise ValueError("Cannot make multiple role changes at once on the cluster: %s" % aurora_cluster)
+                  elif roles_to_add or roles_to_del:
+                      # deleting roles first
+                      for arn in roles_to_del:
+                          rds.remove_role_from_db_cluster(DBClusterIdentifier=aurora_cluster, RoleArn=arn)
+                          print("[INFO]", "Removed role %s from cluster %s" % (arn, aurora_cluster))
+
+                      # adding new roles
+                      for arn in roles_to_add:
+                          rds.add_role_to_db_cluster(DBClusterIdentifier=aurora_cluster, RoleArn=arn)
+                          print("[INFO]", "Added role %s to cluster %s" % (arn, aurora_cluster))
+
+                  # if we got here, set response to success
+                  response_data["DBClusterId"] = response["DBClusters"][0]["DBClusterIdentifier"]
+                  response_data["DBClusterScalableTarget"] = "cluster:%s" % response["DBClusters"][0]["DBClusterIdentifier"]
+                  response_status = cfnresponse.SUCCESS
+              except Exception as e:
+                  print("[ERROR]", e)
+
+              # try/catch
+              try:
+                  # send response to CloudFormation
+                  cfnresponse.send(event, context, response_status, response_data)
+              except Exception as e:
+                  print("[ERROR]", e)
+                  response_status = cfnresponse.FAILED
+
+              print("[INFO]", "Invocation end")
+
+              return response_status
+
+## Custom resource to assign cluster IAM role
+##  resClusterEnhancements:
+##    Type: Custom::resClusterEnhancements
+##    Properties:
+##      ServiceToken: !GetAtt funcClusterEnhancements.Arn
+##      Cluster: !Ref dbCluster
+##      Role: !GetAtt roleServiceIntegration.Arn
+
+## Deploy the first cluster node (always the writer)
+  dbNodeWriter:
+    Type: AWS::RDS::DBInstance
+#    DependsOn: [ resClusterEnhancements ]
+    Properties:
+      DBClusterIdentifier: !Ref dbCluster
+      DBInstanceIdentifier: !Sub ${AWS::StackName}-node-01
+      CopyTagsToSnapshot: true
+      DBInstanceClass: !FindInMap [ RegionalSettings, !Ref "AWS::Region", nodeType ]
+      DBParameterGroupName: !Ref pgNodeParams
+      Engine: aurora-postgresql
+      EngineVersion : !Ref DBEngineVersion
+      MonitoringInterval: 1
+      MonitoringRoleArn: !GetAtt roleEnhancedMonitoring.Arn
+      PubliclyAccessible: false
+      EnablePerformanceInsights: true
+      PerformanceInsightsRetentionPeriod: 7
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-node-01
+
+## Deploy a reader node
+  dbNodeSecondary:
+    Type: AWS::RDS::DBInstance
+    DependsOn: [ dbNodeWriter ]
+    Properties:
+      DBClusterIdentifier: !Ref dbCluster
+      DBInstanceIdentifier: !Sub ${AWS::StackName}-node-02
+      CopyTagsToSnapshot: true
+      DBInstanceClass: !FindInMap [ RegionalSettings, !Ref "AWS::Region", nodeType ]
+      DBParameterGroupName: !Ref pgNodeParams
+      EngineVersion : !Ref DBEngineVersion
+      Engine: aurora-postgresql
+      MonitoringInterval: 1
+      MonitoringRoleArn: !GetAtt roleEnhancedMonitoring.Arn
+      PubliclyAccessible: false
+      EnablePerformanceInsights: true
+      PerformanceInsightsRetentionPeriod: 7
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-node-02
+
+## Role to overcome current limitations in CFN ScalableTarget implemetation
+## This role is *NOT* actively used by any resource and service, but must be present
+  roleScalableTarget:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-aas-target-${AWS::Region}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              Service:
+                - rds.application-autoscaling.amazonaws.com
+
+## Register the scalable target
+## Bug fix: when the stack name contains uppercase letters,
+## the DB cluster identifier is actually lowercased, but the resource ID
+## still contains uppercase, so you get a mismatch on the scalable target ResourceId
+
+## Create sysbench prep SSM document
+  ssmDocSysbenchTest:
+    Type: AWS::SSM::Document
+    Properties:
+      DocumentType: Command
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-sysbench-test
+      Content:
+        schemaVersion: '2.2'
+        description: SysBench Percona TPCC-LIKE Preparation
+        parameters:
+          clusterEndpoint:
+            type: String
+            description: Aurora Cluster Endpoint
+            default: !GetAtt dbCluster.Endpoint.Address
+          dbUser:
+            type: String
+            description: DB User
+            default: !Join ['', ['{{resolve:secretsmanager:', !Ref secretClusterMasterUser, ':SecretString:username}}' ]]
+          dbPassword:
+            type: String
+            description: DB Password
+            default: !Join ['', ['{{resolve:secretsmanager:', !Ref secretClusterMasterUser, ':SecretString:password}}' ]]
+          dbSchema:
+            type: String
+            description: DB Schema
+            default: !FindInMap [ ClusterSettings, sysbench, dbSchema ]
+          dbDriver:
+            type: String
+            description: DB Driver
+            default: !FindInMap [ ClusterSettings, global, dbDriver ]
+            allowedValues: [ mysql, pgsql ]
+          runTime:
+            type: String
+            description: Test Runtime
+            default: !FindInMap [ ClusterSettings, sysbench, runTime ]
+          numThreads:
+            type: String
+            description: Threads
+            default: !FindInMap [ ClusterSettings, sysbench, numThreads ]
+          numTables:
+            type: String
+            description: Tables
+            default: !FindInMap [ ClusterSettings, sysbench, numTables ]
+          numScale:
+            type: String
+            description: Scale
+            default: !FindInMap [ ClusterSettings, sysbench, numWarehouses ]
+        mainSteps:
+        - action: aws:runShellScript
+          name: SysBenchTpcPostgresql
+          inputs:
+            runCommand:
+            - 'cd /home/ec2-user/postgresql-10.7/src/bin/pgbench && ./pgbench -i --fillfactor=90 --scale=100 --host={{ clusterEndpoint }} --user-name={{ dbUser }} --password="{{ dbPassword }}" '
+## Outputs
+Outputs:
+  vpcId:
+    Description: Aurora Lab VPC
+    Value: !Ref vpc
+  bastionEndpoint:
+    Description: Bastion Host Endpoint
+    Value: !GetAtt bastionHost.PublicDnsName
+  bastionInstance:
+    Description: Bastion Instance ID
+    Value: !Ref bastionHost
+  clusterEndpoint:
+    Description: Aurora Cluster Endpoint
+    Value: !GetAtt dbCluster.Endpoint.Address
+  readerEndpoint:
+    Description: Aurora Reader Endpoint
+    Value: !GetAtt dbCluster.ReadEndpoint.Address
+  loadTestRunDoc:
+    Description: Load Test Execution Command Document
+    Value: !Ref ssmDocSysbenchTest
+  dbSubnetGroup:
+    Description: Database Subnet Group
+    Value: !Ref dbSubnets
+  dbSecurityGroup:
+    Description: Database Security Group
+    Value: !Ref dbSecGroupCluster
+  secretArn:
+    Description: Database Credentials Secret ARN
+    Value: !Ref secretClusterMasterUser
+  pgNodeParamsgroup:
+    Description: Database Parameter Group
+    Value: !Ref pgNodeParams
+  cpgClusterParamsgroup:
+    Description: Cluster Parameter Group
+    Value: !Ref cpgClusterParams
+  DatabaseName:
+    Description: Database Name
+    Value: !FindInMap [ ClusterSettings, global, dbSchema ]
+
+

@@ -619,7 +619,7 @@
 </ol>
 <p>This lab requires the following lab modules to be completed first:</p>
 <ul>
-<li><a href="/modules/prerequisites/">Prerequisites</a> (using <code>lab-no-cluster.yml</code> template is sufficient)</li>
+<li><a href="/modules/prerequisites/">Prerequisites</a> (using <code>lab-no-cluster-pgsql.yml</code> template is sufficient)</li>
 </ul>
 <h2 id="1-creating-the-db-cluster">1. Creating the DB cluster<a class="headerlink" href="#1-creating-the-db-cluster" title="Permanent link">&para;</a></h2>
 <p>Open the <a href="https://us-west-2.console.aws.amazon.com/rds/home?region=us-west-2" target="_blank">Amazon RDS service console</a>.</p>
@@ -634,41 +634,39 @@
 </div>
 <p><span class="image"><img alt="Create Database" src="1-create-database.png?raw=true" /></span></p>
 <p>In the first configuration section of the <strong>Create database</strong> page, called <strong>Database settings</strong> ensure the <strong>Easy create</strong> toggle button is turned <strong>OFF</strong> (grey color).</p>
-<p>Next, in the <strong>Engine options</strong> section, choose the <strong>Amazon Aurora</strong> engine type, the <strong>Amazon Aurora with MySQL compatibility</strong> edition, the <strong>Aurora (MySQL 5.6) 1.19.2</strong> version and the <strong>Regional</strong> database location.</p>
-<p><span class="image"><img alt="Engine Options" src="1-engine-options.png?raw=true" /></span></p>
-<p>In the <strong>Database features</strong> section, select <strong>One writer and multiple readers</strong>, and in the <strong>Templates</strong> section, select <strong>Production</strong>. The selections so far will instruct AWS to create an Aurora MySQL database cluster with the most recent version of the MySQL 5.6 compatible engine in a highly available configuration with one writer and one reader database instance in the cluster.</p>
+<p>Next, in the <strong>Engine options</strong> section, choose the <strong>Amazon Aurora</strong> engine type, the <strong>Amazon Aurora with PostgreSQL compatibility</strong> edition, the <strong>Aurora (PostgreSQL 10.7) </strong> version.</p>
+<p><span class="image"><img alt="Engine Options" src="11-engine-options.png?raw=true" /></span></p>
+<p>In the <strong>Database features</strong> section, select <strong>One writer and multiple readers</strong>, and in the <strong>Templates</strong> section, select <strong>Production</strong>. The selections so far will instruct AWS to create an Aurora PostgreSQL database cluster with the most recent version of the PostgreSQL 10.7 compatible engine in a highly available configuration with one writer and one reader database instance in the cluster.</p>
 <p>In the <strong>Settings</strong> section give your database cluster a recognizable identifier, such as <code>labstack-cluster</code>. Configure the name and password of the master database user, with the most elevated permissions in the database. We recommend to use the user name <code>masteruser</code> for consistency with subsequent labs and a password of your choosing. For simplicity ensure the check box <strong>Auto generate a password</strong> is <strong>not checked</strong>.</p>
 <p><span class="image"><img alt="Database Settings" src="1-db-settings.png?raw=true" /></span></p>
 <p>In the <strong>Connectivity</strong> section, expand the sub-section called <strong>Additional connectivity configuration</strong>. This section allows you to specify where the database cluster will be deployed within your defined network configuration. To simplify the labs, the CloudFormation stack you deployed in the preceding <a href="/modules/prerequisites/">Prerequisites</a> module, has configured a VPC that includes all resources needed for an Aurora database cluster. This includes the VPC itself, subnets, DB subnet groups, security groups and several other networking constructs. All you need to do is select the appropriate existing connectivity controls in this section.</p>
-<p>Pick the <strong>Virtual Private Cloud (VPC)</strong> named after the CloudFormation stack name, such as <code>labstack-vpc</code>. Similarly make sure the selected <strong>Subnet Group</strong> also matches the stack name (e.g. <code>labstack-dbsubnets-[hash]</code>). Make sure the cluster <strong>Publicly accessible</strong> option is set to <strong>No</strong>. The lab environment also configured a <strong>VPC security group</strong> that allows your lab workspace EC2 instance to connect to the database. Make sure the <strong>Choose existing</strong> security group option is selected and from the dropdown pick the security group with a name ending in <code>-mysql-internal</code> (eg. <code>labstack-mysql-internal</code>). Please remove any other security groups, such as <code>default</code> from the selection.</p>
-<p><span class="image"><img alt="Connectivity" src="1-connectivity.png?raw=true" /></span></p>
-<p>Next, expand the <strong>Advanced configuration</strong> section. Set the <strong>Initial database name</strong> to <code>mylab</code>. For the <strong>DB cluster parameter group</strong> and <strong>DB parameter group</strong> selectors, choose the groups with the stack name in their name (e.g. <code>labstack-[...]</code>). Choose a <code>7 days</code> <strong>Backup retention period</strong>. Check the box to <strong>Enable encryption</strong> and select the <code>[default] aws/rds</code> for the <strong>Master key</strong>.</p>
-<p><span class="image"><img alt="Advanced configuration" src="1-advanced-1.png?raw=true" /></span></p>
-<p>Enable the backtrack capability by checking the <strong>Enable Backtrack</strong> box and set a <strong>Target backtrack window</strong> of <code>24</code> hours. Check the box to <strong>Enable Performance Insights</strong> with a <strong>Retention period of <code>Default (7 days)</code> and use the <code>[default] aws/rds</code> </strong>Master key<strong> for monitoring data encryption. Next, check the </strong>Enable Enhanced Monitoring<strong> box, and select a </strong>Granularity<strong> of <code>1 second</code>. For </strong>Log exports<strong> check the </strong>Error log<strong> and </strong>Slow query log** boxes.</p>
-<p><span class="image"><img alt="Advanced configuration" src="1-advanced-2.png?raw=true" /></span></p>
+<p>Pick the <strong>Virtual Private Cloud (VPC)</strong> named after the CloudFormation stack name, such as <code>labstack-vpc</code>. Similarly make sure the selected <strong>Subnet Group</strong> also matches the stack name (e.g. <code>labstack-dbsubnets-[hash]</code>). Make sure the cluster <strong>Publicly accessible</strong> option is set to <strong>No</strong>. The lab environment also configured a <strong>VPC security group</strong> that allows your lab workspace EC2 instance to connect to the database. Make sure the <strong>Choose existing</strong> security group option is selected and from the dropdown pick the security group with a name ending in <code>-pgsql-internal</code> (eg. <code>labstack-pgsql-internal</code>). Please remove any other security groups, such as <code>default</code> from the selection.</p>
+<p><span class="image"><img alt="Connectivity" src="11-connectivity.png?raw=true" /></span></p>
+<p>Next, expand the <strong>Additional configuration</strong> section. Set the <strong>Initial database name</strong> to <code>mylab</code>. For the <strong>DB cluster parameter group</strong> and <strong>DB parameter group</strong> selectors, choose the groups with the stack name in their name (e.g. <code>labstack-[...]</code>). Choose a <code>7 days</code> <strong>Backup retention period</strong>. Check the box to <strong>Enable encryption</strong> and select the <code>[default] aws/rds</code> for the <strong>Master key</strong>.</p>
+<p><span class="image"><img alt="Advanced configuration" src="11-advanced-1.png?raw=true" /></span></p>
+<p>Check the box to <strong>Enable Performance Insights</strong> with a <strong>Retention period of <code>Default (7 days)</code> and use the <code>[default] aws/rds</code> </strong>Master key<strong> for monitoring data encryption. Next, check the </strong>Enable Enhanced Monitoring<strong> box, and select a </strong>Granularity<strong> of <code>1 second</code>. For </strong>Log exports<strong> check the </strong>Postgresql log** boxes.</p>
+<p><span class="image"><img alt="Advanced configuration" src="11-advanced-2.png?raw=true" /></span></p>
 <p>Also in the <strong>Advanced configuration</strong> section, de-select the check box <strong>Enable delete protection</strong>. In a production use case, you will want to leave that option checked, but for testing purposes, un-checking this option will make it easier to clean up the resources once you have completed the labs.</p>
 <p>Before continuing, let's summarize the configuration options selected. You will create a database cluster with the following characteristics:</p>
 <ul>
-<li>Aurora MySQL 5.6 compatible (latest stable engine version)</li>
-<li>Regional cluster composed of a writer and a reader DB instance in different availability zones (highly available)</li>
+<li>Aurora PostgreSQL 10.7 compatible (latest stable engine version)</li>
+<li>Cluster composed of a writer and a reader DB instance in different availability zones (highly available)</li>
 <li>Deployed in the VPC and using the network configuration of the lab environment</li>
-<li>Using custom database engine parameters that enable the slow query log, S3 access and tune a few other configurations</li>
 <li>Automatically backed up continuously, retaining backups for 7 days</li>
 <li>Using data at rest encryption</li>
-<li>Retaining 24 hours worth of change data for backtrack purposes</li>
 <li>With Enhanced Monitoring and Performance Insights enabled</li>
 </ul>
 <p>Click <strong>Create database</strong> to provision the DB cluster.</p>
-<p><span class="image"><img alt="Advanced configuration - end" src="1-advanced-3.png?raw=true" /></span></p>
+<p><span class="image"><img alt="Advanced configuration - end" src="11-advanced-3.png?raw=true" /></span></p>
 <h2 id="2-retrieving-the-db-cluster-endpoints">2. Retrieving the DB cluster endpoints<a class="headerlink" href="#2-retrieving-the-db-cluster-endpoints" title="Permanent link">&para;</a></h2>
 <p>The database cluster may take several minutes to provision, including the DB instances making up the cluster. In order to connect to the DB cluster and start using it in subsequent labs, you need to retrieve the DB cluster endpoints. There are two endpoints created by default. The <strong>Cluster Endpoint</strong> will always point to the <strong>writer</strong> DB instance of the cluster, and should be used for both writes and reads. The <strong>Reader Endpoint</strong> will always resolve to one of the <strong>
 reader</strong> DB instances and should be used to offload read operations to read replicas. In the RDS console, go to the DB cluster detail view by clicking on the cluster DB identifier.</p>
-<p><span class="image"><img alt="DB Cluster Status" src="2-db-cluster-status.png?raw=true" /></span></p>
+<p><span class="image"><img alt="DB Cluster Status" src="22-db-cluster-status.png?raw=true" /></span></p>
 <p>The <strong>Endpoints</strong> section in the <strong>Connectivity and security</strong> tab of the details page displays the endpoints. Note these values down, as you will use them later.</p>
-<p><span class="image"><img alt="DB Cluster Endpoints" src="2-db-cluster-details.png?raw=true" /></span></p>
+<p><span class="image"><img alt="DB Cluster Endpoints" src="22-db-cluster-details.png?raw=true" /></span></p>
 <h2 id="3-assigning-an-iam-role-to-the-db-cluster">3. Assigning an IAM role to the DB cluster<a class="headerlink" href="#3-assigning-an-iam-role-to-the-db-cluster" title="Permanent link">&para;</a></h2>
 <p>Once created, you should assign an IAM role to the DB cluster, in order to allow the cluster access to Amazon S3 for importing and exporting data. The IAM role has already been created using CloudFormation when you created the lab environment. On the same DB cluster detail page as before, in the <strong>Manage IAM roles</strong> section, choose the IAM role named after the stack name, ending in <code>-integrate-[region]</code> (e.g. <code>labstack-integrate-[region]</code>). Then click <strong>Add role</strong>.</p>
-<p><span class="image"><img alt="DB Cluster Add Role" src="3-add-role.png?raw=true" /></span></p>
+<p><span class="image"><img alt="DB Cluster Add Role" src="33-add-role.png?raw=true" /></span></p>
 <p>Once the operation completes the <strong>Status</strong> of the role will change from <code>Pending</code> to <code>Active</code>.</p>
 <h2 id="4-creating-a-replica-auto-scaling-policy">4. Creating a replica auto scaling policy<a class="headerlink" href="#4-creating-a-replica-auto-scaling-policy" title="Permanent link">&para;</a></h2>
 <p>Finally, you will add a read replica auto scaling configuration to the DB cluster. This will allow the DB cluster to scale the number of reader DB instances that operate in the DB cluster at any given point in time based on the load.</p>
