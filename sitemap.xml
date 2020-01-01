@@ -2,22 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://mylabs.data-builder.com/</loc>
-     <lastmod>2019-12-31</lastmod>
+     <lastmod>2020-01-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://mylabs.data-builder.com/modules/</loc>
-     <lastmod>2019-12-31</lastmod>
+     <lastmod>2020-01-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://mylabs.data-builder.com/modules/prerequisites/</loc>
-     <lastmod>2019-12-31</lastmod>
+     <lastmod>2020-01-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://mylabs.data-builder.com/modules/create/</loc>
-     <lastmod>2019-12-31</lastmod>
+     <lastmod>2020-01-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
@@ -37,7 +37,7 @@
     </url>
     <url>
      <loc>https://mylabs.data-builder.com/modules/perf-insights/</loc>
-     <lastmod>2019-12-31</lastmod>
+     <lastmod>2020-01-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
@@ -52,7 +52,7 @@
     </url>
     <url>
      <loc>https://mylabs.data-builder.com/modules/qpm/</loc>
-     <lastmod>2019-12-31</lastmod>
+     <lastmod>2020-01-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
@@ -66,18 +66,18 @@
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc></loc>
-     
+     <loc>https://mylabs.data-builder.com/modules/das/</loc>
+     <lastmod>2020-01-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://mylabs.data-builder.com/contribute/</loc>
-     <lastmod>2019-12-31</lastmod>
+     <lastmod>2020-01-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://mylabs.data-builder.com/license/</loc>
-     <lastmod>2019-12-31</lastmod>
+     <lastmod>2020-01-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>

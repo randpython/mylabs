@@ -1,0 +1,1121 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Workshop and lab content for Amazon Aurora PostgreSQL compatible databases. This code will contain a series of templates, instructional guides and sample code to educate users on how to use Amazon Aurora features.">
+      
+      
+        <link rel="canonical" href="https://mylabs.data-builder.com/modules/das/">
+      
+      
+        <meta name="author" content="amazon-aurora-labs-for-mysql@amazon.com">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/aws-favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
+    
+    
+      
+        <title>Database Activity Streaming - Amazon Aurora Labs for PostgreSQL</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.1b62728e.css">
+      
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.268332fc.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../../assets/css/custom.css">
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#database-activity-streaming" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <!--
+  Copyright (c) 2016-2018 Martin Donath <martin.donath@squidfunk.com>
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+-->
+
+<!-- Application header -->
+<header class="md-header" data-md-component="header">
+
+    <!-- Top-level navigation -->
+    <nav class="md-header-nav md-grid">
+      <div class="md-flex">
+
+        <!-- Link to home -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <a href="https://aws.amazon.com/"
+              title="Amazon Web Services"
+              class="md-header-nav__button md-logo">
+            
+              <img src="../../assets/images/aws_smile_logo.png" width="40" height="24" />
+            
+          </a>
+        </div>
+
+        <!-- Button to toggle drawer -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <label class="md-icon md-icon--menu md-header-nav__button"
+              for="__drawer"></label>
+        </div>
+
+        <!-- Header title -->
+        <div class="md-flex__cell md-flex__cell--stretch">
+          <div class="md-flex__ellipsis md-header-nav__title"
+              data-md-component="title">
+            
+              
+                <span class="md-header-nav__topic">
+                  Amazon Aurora Labs for PostgreSQL
+                </span>
+                <span class="md-header-nav__topic">
+                  Database Activity Streaming
+                </span>
+              
+            
+          </div>
+        </div>
+
+        <!-- Button to open search dialogue -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          
+            
+              <label class="md-icon md-icon--search md-header-nav__button"
+                  for="__search"></label>
+
+              <!-- Search interface -->
+              
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+            
+          
+        </div>
+
+        <!-- Repository containing source -->
+        
+      </div>
+    </nav>
+  </header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../.." class="md-tabs__link">
+        Home
+      </a>
+    
+  </li>
+
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../" class="md-tabs__link">
+        Getting Started
+      </a>
+    
+  </li>
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../prerequisites/" class="md-tabs__link md-tabs__link--active">
+          Modules
+        </a>
+      
+    </li>
+  
+
+      
+        
+      
+        
+      
+    </ul>
+  </div>
+</nav>
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://mylabs.data-builder.com/" title="Amazon Aurora Labs for PostgreSQL" class="md-nav__button md-logo">
+      
+        <img src="../../assets/images/aws_smile_logo.png" width="48" height="48">
+      
+    </a>
+    Amazon Aurora Labs for PostgreSQL
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Getting Started" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Modules
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Modules
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../prerequisites/" title="Prerequisites" class="md-nav__link">
+      Prerequisites
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../create/" title="Creating a New Aurora Cluster" class="md-nav__link">
+      Creating a New Aurora Cluster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect/index.md" title="Connecting, Loading Data and Auto Scaling" class="md-nav__link">
+      Connecting, Loading Data and Auto Scaling
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect/index.md" title="Backup And Restore" class="md-nav__link">
+      Backup And Restore
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../clone/index.md" title="Fast Cloning" class="md-nav__link">
+      Fast Cloning
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../perf-insights/" title="Using Performance Insights" class="md-nav__link">
+      Using Performance Insights
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../create-serverless/index.md" title="Creating a Serverless Aurora Cluster" class="md-nav__link">
+      Creating a Serverless Aurora Cluster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Using Aurora Serverless with Lambda Functions" class="md-nav__link">
+      Using Aurora Serverless with Lambda Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../qpm/" title="Query Plan Management" class="md-nav__link">
+      Query Plan Management
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Cluster Cache Management" class="md-nav__link">
+      Cluster Cache Management
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Oracle to Aurora PostgreSQL migration using DMS and SCT" class="md-nav__link">
+      Oracle to Aurora PostgreSQL migration using DMS and SCT
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Database Activity Streaming
+      </label>
+    
+    <a href="./" title="Database Activity Streaming" class="md-nav__link md-nav__link--active">
+      Database Activity Streaming
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-prerequisite" class="md-nav__link">
+    1. Prerequisite
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-creating-aurora-postgresql-cluster-with-cloudformation" class="md-nav__link">
+    2. Creating Aurora PostgreSQL cluster with Cloudformation
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-retrieving-database-credentials-from-secret-manager" class="md-nav__link">
+    2.1 Retrieving Database credentials from Secret Manager
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-cloudformation-resource-chart" class="md-nav__link">
+    2.2 Cloudformation Resource chart
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-connecting-to-the-ec2-bastion-instance" class="md-nav__link">
+    2.3 Connecting to the EC2 bastion Instance
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-database-activity-streams" class="md-nav__link">
+    3 Database Activity Streams
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-configuring-database-activity-streams" class="md-nav__link">
+    3.1 Configuring Database Activity Streams
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-to-start-an-activity-stream" class="md-nav__link">
+    3.2 To start an activity stream
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-accessing-database-activity-streams" class="md-nav__link">
+    3.3 Accessing Database Activity Streams
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-sample-code-database-activity-streams" class="md-nav__link">
+    3.4 Sample code Database Activity Streams
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-sample-output-activity-streaming" class="md-nav__link">
+    3.5 Sample Output Activity Streaming
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-stop-the-database-activity-streaming" class="md-nav__link">
+    3.6 Stop the Database Activity Streaming
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../contribute/" title="Contributing" class="md-nav__link">
+      Contributing
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-prerequisite" class="md-nav__link">
+    1. Prerequisite
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-creating-aurora-postgresql-cluster-with-cloudformation" class="md-nav__link">
+    2. Creating Aurora PostgreSQL cluster with Cloudformation
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-retrieving-database-credentials-from-secret-manager" class="md-nav__link">
+    2.1 Retrieving Database credentials from Secret Manager
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-cloudformation-resource-chart" class="md-nav__link">
+    2.2 Cloudformation Resource chart
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-connecting-to-the-ec2-bastion-instance" class="md-nav__link">
+    2.3 Connecting to the EC2 bastion Instance
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-database-activity-streams" class="md-nav__link">
+    3 Database Activity Streams
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-configuring-database-activity-streams" class="md-nav__link">
+    3.1 Configuring Database Activity Streams
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-to-start-an-activity-stream" class="md-nav__link">
+    3.2 To start an activity stream
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-accessing-database-activity-streams" class="md-nav__link">
+    3.3 Accessing Database Activity Streams
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-sample-code-database-activity-streams" class="md-nav__link">
+    3.4 Sample code Database Activity Streams
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-sample-output-activity-streaming" class="md-nav__link">
+    3.5 Sample Output Activity Streaming
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-stop-the-database-activity-streaming" class="md-nav__link">
+    3.6 Stop the Database Activity Streaming
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="database-activity-streaming">Database Activity Streaming<a class="headerlink" href="#database-activity-streaming" title="Permanent link">&para;</a></h1>
+<h2 id="1-prerequisite">1. Prerequisite<a class="headerlink" href="#1-prerequisite" title="Permanent link">&para;</a></h2>
+<p><strong>Create an EC2 Key Pair</strong>: <br></p>
+<p>You will need an EC2 key pair in order to log into the EC2 bastion instance<br></p>
+<p>To create a new key pair:</p>
+<ol>
+<li>Open the EC2 service console</li>
+<li>In the left-hand gutter under “Network &amp; Security” click “Key Pairs”</li>
+<li>Supply a name and click “Create”</li>
+<li>Download or otherwise save the .pem file</li>
+</ol>
+<h2 id="2-creating-aurora-postgresql-cluster-with-cloudformation">2. Creating Aurora PostgreSQL cluster with Cloudformation<a class="headerlink" href="#2-creating-aurora-postgresql-cluster-with-cloudformation" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2" target="_blank">Log in to your AWS console and go to the CloudFormation landing page</a></li>
+<li>Click create stack, select ‘Specify an Amazon S3 template URL’ and launch the CloudFormation stack from this <a href="https://tinyurl.com/my-cf-template" target="_blank">template</a></li>
+<li>Download and save this locally and use upload a template to S3 option and click on “Choose File” option to point to the location where you have saved the template.</li>
+<li>Here is a screenshot of the first page –
+<span class="image"><img alt="1-das-cf1" src="1-das-cf1.png?raw=true" /></span>
+<br>
+<span class="image"><img alt="1-das-cf2" src="1-das-cf2.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-cf3" src="1-das-cf3.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-cf4" src="1-das-cf4.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-cf5" src="1-das-cf5.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-cf6" src="1-das-cf6.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-cf7" src="1-das-cf7.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-cf8" src="1-das-cf8.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-cf9" src="1-das-cf9.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-cf10" src="1-das-cf10.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-cf11" src="1-das-cf11.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-cf12" src="1-das-cf12.png?raw=true" /></span><br></li>
+</ol>
+<h3 id="21-retrieving-database-credentials-from-secret-manager">2.1 Retrieving Database credentials from Secret Manager<a class="headerlink" href="#21-retrieving-database-credentials-from-secret-manager" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>Search for the secret name as shown in the output of the stack and select the secret name.
+<span class="image"><img alt="1-das-secrets-1" src="1-das-secrets-1.png?raw=true" /></span><br></p>
+</li>
+<li>
+<p>Click on the Retrieve secret value to get the Database user and the password to connect to the Aurora Database.
+<span class="image"><img alt="1-das-secrets-2" src="1-das-secrets-2.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-secrets-3" src="1-das-secrets-3.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-secrets-4" src="1-das-secrets-4.png?raw=true" /></span><br></p>
+</li>
+</ol>
+<h3 id="22-cloudformation-resource-chart">2.2 Cloudformation Resource chart<a class="headerlink" href="#22-cloudformation-resource-chart" title="Permanent link">&para;</a></h3>
+<p>Please note that the Database names and the Custom Cluster and Database Parameter groups shown below are only for illustrative purpose. Participants are required to use the appropriate resources created from the Cloudformation template.</p>
+<p><strong>Please refer the below table for the list of resources and the value</strong></p>
+<table>
+<thead>
+<tr>
+<th>Resource name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cluster Parameter Group</td>
+<td>refer CloudFormation template output section and refer the key value “apgcustomclusterparamgroup”</td>
+</tr>
+<tr>
+<td>Database Parameter Group</td>
+<td>refer CloudFormation template output section and refer the key value “apgcustomdbparamgroup”</td>
+</tr>
+<tr>
+<td>Cluster Endpoint</td>
+<td>refer CloudFormation template output section and refer the key value “clusterEndpoint”</td>
+</tr>
+<tr>
+<td>Reader Endpoint</td>
+<td>refer CloudFormation template output section and refer the key value “readerEndpoint”</td>
+</tr>
+<tr>
+<td>DB name</td>
+<td>mylab</td>
+</tr>
+<tr>
+<td>DB username</td>
+<td>masteruser</td>
+</tr>
+<tr>
+<td>DB password</td>
+<td>extract from the secrets Manager as shown above</td>
+</tr>
+<tr>
+<td>bastionEndpoint</td>
+<td>refer CloudFormation template output section and refer the key value “bastionEndpoint”</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-connecting-to-the-ec2-bastion-instance">2.3 Connecting to the EC2 bastion Instance<a class="headerlink" href="#23-connecting-to-the-ec2-bastion-instance" title="Permanent link">&para;</a></h3>
+<p>We are creating EC2 instance (Amazon Linux AMI-ID ami-0f2176987ee50226e) and bootstrapping the EC2 Instance to have pgbench and sysbench benchmarking tools to be installed.</p>
+<div class="codehilite"><pre><span></span>ssh -i &lt;keypair.pem&gt; ec2-user@&lt;bastionEndpoint&gt;
+</pre></div>
+
+
+<p>Replace the [<code>keypair.pem</code>] with the keypair file name input provided to the Cloud formation template. Replace the “bastionEndpoint” with the key value from the output section of the Cloud formation template.</p>
+<p>If you need to open an access for your laptop IP specifically, then whitelist your IP, by specifying your IP in the format <code>x.x.x.x/32</code> (<a href=" http://www.whatsmyip.org/" target="_blank">Lookup your IP </a>). If there are any issues in accessing the instance, you can always modify the security group to populate your IP address as My IP as mentioned <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html" target="_blank"> here</a>.</p>
+<h2 id="3-database-activity-streams">3 Database Activity Streams<a class="headerlink" href="#3-database-activity-streams" title="Permanent link">&para;</a></h2>
+<p>Database Activity Streams provide a near real-time data stream of the database activity in your relational database. When you integrate Database Activity Streams with third-party monitoring tools, you can monitor and audit database activity. </p>
+<p>Database Activity Streams have the following limits and requirements:</p>
+<ol>
+<li>Currently, these streams are supported only with Aurora with PostgreSQL compatibility version 2.3, which is compatible with PostgreSQL version 10.7. </li>
+<li>They require use of AWS Key Management Service (AWS KMS) because the activity streams are always encrypted. </li>
+</ol>
+<h3 id="31-configuring-database-activity-streams">3.1 Configuring Database Activity Streams<a class="headerlink" href="#31-configuring-database-activity-streams" title="Permanent link">&para;</a></h3>
+<p>You start an activity stream at the DB cluster level to monitor database activity for all DB instances of the cluster. Any DB instances added to the cluster are also automatically monitored. </p>
+<p>You can choose to have the database session handle database activity events either synchronously or asynchronously: </p>
+<ol>
+<li>Synchronous mode – In synchronous mode, when a database session generates an activity stream event, the session blocks until the event is made durable. If the event can't be made durable for some reason, the database session returns to normal activities. However, an RDS event is sent indicating that activity stream records might be lost for some time. A second RDS event is sent after the system is back to a healthy state. 
+<strong><em>The synchronous mode favors the accuracy of the activity stream over database performance. </em></strong></li>
+<li>Asynchronous mode – In asynchronous mode, when a database session generates an activity stream event, the session returns to normal activities immediately. In the background, the activity stream event is made a durable record. If an error occurs in the background task, an RDS event is sent. This event indicates the beginning and end of any time windows where activity stream event records might have been lost. 
+<strong><em>Asynchronous mode favors database performance over the accuracy of the activity stream.</em></strong> </li>
+</ol>
+<h3 id="32-to-start-an-activity-stream">3.2 To start an activity stream<a class="headerlink" href="#32-to-start-an-activity-stream" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open the <a href="https://us-west-2.console.aws.amazon.com/rds/home?region=us-west-2" target="_blank">Amazon RDS service console</a>.<br></li>
+<li>In the navigation pane, choose Databases and click on the DB identifier with the cluster name you created as a part of the CloudFormation stack.
+<span class="image"><img alt="1-das-stream-1" src="1-das-stream-1.png?raw=true" /></span><br></li>
+<li>For Actions, choose Start activity stream. The Database Activity Stream window appears. 
+<span class="image"><img alt="1-das-stream-2" src="1-das-stream-2.png?raw=true" /></span><br></li>
+<li>
+<p>Enter the following settings in the Database Activity Stream window: </p>
+<p>a. For Master key, choose a key from the list of AWS KMS keys. </p>
+<p>b. For Database activity stream mode, choose Asynchronous or Synchronous. </p>
+<p>c. Choose Apply immediately. </p>
+</li>
+<li>
+<p>When you're done entering settings, choose Continue. 
+<span class="image"><img alt="1-das-51" src="1-das-51.png?raw=true" /></span><br></p>
+</li>
+<li>The status column on the RDS-&gt; Database page for the cluster will start showing <code>configuring-activity-stream</code>
+<span class="image"><img alt="1-das-52" src="1-das-52.png?raw=true" /></span><br></li>
+<li>Verify the activity streaming by clicking on the cluster name <code>(with role =regional)</code> and click on configuration.
+<span class="image"><img alt="1-das-53" src="1-das-53.png?raw=true" /></span><br></li>
+</ol>
+<h3 id="33-accessing-database-activity-streams">3.3 Accessing Database Activity Streams<a class="headerlink" href="#33-accessing-database-activity-streams" title="Permanent link">&para;</a></h3>
+<p>We are generating load on the Database via pgbench and will access the database activity in real time. We will connect to the EC2 Instance to generate the load on the Database and will access the Database activity streaming information from another session by execution the python script <code>(das_qpm.py)</code>. </p>
+<p>We will be formatting the output of the 1 streaming record using JSON formatter.</p>
+<div class="codehilite"><pre><span></span>export PATH=/home/ec2-user/postgresql-10.7/src/bin/pgbench:$PATH
+
+cd /home/ec2-user/postgresql-10.7/src/bin/pgbench
+
+./pgbench -i --fillfactor=90 --scale=100 --host=labstack-cluster.cluster-xxxxxxxxx.us-west-2.rds.amazonaws.com --username=masteruser mylab
+
+./pgbench --host=labstack-cluster.cluster-xxxxxxxxx.us-west-2.rds.amazonaws.com --username=masteruser --protocol=prepared -P 60 --time=300 --client=16 --jobs=96 mylab&gt; results1.log
+</pre></div>
+
+
+<h3 id="34-sample-code-database-activity-streams">3.4 Sample code Database Activity Streams<a class="headerlink" href="#34-sample-code-database-activity-streams" title="Permanent link">&para;</a></h3>
+<p>The python file with the sample code is already created by the CloudFormation script at this location <code>/home/ec2-user/das-script.py</code>. You will be required to replace the value for <code>RESOURCE_ID</code> with the <code>Resourceid</code> value from your cluster configuration as shown below and also replace the value for <code>STREAM_NAME</code> with the <code>Kinesis Stream</code>. </p>
+<p>You can also copy and paste the script text as shown below to create a new python file and replace the value for <code>RESOURCE_ID</code> with the <code>Resourceid</code> value from your cluster configuration as shown below and also replace the value for <code>STREAM_NAME</code> with the <code>Kinesis Stream</code>. 
+<span class="image"><img alt="1-das-53" src="1-das-53.png?raw=true" /></span><br></p>
+<div class="codehilite"><pre><span></span>vi das_script.py
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">zlib</span>
+<span class="kn">import</span> <span class="nn">boto3</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">aws_encryption_sdk</span>
+<span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">AES</span>
+<span class="kn">from</span> <span class="nn">aws_encryption_sdk</span> <span class="kn">import</span> <span class="n">DefaultCryptoMaterialsManager</span>
+<span class="kn">from</span> <span class="nn">aws_encryption_sdk.internal.crypto</span> <span class="kn">import</span> <span class="n">WrappingKey</span>
+<span class="kn">from</span> <span class="nn">aws_encryption_sdk.key_providers.raw</span> <span class="kn">import</span> <span class="n">RawMasterKeyProvider</span>
+<span class="kn">from</span> <span class="nn">aws_encryption_sdk.identifiers</span> <span class="kn">import</span> <span class="n">WrappingAlgorithm</span><span class="p">,</span> <span class="n">EncryptionKeyType</span>
+
+<span class="n">REGION_NAME</span> <span class="o">=</span> <span class="s1">&#39;us-west-2&#39;</span>                    
+<span class="n">RESOURCE_ID</span> <span class="o">=</span> <span class="s1">&#39;cluster-XXXXXXXXXXX&#39;</span>      <span class="c1"># cluster-ABCD123456</span>
+<span class="n">STREAM_NAME</span> <span class="o">=</span> <span class="s1">&#39;aws-rds-das-cluster-XXXXXXXXXXX&#39;</span> <span class="c1"># aws-rds-das-cluster-ABCD123456</span>
+
+<span class="k">class</span> <span class="nc">MyRawMasterKeyProvider</span><span class="p">(</span><span class="n">RawMasterKeyProvider</span><span class="p">):</span>
+    <span class="n">provider_id</span> <span class="o">=</span> <span class="s2">&quot;BC&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">RawMasterKeyProvider</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plain_key</span><span class="p">):</span>
+        <span class="n">RawMasterKeyProvider</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wrapping_key</span> <span class="o">=</span> <span class="n">WrappingKey</span><span class="p">(</span><span class="n">wrapping_algorithm</span><span class="o">=</span><span class="n">WrappingAlgorithm</span><span class="o">.</span><span class="n">AES_256_GCM_IV12_TAG16_NO_PADDING</span><span class="p">,</span>
+                                        <span class="n">wrapping_key</span><span class="o">=</span><span class="n">plain_key</span><span class="p">,</span> <span class="n">wrapping_key_type</span><span class="o">=</span><span class="n">EncryptionKeyType</span><span class="o">.</span><span class="n">SYMMETRIC</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_raw_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapping_key</span>
+
+
+<span class="k">def</span> <span class="nf">decrypt_payload</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">data_key</span><span class="p">):</span>
+    <span class="n">my_key_provider</span> <span class="o">=</span> <span class="n">MyRawMasterKeyProvider</span><span class="p">(</span><span class="n">data_key</span><span class="p">)</span>
+    <span class="n">my_key_provider</span><span class="o">.</span><span class="n">add_master_key</span><span class="p">(</span><span class="s2">&quot;DataKey&quot;</span><span class="p">)</span>
+    <span class="n">decrypted_plaintext</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="n">aws_encryption_sdk</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+        <span class="n">materials_manager</span><span class="o">=</span><span class="n">aws_encryption_sdk</span><span class="o">.</span><span class="n">DefaultCryptoMaterialsManager</span><span class="p">(</span><span class="n">master_key_provider</span><span class="o">=</span><span class="n">my_key_provider</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">decrypted_plaintext</span>
+
+
+<span class="k">def</span> <span class="nf">decrypt_decompress</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="n">decrypted</span> <span class="o">=</span> <span class="n">decrypt_payload</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">decrypted</span><span class="p">,</span> <span class="n">zlib</span><span class="o">.</span><span class="n">MAX_WBITS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+    <span class="n">kms</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;kms&#39;</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">REGION_NAME</span><span class="p">)</span>
+    <span class="n">kinesis</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;kinesis&#39;</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">REGION_NAME</span><span class="p">)</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">kinesis</span><span class="o">.</span><span class="n">describe_stream</span><span class="p">(</span><span class="n">StreamName</span><span class="o">=</span><span class="n">STREAM_NAME</span><span class="p">)</span>
+    <span class="n">shard_iters</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">shard</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;StreamDescription&#39;</span><span class="p">][</span><span class="s1">&#39;Shards&#39;</span><span class="p">]:</span>
+        <span class="n">shard_iter_response</span> <span class="o">=</span> <span class="n">kinesis</span><span class="o">.</span><span class="n">get_shard_iterator</span><span class="p">(</span><span class="n">StreamName</span><span class="o">=</span><span class="n">STREAM_NAME</span><span class="p">,</span> <span class="n">ShardId</span><span class="o">=</span><span class="n">shard</span><span class="p">[</span><span class="s1">&#39;ShardId&#39;</span><span class="p">],</span><span class="n">ShardIteratorType</span><span class="o">=</span><span class="s1">&#39;LATEST&#39;</span><span class="p">)</span> <span class="c1"># TRIM_HORIZON will </span>
+        <span class="n">shard_iters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shard_iter_response</span><span class="p">[</span><span class="s1">&#39;ShardIterator&#39;</span><span class="p">])</span>
+
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">shard_iters</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">next_shard_iters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">shard_iter</span> <span class="ow">in</span> <span class="n">shard_iters</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">kinesis</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">ShardIterator</span><span class="o">=</span><span class="n">shard_iter</span><span class="p">,</span> <span class="n">Limit</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;Records&#39;</span><span class="p">]:</span>
+                <span class="n">record_data</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="s1">&#39;Data&#39;</span><span class="p">]</span>
+                <span class="n">record_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">record_data</span><span class="p">)</span>
+                <span class="n">payload_decoded</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">record_data</span><span class="p">[</span><span class="s1">&#39;databaseActivityEvents&#39;</span><span class="p">])</span>
+                <span class="n">data_key_decoded</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">record_data</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">])</span>
+                <span class="n">data_key_decrypt_result</span> <span class="o">=</span> <span class="n">kms</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">CiphertextBlob</span><span class="o">=</span><span class="n">data_key_decoded</span><span class="p">,</span>
+                                                      <span class="n">EncryptionContext</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;aws:rds:dbc-id&#39;</span><span class="p">:</span> <span class="n">RESOURCE_ID</span><span class="p">})</span>
+                <span class="k">print</span> <span class="n">decrypt_decompress</span><span class="p">(</span><span class="n">payload_decoded</span><span class="p">,</span> <span class="n">data_key_decrypt_result</span><span class="p">[</span><span class="s1">&#39;Plaintext&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;NextShardIterator&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+                <span class="n">next_shard_iters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;NextShardIterator&#39;</span><span class="p">])</span>
+        <span class="n">shard_iters</span> <span class="o">=</span> <span class="n">next_shard_iters</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+
+<h3 id="35-sample-output-activity-streaming">3.5 Sample Output Activity Streaming<a class="headerlink" href="#35-sample-output-activity-streaming" title="Permanent link">&para;</a></h3>
+<p><a href="https://jsonformatter.org/" target=_blank"> jsonformatter.org</a>
+<span class="image"><img alt="1-das-55" src="1-das-55.png?raw=true" /></span><br></p>
+<div class="codehilite"><pre><span></span>{
+  &quot;type&quot;: &quot;DatabaseActivityMonitoringRecord&quot;,
+  &quot;clusterId&quot;: &quot;cluster-XXXXXXXXXXXXXXXXXXXXXXXXXX&quot;,
+  &quot;instanceId&quot;: &quot;db-XXXXXXXXXXXXXXXXXXXXXXX&quot;,
+  &quot;databaseActivityEventList&quot;: [
+    {
+      &quot;logTime&quot;: &quot;2019-12-26 06:56:09.090054+00&quot;,
+      &quot;statementId&quot;: 3731,
+      &quot;substatementId&quot;: 1,
+      &quot;objectType&quot;: &quot;TABLE&quot;,
+      &quot;command&quot;: &quot;INSERT&quot;,
+      &quot;objectName&quot;: &quot;public.pgbench_history&quot;,
+      &quot;databaseName&quot;: &quot;mylab&quot;,
+      &quot;dbUserName&quot;: &quot;masteruser&quot;,
+      &quot;remoteHost&quot;: &quot;10.0.0.204&quot;,
+      &quot;remotePort&quot;: &quot;33948&quot;,
+      &quot;sessionId&quot;: &quot;5e04596c.2383&quot;,
+      &quot;rowCount&quot;: 1,
+      &quot;commandText&quot;: &quot;INSERT INTO pgbench_history (tid, bid, aid, delta, mtime) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP);&quot;,
+      &quot;paramList&quot;: [
+        &quot;424&quot;,
+        &quot;62&quot;,
+        &quot;1788678&quot;,
+        &quot;-2770&quot;
+      ],
+      &quot;pid&quot;: 9091,
+      &quot;clientApplication&quot;: &quot;pgbench&quot;,
+      &quot;exitCode&quot;: null,
+      &quot;class&quot;: &quot;WRITE&quot;,
+      &quot;serverVersion&quot;: &quot;2.3.5&quot;,
+      &quot;serverType&quot;: &quot;PostgreSQL&quot;,
+      &quot;serviceName&quot;: &quot;Amazon Aurora PostgreSQL-Compatible edition&quot;,
+      &quot;serverHost&quot;: &quot;10.0.12.39&quot;,
+      &quot;netProtocol&quot;: &quot;TCP&quot;,
+      &quot;dbProtocol&quot;: &quot;Postgres 3.0&quot;,
+      &quot;type&quot;: &quot;record&quot;
+    }
+  ]
+}
+</pre></div>
+
+
+<h3 id="36-stop-the-database-activity-streaming">3.6 Stop the Database Activity Streaming<a class="headerlink" href="#36-stop-the-database-activity-streaming" title="Permanent link">&para;</a></h3>
+<ol>
+<li>In the navigation pane, choose Databases and click on the DB identifier with the cluster name you created as a part of the CloudFormation stack.
+<span class="image"><img alt="1-das-56" src="1-das-56.png?raw=true" /></span><br></li>
+<li>Click on “Actions” and select “stop activity stream” and click “continue to stop Database activity streaming on the cluster.
+<span class="image"><img alt="1-das-57" src="1-das-57.png?raw=true" /></span><br>
+<span class="image"><img alt="1-das-58" src="1-das-58.png?raw=true" /></span><br></li>
+<li>The status column on the RDS Database home page for the cluster will start showing “configuring-activity-stream”
+<span class="image"><img alt="1-das-59" src="1-das-59.png?raw=true" /></span><br></li>
+</ol>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../qpm/" title="Query Plan Management" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Query Plan Management
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../../contribute/" title="Contributing" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Contributing
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            &copy; 2019, Amazon Web Services, Inc. or its affiliates. All rights reserved.
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://mylabs.data-builder.com/" class="md-footer-social__link fa fa-home"></a>
+    
+      <a href="https://aws.amazon.com/rds/aurora/postgresql-features/" class="md-footer-social__link fa fa-amazon"></a>
+    
+      <a href="https://mylabs.data-builder.com/" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.8e03edeb.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+    
+  </body>
+</html>
