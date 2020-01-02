@@ -1,0 +1,1158 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Workshop and lab content for Amazon Aurora PostgreSQL compatible databases. This code will contain a series of templates, instructional guides and sample code to educate users on how to use Amazon Aurora features.">
+      
+      
+        <link rel="canonical" href="https://mylabs.data-builder.com/modules/migration/">
+      
+      
+        <meta name="author" content="amazon-aurora-labs-for-mysql@amazon.com">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/aws-favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
+    
+    
+      
+        <title>Oracle to Aurora PostgreSQL migration using DMS and SCT - Amazon Aurora Labs for PostgreSQL</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.1b62728e.css">
+      
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.268332fc.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../../assets/css/custom.css">
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#oracle-to-aurora-postgresql-migration-using-dms-and-sct" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <!--
+  Copyright (c) 2016-2018 Martin Donath <martin.donath@squidfunk.com>
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+-->
+
+<!-- Application header -->
+<header class="md-header" data-md-component="header">
+
+    <!-- Top-level navigation -->
+    <nav class="md-header-nav md-grid">
+      <div class="md-flex">
+
+        <!-- Link to home -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <a href="https://aws.amazon.com/"
+              title="Amazon Web Services"
+              class="md-header-nav__button md-logo">
+            
+              <img src="../../assets/images/aws_smile_logo.png" width="40" height="24" />
+            
+          </a>
+        </div>
+
+        <!-- Button to toggle drawer -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <label class="md-icon md-icon--menu md-header-nav__button"
+              for="__drawer"></label>
+        </div>
+
+        <!-- Header title -->
+        <div class="md-flex__cell md-flex__cell--stretch">
+          <div class="md-flex__ellipsis md-header-nav__title"
+              data-md-component="title">
+            
+              
+                <span class="md-header-nav__topic">
+                  Amazon Aurora Labs for PostgreSQL
+                </span>
+                <span class="md-header-nav__topic">
+                  Oracle to Aurora PostgreSQL migration using DMS and SCT
+                </span>
+              
+            
+          </div>
+        </div>
+
+        <!-- Button to open search dialogue -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          
+            
+              <label class="md-icon md-icon--search md-header-nav__button"
+                  for="__search"></label>
+
+              <!-- Search interface -->
+              
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+            
+          
+        </div>
+
+        <!-- Repository containing source -->
+        
+      </div>
+    </nav>
+  </header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../.." class="md-tabs__link">
+        Home
+      </a>
+    
+  </li>
+
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../" class="md-tabs__link">
+        Getting Started
+      </a>
+    
+  </li>
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../prerequisites/" class="md-tabs__link md-tabs__link--active">
+          Modules
+        </a>
+      
+    </li>
+  
+
+      
+        
+      
+        
+      
+    </ul>
+  </div>
+</nav>
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://mylabs.data-builder.com/" title="Amazon Aurora Labs for PostgreSQL" class="md-nav__button md-logo">
+      
+        <img src="../../assets/images/aws_smile_logo.png" width="48" height="48">
+      
+    </a>
+    Amazon Aurora Labs for PostgreSQL
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Getting Started" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Modules
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Modules
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../prerequisites/" title="Prerequisites" class="md-nav__link">
+      Prerequisites
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../create/" title="Creating a New Aurora Cluster" class="md-nav__link">
+      Creating a New Aurora Cluster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect/index.md" title="Connecting, Loading Data and Auto Scaling" class="md-nav__link">
+      Connecting, Loading Data and Auto Scaling
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect/index.md" title="Backup And Restore" class="md-nav__link">
+      Backup And Restore
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../clone/index.md" title="Fast Cloning" class="md-nav__link">
+      Fast Cloning
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../perf-insights/" title="Using Performance Insights" class="md-nav__link">
+      Using Performance Insights
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../create-serverless/index.md" title="Creating a Serverless Aurora Cluster" class="md-nav__link">
+      Creating a Serverless Aurora Cluster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect-serverless/index.md" title="Using Aurora Serverless with Lambda Functions" class="md-nav__link">
+      Using Aurora Serverless with Lambda Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../qpm/" title="Query Plan Management" class="md-nav__link">
+      Query Plan Management
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ccm/index.md" title="Cluster Cache Management" class="md-nav__link">
+      Cluster Cache Management
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Oracle to Aurora PostgreSQL migration using DMS and SCT
+      </label>
+    
+    <a href="./" title="Oracle to Aurora PostgreSQL migration using DMS and SCT" class="md-nav__link md-nav__link--active">
+      Oracle to Aurora PostgreSQL migration using DMS and SCT
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites-before-you-start" class="md-nav__link">
+    Prerequisites before you start:
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-conversion" class="md-nav__link">
+    Schema Conversion
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-migration" class="md-nav__link">
+    Data Migration
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-source-endpoint" class="md-nav__link">
+    Create a source endpoint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-target-endpoint" class="md-nav__link">
+    Create a target endpoint
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-migraiton-task" class="md-nav__link">
+    Create a migraiton task
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#start-moving-data" class="md-nav__link">
+    Start Moving Data
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../das/" title="Database Activity Streaming" class="md-nav__link">
+      Database Activity Streaming
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../contribute/" title="Contributing" class="md-nav__link">
+      Contributing
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites-before-you-start" class="md-nav__link">
+    Prerequisites before you start:
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-conversion" class="md-nav__link">
+    Schema Conversion
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-migration" class="md-nav__link">
+    Data Migration
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-source-endpoint" class="md-nav__link">
+    Create a source endpoint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-target-endpoint" class="md-nav__link">
+    Create a target endpoint
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-migraiton-task" class="md-nav__link">
+    Create a migraiton task
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#start-moving-data" class="md-nav__link">
+    Start Moving Data
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="oracle-to-aurora-postgresql-migration-using-dms-and-sct">Oracle to Aurora PostgreSQL migration using DMS and SCT<a class="headerlink" href="#oracle-to-aurora-postgresql-migration-using-dms-and-sct" title="Permanent link">&para;</a></h1>
+<p>The following instructions help you launch an AWS CloudFormation stack, which sets up the resources required for this lab. Once the resources are launched you are guided through the migration of a sample database from Oracle to Amazon Aurora PostgreSQL using the AWS Database Migration Service (AWS DMS) and the AWS Schema Conversion Tool (AWS SCT). The resources launched by the CloudFormation stack include:</p>
+<ol>
+<li>An Oracle RDS source within a VPC with all networking resources configured with a sample database installed from <a href="https://github.com/awslabs/aws-database-migration-samples" target="_blank"> github</a></li>
+<li>An Aurora target within same VPC as #1 with all networking resources configured</li>
+<li>A Windows Host with the Schema Conversion Tool pre-installed within same VPC as #1</li>
+<li>A Database Migration Service Instance within same VPC as #1</li>
+</ol>
+<p>The AWS CloudFormation script provisions the necessary security groups with access to database resources from #3 and #4 and allow RDP access to #3</p>
+<h2 id="prerequisites-before-you-start"><strong><em>Prerequisites before you start:</em></strong><a class="headerlink" href="#prerequisites-before-you-start" title="Permanent link">&para;</a></h2>
+<p>1.An active AWS account to use AWS services. All the participants will be using pre-provisioned AWS accounts to run this lab.
+2. The AWS account should have required privileges to be able to create all the resources created in this lab. The pre-provisioned AWS account will have all required privilege to run this lab. 
+3. If you are on a Mac, download the Remote Desktop Client from App Store, if you don’t have one already.
+4. Amazon EC2 Key pair required to log into the AWS SCT instance launched as a part of this lab. The pre-provisioned AWS accounts have a pre-created EC2 key pair “ee-default-keypair”, this will be used in this lab.
+5. Active login to Oracle OTN (https://login.oracle.com) to be able to download the ODBC drivers required for this lab. </p>
+<p><strong><em>High-level steps:</em></strong></p>
+<ol>
+<li>Log into your AWS account</li>
+<li>Launch the CloudFormation stack </li>
+<li>Log in to the Windows Host and install JDBC drivers</li>
+<li>Use AWS SCT to convert source Oracle schema objects to target Aurora PostgreSQL </li>
+<li>Create a source endpoint (the source database is launched using the CloudFormation stack)</li>
+<li>Create a target endpoint (the target database is launched using the CloudFormation stack)</li>
+<li>Create a task to migrate the data from the source database to the target database</li>
+<li>Verify that the data has been migrated to the target</li>
+</ol>
+<p><strong>Create an EC2 Key Pair</strong>: <br></p>
+<p>You will need an Amazon EC2 key pair in order to log into the AWS SCT instance launched as part of your stack. If you have access to an existing one in the Region where your assets are launched, you can skip this step and use it, (however you should check to be sure.) If you don’t have access to an existing key pair, you will need to create one, (you can remove it once the lab is complete if you want to.) </p>
+<p>To create a new key pair:</p>
+<ol>
+<li>Open the EC2 service console</li>
+<li>In the left-hand gutter under “Network &amp; Security” click “Key Pairs”</li>
+<li>Supply a name and click “Create”</li>
+<li>Download or otherwise save the .pem file</li>
+</ol>
+<p><strong>Lab Instructions: </strong></p>
+<ol>
+<li><a href="https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1" target="_blank">Log in to your AWS Management Console and go to the AWS CloudFormation landing page </a>   (This is for Ireland, you can find the AWS CloudFormation service in all supported Regions in your console.) </li>
+<li>Click create stack, select “Upload a template file” and launch the CloudFormation stack from this <a href="http://d1n4xwlpyrsrdg.cloudfront.net/DAT366-Reinvent-2019-DMS-Workshop-v1.4.template" target="_blank"> url</a> (Please download the template file to your computer drive)</li>
+<li>Here is a screenshot of the first page – 
+<span class="image"><img alt="1-migration-1" src="1-migration-1.png?raw=true" /></span><br>
+Click on “create stack” and select “with new resources(standard)
+<span class="image"><img alt="1-migration-2" src="1-migration-2.png?raw=true" /></span><br></li>
+<li>Click on the “Choose file” button and point the location of the template file which you have downloaded in step -2 and click next.
+<span class="image"><img alt="1-migration-3" src="1-migration-3.png?raw=true" /></span><br></li>
+<li>Click next to bring up the stack details page</li>
+<li>Do the following for the entries on this page</li>
+</ol>
+<p><strong>Parameters for the Source RDS Database Configuration</strong></p>
+<table>
+<thead>
+<tr>
+<th>Resource name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stack name</td>
+<td>give a friendly name, such as “reinvent2019-dms-sct-lab” for the stack</td>
+</tr>
+<tr>
+<td>SourceDBPassword</td>
+<td>use srcadmin123 (default)</td>
+</tr>
+<tr>
+<td>SourceDBStorage</td>
+<td>use 50  (default)</td>
+</tr>
+<tr>
+<td>sourceDBInstanceType</td>
+<td>Pick any instance type. Maybe pick something different than your neighbor to spread things around a bit.</td>
+</tr>
+<tr>
+<td>SourceDBEngineType</td>
+<td>use oracle-se2 (default)</td>
+</tr>
+<tr>
+<td>LicenseModelType</td>
+<td>use “bring-your-own-license” (default)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Parameters for the target Aurora Database Configuration</strong></p>
+<table>
+<thead>
+<tr>
+<th>Resource name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AuroraDBUsername</td>
+<td>use auradmin (default)</td>
+</tr>
+<tr>
+<td>AuroraDBPassword</td>
+<td>use auroradmin123</td>
+</tr>
+<tr>
+<td>AuroraInstanceType</td>
+<td>Pick any instance type. Maybe pick something different than your neighbor to spread things around a bit.</td>
+</tr>
+<tr>
+<td>AuroraEngineType</td>
+<td>use aurora-postgresql (default)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Parameters for the Schema Conversion Tool Host Configuration</strong></p>
+<table>
+<thead>
+<tr>
+<th>Resource name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCTHostKeyName</td>
+<td>Select the existing pre-created EC2 key pairs to enable access to the AWS SCT host. The pre-created EC2 key pair is “ee-default-keypair”</td>
+</tr>
+<tr>
+<td>SCTHostInstanceType</td>
+<td>Pick any instance type. Maybe pick something different than your neighbor to spread things around a bit</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Parameters for the DMS Instance Configuration</strong></p>
+<table>
+<thead>
+<tr>
+<th>Resource name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DMSInstanceType</td>
+<td>Pick any instance type. Maybe pick something different than your neighbor to spread things around a bit.</td>
+</tr>
+<tr>
+<td>DMSInstanceStorage</td>
+<td>use 50 (default)</td>
+</tr>
+<tr>
+<td>DMSInstanceVersion</td>
+<td>use 3.1.3 (default)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Other Parameters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Resource name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CreateRoleResources</td>
+<td>This should be true, unless you have run DMS before in this region and the required IAM roles have already been created. Setting this to true when the roles already exist will cause the Stack Creation to fail, and you will need to re-run the stack creation with this set to false. If you aren’t sure, try it with “true” first. If it fails, try again with “false.”</td>
+</tr>
+<tr>
+<td>LaptopIPAddress</td>
+<td>the IP address you are running the workshop from, this will limit access to the SCT Host only from your laptop. If you want to limit access to your SCT host enter your laptop IP address here.</td>
+</tr>
+</tbody>
+</table>
+<p><strong> Finally, click Next.</strong>
+<span class="image"><img alt="1-migration-4" src="1-migration-4.png?raw=true" /></span><br>
+<span class="image"><img alt="1-migration-5" src="1-migration-5.png?raw=true" /></span><br>
+<span class="image"><img alt="1-migration-6" src="1-migration-6.png?raw=true" /></span><br>
+<span class="image"><img alt="1-migration-7" src="1-migration-7.png?raw=true" /></span><br>
+<span class="image"><img alt="1-migration-8" src="1-migration-8.png?raw=true" /></span><br>
+7. On the next page, simply click Next.
+<span class="image"><img alt="1-migration-9" src="1-migration-9.png?raw=true" /></span><br>
+8. On the next page, check the check box to allow AWS CloudFormation to create IAM resources with custom names. Under the “Capabilities” section check the box to acknowledge that you allow Cloudformation to create IAM roles with custom names. Then click <code>Create task</code>!
+<span class="image"><img alt="1-migration-10" src="1-migration-10.png?raw=true" /></span><br>
+<strong><em>Leave everything else default. Once the CloudFormation stack launch is complete, you should see two Amazon RDS instances in your account in the Region you created the stack.  Approximately, it will take 15–20 minutes for creating the Stack.</em></strong></br>
+9. When the stack creation completes, look at the Outputs section. It will provide you with the names, etc., of the resources needed to complete the workshop.
+<span class="image"><img alt="1-migration-11" src="1-migration-11.png?raw=true" /></span><br>
+10. Once stack is completed, Log in to the AWS SCT host using RDP and the information provided in the stack Output section. The user name to connect as is “Administrator”. You will need to open a new tab and go to the Amazon EC2 console to decrypt the password using the key pair you provided during the stack creation. </p>
+<p>a. Go to the EC2 console.<br>
+b. Find and select the EC2 instance you just created. The name should contain your stack name.
+<span class="image"><img alt="1-migration-12" src="1-migration-12.png?raw=true" /></span><br>
+c. Click the “connect” button at the top of the console.
+<span class="image"><img alt="1-migration-13" src="1-migration-13.png?raw=true" /></span><br>
+d. Supply the key pair when prompted to do so.
+e. Launch RDP and connect as Administrator using the password just obtained.<br>
+11. Once on the host, open the document “JDBC Driver Install Instructions.rtf” located on the desktop and follow the instructions for installing the JDBC drivers for the database engines selected during stack creation. </p>
+<p><strong>Internet Explorer</strong></p>
+<p>• For this Oracle -&gt; Aurora PostgreSQL lab you will need the Oracle and PostgreSQL drivers
+Please note if you are not able to see the pop on the Internet explorer then do this (Internet Options -&gt; security -&gt; trusted sites -&gt; add the website address)
+(or whatever level you're working with) -&gt; Custom Level -&gt; Downloads -&gt; "Automatic prompting for file downloads" set to enabled.</p>
+<p><strong>Or simply download and Install Firefox </strong></p>
+<p><span class="image"><img alt="1-migration-14" src="1-migration-14.png?raw=true" /></span><br></p>
+<h2 id="schema-conversion"><strong>Schema Conversion</strong><a class="headerlink" href="#schema-conversion" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Launch AWS SCT on your Windows Host – there’s a shortcut for it on your desktop
+<span class="image"><img alt="1-migration-15" src="1-migration-15.png?raw=true" /></span><br></li>
+<li>You can choose to update the AWS SCT installation or dismiss update dialog box (this is recommended for the Workshop, in all other situations you will want to download the update and install it)</li>
+<li>Accept the license agreement
+<span class="image"><img alt="1-migration-16" src="1-migration-16.png?raw=true" /></span><br></li>
+<li>The “Create a new database Migration Project” Wizard will launch. If it doesn’t, you should select this option from the File Menu. Make sure that you have the following selected, and then click Next.</li>
+</ol>
+<p>a. Transactional database (OLTP) <br>
+ b. Source database engine: Oracle <br>
+ c. I want to switch engines and optimize for the cloud.</p>
+<p><span class="image"><img alt="1-migration-17" src="1-migration-17.png?raw=true" /></span><br></p>
+<ol>
+<li>Provide the connection information for your source Amazon RDS database. </li>
+</ol>
+<p>This information can be obtained from the Outputs section of the CloudFormation Stack. <br>
+Leave “Use SSL” unchecked<br>
+Check “Store password”<br>
+Browse for and find the JDBC driver you just installed. <br>
+For Oracle sources the SID to use is SRCDB&gt;  <br>
+When you are finished press the “Test Connection” button. <br>
+<span class="image"><img alt="1-migration-18" src="1-migration-18.png?raw=true" /></span><br>
+<span class="image"><img alt="1-migration-19" src="1-migration-19.png?raw=true" /></span><br>
+6. After a successful connection test. Click “OK”, then click “Next”
+<span class="image"><img alt="1-migration-20" src="1-migration-20.png?raw=true" /></span><br>
+7. Now. select the schema to convert and click next. For this workshop the schema will be “DMS_SAMPLE” 
+8. The Schema Conversion Tool will now perform an analysis of the DMS_SAMPLE, wait while it completes.
+<span class="image"><img alt="1-migration-21" src="1-migration-21.png?raw=true" /></span><br>
+9. When the analysis is complete you will see the “Database migration assessment report”. Review it as it will provide information on various target databases and how much can automatically be converted. When done reviewing the report click “Next”
+<span class="image"><img alt="1-migration-22" src="1-migration-22.png?raw=true" /></span><br>
+10. Now you will set up your connection to your target database. Select the correct target engine type (Amazon Aurora PostgreSQL Compatible). For Aurora PostgreSQL compatible use postgres for the Database field, The rest of the information for filling in the option can be obtained from the <strong>outputs section of the CloudFormation stack</strong> you created. Once you have filled out all of the fields click “Test Connection”
+<span class="image"><img alt="1-migration-23" src="1-migration-23.png?raw=true" /></span><br>
+11. Once the connection test completes successfully click “OK” and then click “Finish”.
+<span class="image"><img alt="1-migration-24" src="1-migration-24.png?raw=true" /></span><br>
+12. At this point a migration project will launch. 
+<span class="image"><img alt="1-migration-25" src="1-migration-25.png?raw=true" /></span><br>
+13. In the left-hand panel deselect all of the source schemas except for DMS_SAMPLE.
+<span class="image"><img alt="1-migration-26" src="1-migration-26.png?raw=true" /></span><br>
+14. Now, on the source schema panel, select the DMS_SAMPLE (or dms_sample -&gt; dbo) and right-click to bring up the menu to convert the schema. You can also select convert schema from the Actions 
+<span class="image"><img alt="1-migration-27" src="1-migration-27.png?raw=true" /></span><br>
+15. A confirmation dialog box opens.  Click “Yes” to continue as there are no objects in the target database at this point.
+<span class="image"><img alt="1-migration-28" src="1-migration-28.png?raw=true" /></span><br>
+16. AWS SCT will convert your source schema to a target schema that will be displayed in the right-hand panel as either dms_sample or dms_sample_dbo. 
+<span class="image"><img alt="1-migration-29" src="1-migration-29.png?raw=true" /></span><br>
+17. At this point you can select objects in either the source or target panels and see a comparison of original and converted code and objects. You can also make changes to the converted objects as desired. Look through which objects could be automatically converted and which could not be.
+<span class="image"><img alt="1-migration-30" src="1-migration-30.png?raw=true" /></span><br>
+18. Since the majority of the objects that could not be converted are secondary objects like functions or procedures, right-click on the schema that was created (in the right panel) and select “Apply to database”. This will write the converted objects to the target database.
+<span class="image"><img alt="1-migration-31" src="1-migration-31.png?raw=true" /></span><br>
+19. Another confirmation dialog box will pop up at this point. Click “Yes” to continue.
+<span class="image"><img alt="1-migration-32" src="1-migration-32.png?raw=true" /></span><br>
+20. The schema conversion is now complete. You are ready to move on to the next step and use the Database Migration Service to move the data from your Source to your Target.</p>
+<h2 id="data-migration">Data Migration<a class="headerlink" href="#data-migration" title="Permanent link">&para;</a></h2>
+<p>Now we will use the Database Migration Service (DMS) to move the data from the Source to the Target. Go to the AWS Management Console and bring up the Database Migration Service page. To migrate date from source to target we will:</p>
+<ol>
+<li>Create a source endpoint</li>
+<li>Create a target endpoint</li>
+<li>Create a task to move data from the source endpoint to the target endpoint</li>
+</ol>
+<h3 id="create-a-source-endpoint">Create a source endpoint<a class="headerlink" href="#create-a-source-endpoint" title="Permanent link">&para;</a></h3>
+<p>Click Endpoints on the left-hand side of the screen. Then click “Create Endpoint” and the create endpoint page will appear. You will do this twice, once to create a source endpoint and once to create a target endpoint. The screenshot are taken from the old AWS console.
+<span class="image"><img alt="1-migration-33" src="1-migration-33.png?raw=true" /></span><br>
+<span class="image"><img alt="1-migration-34" src="1-migration-34.png?raw=true" /></span><br></p>
+<p>•Select Endpoints from the menu on the left and “click the "create endpoint" button at the top.<br>
+•Endpoint Type: source<br>
+<br>
+Note: if you check “select RDS DB Instance” you can select your particular instance from drop-down menus and several entries will be populated for you.<br>
+<br>
+•Endpoint identifier: orclsourcedb<br>
+•Engine: Oracle <br>
+•Server Name: RDS Source endpoint from your account (found in your CloudFormation stack outputs)<br>
+•Port: 1521 for Oracle <br>
+•SSL Mode: none<br>
+•User name: dbmaster<br>
+•Password: srcadmin123 ( Please note that if you changed the default settings when creating the CloudFormation stack, then you need to enter the password that you have provided)<br>
+•Database name: dms_sample<br>
+•For Oracle - SID: SRCDB<br>
+•VPC: VPC launched by the AWS CloudFormation template<br>
+•Replication Instance: choose the instance that was created as part of the stack creation<br>
+•Refresh schemas: Yes - check this box<br></p>
+<p><strong>Test the connection and save it if the test is successful.</strong></p>
+<h3 id="create-a-target-endpoint">Create a target endpoint<a class="headerlink" href="#create-a-target-endpoint" title="Permanent link">&para;</a></h3>
+<p><span class="image"><img alt="1-migration-35" src="1-migration-35.png?raw=true" /></span><br>
+<span class="image"><img alt="1-migration-36" src="1-migration-36.png?raw=true" /></span><br>
+•Click the "create endpoint" button at the top<br>
+•Endpoint Type: Target<br></p>
+<p>Note: if you check “select RDS DB Instance” you can select your particular instance from drop down menus and several entries will be populated for you.<br></p>
+<p>•Endpoint identifier: apgtargetdb<br>
+•Engine: simply aurora-postgresql <br>
+•Server name: endpoint of Aurora target instance<br>
+•Port: 5432 <br>
+•SSL Mode: none<br>
+•Username: auradmin<br>
+•Password: auroradmin123 ( Please note that if you changed the default settings when creating the Cloudformation stack, then you need to enter the password that you have provided)<br>
+•For Aurora PostgreSQL - Database name: postgres<br>
+•VPC: VPC launched by the CloudFormation template<br>
+•Replication Instance: choose the instance that was created as part of the workshop stack<br></p>
+<p><strong>Test the connection and save it if the test is successful</strong></p>
+<h2 id="create-a-migraiton-task">Create a migraiton task<a class="headerlink" href="#create-a-migraiton-task" title="Permanent link">&para;</a></h2>
+<p>Next, we need to create a migration task. Navigate to the Database Migration Service item in the console and select “Database Migration Tasks” from the menu on the left in your DMS console. Click the “Create task” button in the upper left and fill out the form as follows:<br>
+•Name: Give your task a relevant name (dms-workshop or something like that)<br>
+•Replication instance: choose the one you created (see your CloudFormation stack outputs)<br>
+•Source endpoint: choose the source endpoint you just created<br>
+•Target endpoint: choose the target endpoint you just created<br>
+•Migration type: Migrate existing data<br>
+•Start task on create: check this (or don't, up to you). If you don’t, you’ll need to start your task separately.<br></p>
+<p><strong> Target table preparation mode: Do Nothing (Important for PostgreSQL targets - you DON’T want to drop tables on the target)</strong></p>
+<p><span class="image"><img alt="1-migration-37" src="1-migration-37.png?raw=true" /></span><br>
+<strong>Why a do-nothing task?</strong></p>
+<p>Since the initial load in AWS DMS is done table by table, which means that the target tables cannot have active foreign key constraints. As we are using AWS SCT to convert source objects into target objects, all secondary objects were created as part of the process. This means that we would need to disable all foreign key constraints on the target for the initial full load to be successful. </p>
+<p>One of the ways to do this is to use the session_replication_role parameter in PostgreSQL. Triggers also have a state in PostgreSQL (Origin, replica, always or disabled). When the session_replication_role parameter is set to replica, only triggers of the state replica will be active and are fired when called. If not, the triggers remain inactive. We have already setup the parameter group on the target to set this role to replica which means all foreign key constraints (innately triggers in the origin state) will not be active. However, PostgreSQL has a failsafe mechanism of not letting a table truncate even with this role set. As we are using prepopulated tables on the target and cannot truncate the table, we are using “do_nothing” for the target table prep mode.
+<a href="http://blog.endpoint.com/2015/01/postgressessionreplication-role.html" target="_blank"> More details in this awesome blog post </a></p>
+<p>•   Target table preparation mode:  <strong>Do nothing </strong><br>
+•   Include LOB columns in replication: <strong>Accept the default</strong><br>
+•   Enable validation: up to you – <strong>enabling will take additional time to complete</strong><br>
+•   Enable CloudWatch Logs: <strong>YES! (Check this box)</strong><br></p>
+<p><span class="image"><img alt="1-migration-38" src="1-migration-38.png?raw=true" /></span><br></p>
+<p><strong>Table Mappings – Selection and Transformation Rules (For Oracle to Aurora PostgreSQL Migrations):</strong></p>
+<ol>
+<li>Select Guided UI and click “Add new selection rule”</li>
+<li>Choose DMS_SAMPLE from the drop-down box 
+<span class="image"><img alt="1-migration-39" src="1-migration-39.png?raw=true" /></span><br></li>
+<li>Next, expand “Transformation rule” and click on “add transformation rule”
+<span class="image"><img alt="1-migration-40" src="1-migration-40.png?raw=true" /></span><br></li>
+<li>Choose schema for target dropdown -&gt; Schema name is DMS_SAMPLE -&gt; Choose “make lower case” for action &amp; click “add transformation rule”.
+<span class="image"><img alt="1-migration-41" src="1-migration-41.png?raw=true" /></span><br></li>
+<li>Choose table for target dropdown -&gt; Schema name is DMS_SAMPLE and table name is % -&gt; Choose “make lower case” for action &amp; click “add transformation rule”.
+<span class="image"><img alt="1-migration-42" src="1-migration-42.png?raw=true" /></span><br></li>
+<li>Choose column for target dropdown -&gt; schema name is DMS_SAMPLE, table name is % -&gt; column name is %  -&gt; Choose “make lower case” for action 
+<span class="image"><img alt="1-migration-43" src="1-migration-43.png?raw=true" /></span><br></li>
+<li>Click on the “JSON” tab to review the details you created to make sure they look like this:</li>
+</ol>
+<p>Note – We are doing 2, 3 and 4 above as the schema has been pre-created on the target with lowercase (PostgreSQL convention). Your task JSON should look like this:</p>
+<div class="codehilite"><pre><span></span>{
+    &quot;rules&quot;: [
+        {
+            &quot;rule-type&quot;: &quot;selection&quot;,
+            &quot;rule-id&quot;: &quot;1&quot;,
+            &quot;rule-name&quot;: &quot;1&quot;,
+            &quot;object-locator&quot;: {
+                &quot;schema-name&quot;: &quot;DMS_SAMPLE&quot;,
+                &quot;table-name&quot;: &quot;%&quot;
+            },
+            &quot;rule-action&quot;: &quot;include&quot;
+        },
+        {
+            &quot;rule-type&quot;: &quot;transformation&quot;,
+            &quot;rule-id&quot;: &quot;2&quot;,
+            &quot;rule-name&quot;: &quot;2&quot;,
+            &quot;rule-target&quot;: &quot;schema&quot;,
+            &quot;object-locator&quot;: {
+                &quot;schema-name&quot;: &quot;DMS_SAMPLE&quot;
+            },
+            &quot;rule-action&quot;: &quot;convert-lowercase&quot;
+        },
+        {
+            &quot;rule-type&quot;: &quot;transformation&quot;,
+            &quot;rule-id&quot;: &quot;3&quot;,
+            &quot;rule-name&quot;: &quot;3&quot;,
+            &quot;rule-target&quot;: &quot;table&quot;,
+            &quot;object-locator&quot;: {
+                &quot;schema-name&quot;: &quot;DMS_SAMPLE&quot;,
+                &quot;table-name&quot;: &quot;%&quot;
+            },
+            &quot;rule-action&quot;: &quot;convert-lowercase&quot;
+        },
+        {
+            &quot;rule-type&quot;: &quot;transformation&quot;,
+            &quot;rule-id&quot;: &quot;4&quot;,
+            &quot;rule-name&quot;: &quot;4&quot;,
+            &quot;rule-target&quot;: &quot;column&quot;,
+            &quot;object-locator&quot;: {
+                &quot;schema-name&quot;: &quot;DMS_SAMPLE&quot;,
+                &quot;table-name&quot;: &quot;%&quot;,
+                &quot;column-name&quot;: &quot;%&quot;
+            },
+            &quot;rule-action&quot;: &quot;convert-lowercase&quot;
+        }
+    ]
+}
+</pre></div>
+
+
+<h3 id="start-moving-data">Start Moving Data<a class="headerlink" href="#start-moving-data" title="Permanent link">&para;</a></h3>
+<p>Click create task now and let the task run. </p>
+<p><strong>Note:</strong> Task may fail for 3 tables while it should go well for other tables in the DMS_SAMPLE (or dbo) schema. As a bonus step you can investigate why this is happening and fix the problem before reloading failed tables. </p>
+<p><strong>Checking your results:</strong></p>
+<ol>
+<li>In the AWS DMS dashboard, view the running process
+<span class="image"><img alt="1-migration-44" src="1-migration-44.png?raw=true" /></span><br></li>
+<li>In the remote desktop connection, install PGAdmin and review the database tables, etc.
+<span class="image"><img alt="1-migration-45" src="1-migration-45.png?raw=true" /></span><br>
+Add new server and run the query to verify the tables and the number of rows.
+<span class="image"><img alt="1-migration-46" src="1-migration-46.png?raw=true" /></span><br>
+<span class="image"><img alt="1-migration-47" src="1-migration-47.png?raw=true" /></span><br></li>
+</ol>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../qpm/" title="Query Plan Management" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Query Plan Management
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../das/" title="Database Activity Streaming" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Database Activity Streaming
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            &copy; 2019, Amazon Web Services, Inc. or its affiliates. All rights reserved.
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://mylabs.data-builder.com/" class="md-footer-social__link fa fa-home"></a>
+    
+      <a href="https://aws.amazon.com/rds/aurora/postgresql-features/" class="md-footer-social__link fa fa-amazon"></a>
+    
+      <a href="https://mylabs.data-builder.com/" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.8e03edeb.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+    
+  </body>
+</html>
