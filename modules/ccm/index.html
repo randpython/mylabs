@@ -1,0 +1,1431 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Workshop and lab content for Amazon Aurora PostgreSQL compatible databases. This code will contain a series of templates, instructional guides and sample code to educate users on how to use Amazon Aurora features.">
+      
+      
+        <link rel="canonical" href="https://mylabs.data-builder.com/modules/ccm/">
+      
+      
+        <meta name="author" content="amazon-aurora-labs-for-mysql@amazon.com">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/aws-favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
+    
+    
+      
+        <title>Cluster Cache Management - Amazon Aurora Labs for PostgreSQL</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.1b62728e.css">
+      
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.268332fc.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../../assets/css/custom.css">
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#cluster-cache-management" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <!--
+  Copyright (c) 2016-2018 Martin Donath <martin.donath@squidfunk.com>
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+-->
+
+<!-- Application header -->
+<header class="md-header" data-md-component="header">
+
+    <!-- Top-level navigation -->
+    <nav class="md-header-nav md-grid">
+      <div class="md-flex">
+
+        <!-- Link to home -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <a href="https://aws.amazon.com/"
+              title="Amazon Web Services"
+              class="md-header-nav__button md-logo">
+            
+              <img src="../../assets/images/aws_smile_logo.png" width="40" height="24" />
+            
+          </a>
+        </div>
+
+        <!-- Button to toggle drawer -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <label class="md-icon md-icon--menu md-header-nav__button"
+              for="__drawer"></label>
+        </div>
+
+        <!-- Header title -->
+        <div class="md-flex__cell md-flex__cell--stretch">
+          <div class="md-flex__ellipsis md-header-nav__title"
+              data-md-component="title">
+            
+              
+                <span class="md-header-nav__topic">
+                  Amazon Aurora Labs for PostgreSQL
+                </span>
+                <span class="md-header-nav__topic">
+                  Cluster Cache Management
+                </span>
+              
+            
+          </div>
+        </div>
+
+        <!-- Button to open search dialogue -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          
+            
+              <label class="md-icon md-icon--search md-header-nav__button"
+                  for="__search"></label>
+
+              <!-- Search interface -->
+              
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+            
+          
+        </div>
+
+        <!-- Repository containing source -->
+        
+      </div>
+    </nav>
+  </header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../.." class="md-tabs__link">
+        Home
+      </a>
+    
+  </li>
+
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../" class="md-tabs__link">
+        Getting Started
+      </a>
+    
+  </li>
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../prerequisites/" class="md-tabs__link md-tabs__link--active">
+          Modules
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://mylabs.data-builder.com/" title="Amazon Aurora Labs for PostgreSQL" class="md-nav__button md-logo">
+      
+        <img src="../../assets/images/aws_smile_logo.png" width="48" height="48">
+      
+    </a>
+    Amazon Aurora Labs for PostgreSQL
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Getting Started" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Modules
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Modules
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../prerequisites/" title="Prerequisites" class="md-nav__link">
+      Prerequisites
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../create/" title="Creating a New Aurora Cluster" class="md-nav__link">
+      Creating a New Aurora Cluster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect/index.md" title="Connecting, Loading Data and Auto Scaling" class="md-nav__link">
+      Connecting, Loading Data and Auto Scaling
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../clone/index.md" title="Fast Cloning" class="md-nav__link">
+      Fast Cloning
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../qpm/" title="Query Plan Management" class="md-nav__link">
+      Query Plan Management
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Cluster Cache Management
+      </label>
+    
+    <a href="./" title="Cluster Cache Management" class="md-nav__link md-nav__link--active">
+      Cluster Cache Management
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-prerequisite" class="md-nav__link">
+    1. Prerequisite
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-creating-aurora-postgresql-cluster-with-cloudformation" class="md-nav__link">
+    2. Creating Aurora PostgreSQL cluster with Cloudformation
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-retrieving-database-credentials-from-secret-manager" class="md-nav__link">
+    2.1 Retrieving Database credentials from Secret Manager
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-cloudformation-resource-chart" class="md-nav__link">
+    2.2 Cloudformation Resource chart
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-connecting-to-the-ec2-bastion-instance" class="md-nav__link">
+    2.3 Connecting to the EC2 bastion Instance
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-quick-start-guide-on-using-cluster-cache-management" class="md-nav__link">
+    3. Quick Start Guide on using Cluster Cache Management
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-configuring-cluster-cache-management-ccm" class="md-nav__link">
+    3.1. Configuring Cluster Cache Management (CCM)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-verifying-if-ccm-is-enabled" class="md-nav__link">
+    3.2. Verifying if CCM is enabled
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-benchmarking-with-ccm-enabled-before-failover" class="md-nav__link">
+    4. Benchmarking with CCM enabled (before Failover)
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-using-pg_buffercache-ccm-enabled" class="md-nav__link">
+    4.1 Using pg_buffercache (CCM enabled)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-collecting-the-pgbench-benchmarking-metrics" class="md-nav__link">
+    4.2 Collecting the pgbench benchmarking metrics.
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-ccm-enabled-failover-benchmarking" class="md-nav__link">
+    4.3 CCM enabled failover benchmarking
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-benchmarking-on-ccm-disabled-cluster" class="md-nav__link">
+    4.4 Benchmarking on CCM disabled cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-using-pg_buffercache-ccm-disabled" class="md-nav__link">
+    4.5. Using pg_buffercache (CCM disabled)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-ccm-vs-no-ccm-benchmarking-results-for-illustration-only" class="md-nav__link">
+    4.6. CCM vs no CCM benchmarking results (for illustration only)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../migration/" title="Oracle to Aurora PostgreSQL migration using DMS and SCT" class="md-nav__link">
+      Oracle to Aurora PostgreSQL migration using DMS and SCT
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../das/" title="Database Activity Streaming" class="md-nav__link">
+      Database Activity Streaming
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-prerequisite" class="md-nav__link">
+    1. Prerequisite
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-creating-aurora-postgresql-cluster-with-cloudformation" class="md-nav__link">
+    2. Creating Aurora PostgreSQL cluster with Cloudformation
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-retrieving-database-credentials-from-secret-manager" class="md-nav__link">
+    2.1 Retrieving Database credentials from Secret Manager
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-cloudformation-resource-chart" class="md-nav__link">
+    2.2 Cloudformation Resource chart
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-connecting-to-the-ec2-bastion-instance" class="md-nav__link">
+    2.3 Connecting to the EC2 bastion Instance
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-quick-start-guide-on-using-cluster-cache-management" class="md-nav__link">
+    3. Quick Start Guide on using Cluster Cache Management
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-configuring-cluster-cache-management-ccm" class="md-nav__link">
+    3.1. Configuring Cluster Cache Management (CCM)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-verifying-if-ccm-is-enabled" class="md-nav__link">
+    3.2. Verifying if CCM is enabled
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-benchmarking-with-ccm-enabled-before-failover" class="md-nav__link">
+    4. Benchmarking with CCM enabled (before Failover)
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-using-pg_buffercache-ccm-enabled" class="md-nav__link">
+    4.1 Using pg_buffercache (CCM enabled)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-collecting-the-pgbench-benchmarking-metrics" class="md-nav__link">
+    4.2 Collecting the pgbench benchmarking metrics.
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-ccm-enabled-failover-benchmarking" class="md-nav__link">
+    4.3 CCM enabled failover benchmarking
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-benchmarking-on-ccm-disabled-cluster" class="md-nav__link">
+    4.4 Benchmarking on CCM disabled cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-using-pg_buffercache-ccm-disabled" class="md-nav__link">
+    4.5. Using pg_buffercache (CCM disabled)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-ccm-vs-no-ccm-benchmarking-results-for-illustration-only" class="md-nav__link">
+    4.6. CCM vs no CCM benchmarking results (for illustration only)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="cluster-cache-management">Cluster Cache Management<a class="headerlink" href="#cluster-cache-management" title="Permanent link">&para;</a></h1>
+<h2 id="1-prerequisite">1. Prerequisite<a class="headerlink" href="#1-prerequisite" title="Permanent link">&para;</a></h2>
+<p><strong>Create an EC2 Key Pair</strong>: <br> </p>
+<p>You will need an EC2 key pair in order to log into the EC2 bastion instance<br></p>
+<p>To create a new key pair: </p>
+<ol>
+<li>Open the EC2 service console</li>
+<li>In the left-hand gutter under “Network &amp; Security” click “Key Pairs”</li>
+<li>Supply a name and click “Create”</li>
+<li>Download or otherwise save the .pem file</li>
+</ol>
+<h2 id="2-creating-aurora-postgresql-cluster-with-cloudformation">2. Creating Aurora PostgreSQL cluster with Cloudformation<a class="headerlink" href="#2-creating-aurora-postgresql-cluster-with-cloudformation" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2" target="_blank">Log in to your AWS console and go to the CloudFormation landing page</a></li>
+<li>Click create stack, select ‘Specify an Amazon S3 template URL’ and launch the CloudFormation stack from this <a href="https://tinyurl.com/my-cf-template" target="_blank">template</a></li>
+<li>Download and save this locally and use upload a template to S3 option and click on “Choose File” option to point to the location where you have saved the template.</li>
+<li>Here is a screenshot of the first page – 
+<span class="image"><img alt="1-qpm-cf1" src="1-qpm-cf1.png?raw=true" /></span>
+<br>
+<span class="image"><img alt="1-qpm-cf-2" src="1-qpm-cf-2.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-3" src="1-qpm-cf-3.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-4" src="1-qpm-cf-4.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-5" src="1-qpm-cf-5.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-6" src="1-qpm-cf-6.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-7" src="1-qpm-cf-7.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-8" src="1-qpm-cf-8.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-9" src="1-qpm-cf-9.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-10" src="1-qpm-cf-10.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-11" src="1-qpm-cf-11.png?raw=true" /></span><br></li>
+</ol>
+<h3 id="21-retrieving-database-credentials-from-secret-manager">2.1 Retrieving Database credentials from Secret Manager<a class="headerlink" href="#21-retrieving-database-credentials-from-secret-manager" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>Search for the secret name as shown in the output of the stack and select the secret name.
+<span class="image"><img alt="1-qpm-secrets-1" src="1-qpm-secrets-1.png?raw=true" /></span><br> </p>
+</li>
+<li>
+<p>Click on the Retrieve secret value to get the Database user and the password to connect to the Aurora Database.
+<span class="image"><img alt="1-qpm-secrets-2" src="1-qpm-secrets-2.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-secrets-3" src="1-qpm-secrets-3.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-secrets-4" src="1-qpm-secrets-4.png?raw=true" /></span><br></p>
+</li>
+</ol>
+<h3 id="22-cloudformation-resource-chart">2.2 Cloudformation Resource chart<a class="headerlink" href="#22-cloudformation-resource-chart" title="Permanent link">&para;</a></h3>
+<p>Please note that the Database names and the Custom Cluster and Database Parameter groups shown below are only for illustrative purpose. Participants are required to use the appropriate resources created from the Cloudformation template.</p>
+<p><strong>Please refer the below table for the list of resources and the value</strong></p>
+<table>
+<thead>
+<tr>
+<th>Resource name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cluster Parameter Group</td>
+<td>refer CloudFormation template output section and refer the key value “apgcustomclusterparamgroup”</td>
+</tr>
+<tr>
+<td>Database Parameter Group</td>
+<td>refer CloudFormation template output section and refer the key value “apgcustomdbparamgroup”</td>
+</tr>
+<tr>
+<td>Cluster Endpoint</td>
+<td>refer CloudFormation template output section and refer the key value “clusterEndpoint”</td>
+</tr>
+<tr>
+<td>Reader Endpoint</td>
+<td>refer CloudFormation template output section and refer the key value “readerEndpoint”</td>
+</tr>
+<tr>
+<td>DB name</td>
+<td>mylab</td>
+</tr>
+<tr>
+<td>DB username</td>
+<td>masteruser</td>
+</tr>
+<tr>
+<td>DB password</td>
+<td>extract from the secrets Manager as shown above</td>
+</tr>
+<tr>
+<td>bastionEndpoint</td>
+<td>refer CloudFormation template output section and refer the key value “bastionEndpoint”</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-connecting-to-the-ec2-bastion-instance">2.3 Connecting to the EC2 bastion Instance<a class="headerlink" href="#23-connecting-to-the-ec2-bastion-instance" title="Permanent link">&para;</a></h3>
+<p>We are creating EC2 instance (Amazon Linux AMI-ID ami-0f2176987ee50226e) and bootstrapping the EC2 Instance to have pgbench and sysbench benchmarking tools to be installed.</p>
+<div class="codehilite"><pre><span></span>ssh -i &lt;keypair.pem&gt; ec2-user@&lt;bastionEndpoint&gt;
+</pre></div>
+
+
+<p>Replace the [<code>keypair.pem</code>] with the keypair file name input provided to the Cloud formation template. Replace the “bastionEndpoint” with the key value from the output section of the Cloud formation template.</p>
+<p>If you need to open an access for your laptop IP specifically, then whitelist your IP, by specifying your IP in the format <code>x.x.x.x/32</code> (<a href=" http://www.whatsmyip.org/" target="_blank">Lookup your IP </a>). If there are any issues in accessing the instance, you can always modify the security group to populate your IP address as My IP as mentioned <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html" target="_blank"> here</a>. </p>
+<h2 id="3-quick-start-guide-on-using-cluster-cache-management">3. Quick Start Guide on using Cluster Cache Management<a class="headerlink" href="#3-quick-start-guide-on-using-cluster-cache-management" title="Permanent link">&para;</a></h2>
+<p>Cluster cache management is supported for Aurora PostgreSQL DB clusters of versions 9.6.11 and above, and versions 10.5 and above.</p>
+<h3 id="31-configuring-cluster-cache-management-ccm">3.1. Configuring Cluster Cache Management (CCM)<a class="headerlink" href="#31-configuring-cluster-cache-management-ccm" title="Permanent link">&para;</a></h3>
+<p>Following are the steps to configure and enable the use of CCM on your Aurora PostgreSQL cluster</p>
+<ol>
+<li>Modify the Amazon Aurora DB Cluster Parameters related to the CCM. Screenshots of some of the steps are shown below</li>
+</ol>
+<p>a. <a href="https://console.aws.amazon.com/rds/" target="_blank"> Sign in to the AWS Management Console and open the Amazon RDS console</a> <br>
+  b. In the navigation pane, choose Parameter groups.
+<span class="image"><img alt="1-ccm-guide-1" src="1-ccm-guide-1.png?raw=true" /></span><br>
+c. In the list, choose the parameter group for your Aurora PostgreSQL DB cluster.  Please refer the name of the DB cluster parameter group file 
+<span class="image"><img alt="1-ccm-guide-2" src="1-ccm-guide-2.png?raw=true" /></span><br>
+created from the output section of the CloudFormation Stack. It is in the format <stack-name-apgcustom-clusterparamgroup-nnnn>. In this case the stack name is “labstack” and hence the DB cluster parameter group file is “labstack- apgcustom-clusterparamgroup-nnnn &gt;. The DB cluster must use a parameter group other than the default, because you can't change values in a default parameter group.
+For more information , <a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html#USER_WorkingWithParamGroups.CreatingCluster" target="_blank"> see Creating a DB Cluster Parameter Group</a>.<br>
+d. Click on the DB cluster parameter group selected above and then click on “Edit Parameters” 
+<span class="image"><img alt="1-ccm-guide-3" src="1-ccm-guide-3.png?raw=true" /></span><br>
+e. Set the value of the apg_ccm_enabled cluster parameter to 1 and click on “Save changes”
+<span class="image"><img alt="1-ccm-guide-4" src="1-ccm-guide-4.png?raw=true" /></span><br>
+f. Choose Save changes. For more Information,<a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html#USER_WorkingWithParamGroups.ModifyingCluster" target="_blank">see Modifying Parameters in a DB Cluster Parameter Group</a>. <br>
+<br>
+2. Set the Promotion Tier Priority for the Writer DB Instance
+<br>
+<br>
+a. <a href="https://console.aws.amazon.com/rds/" target="_blank"> Sign in to the AWS Management Console and open the Amazon RDS console</a> . <br> <br>
+b. In the navigation pane, choose Databases. <br><br>
+c. Choose the Writer DB instance of the Aurora PostgreSQL DB cluster and click on “Modify”<br><br>
+<span class="image"><img alt="1-ccm-guide-5" src="1-ccm-guide-5.png?raw=true" /></span><br><br>
+d. Choose Modify. The Modify DB Instance page appears.
+<span class="image"><img alt="1-ccm-guide-6" src="1-ccm-guide-6.png?raw=true" /></span><br>
+e. On the Failover panel, choose tier-0 for the Priority.
+<span class="image"><img alt="1-ccm-guide-7" src="1-ccm-guide-7.png?raw=true" /></span><br>
+f. Choose Continue and check the summary of modifications.
+g. To apply the changes immediately after you save them, choose Apply immediately.
+<span class="image"><img alt="1-ccm-guide-8" src="1-ccm-guide-8.png?raw=true" /></span><br>
+h. Choose Modify DB Instance to save your changes
+For more information about setting the promotion tier, <a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Modifying.html#Aurora.Modifying.Instance" target="_blank"> see Modify a DB Instance in a DB Cluster and the Promotion tier setting</a>. See also, <a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Backups.html#Aurora.Managing.FaultTolerance" target="_blank">Fault Tolerance for an Aurora DB Cluster </a>.
+<br>
+3. Set the Promotion Tier Priority for the Reader DB Instance 
+Repeat the steps from the above section 2 for the reader instance to act as a failover target. To designate a specific replica for cluster cache management, set the promotion tier priority to 0 for that Aurora replica. The promotion tier priority is a value that specifies the order in which an Aurora replica is promoted to the primary DB instance after a failure. Valid values are 0 to 15, where 0 is the highest and 15 the lowest priority. </p>
+<p>a. <a href="https://console.aws.amazon.com/rds/" target="_blank"> Sign in to the AWS Management Console and open the Amazon RDS console</a> . <br> 
+b. In the navigation pane, choose Databases. <br>
+c. Choose the Reader DB instance of the Aurora PostgreSQL DB cluster and click on “Modify”
+<span class="image"><img alt="1-ccm-guide-9" src="1-ccm-guide-9.png?raw=true" /></span><br>
+d. Choose Modify. The Modify DB Instance page appears.
+<span class="image"><img alt="1-ccm-guide-10" src="1-ccm-guide-10.png?raw=true" /></span><br>
+e. On the Failover panel, choose tier-0 for the Priority.<br> 
+<span class="image"><img alt="1-ccm-guide-11" src="1-ccm-guide-11.png?raw=true" /></span><br>
+f. Choose Continue and check the summary of modifications.<br> <br>
+g. To apply the changes immediately after you save them, choose Apply immediately.
+<span class="image"><img alt="1-ccm-guide-12" src="1-ccm-guide-12.png?raw=true" /></span><br>
+h. Choose Modify DB Instance to save your changes</p>
+<h3 id="32-verifying-if-ccm-is-enabled">3.2. Verifying if CCM is enabled<a class="headerlink" href="#32-verifying-if-ccm-is-enabled" title="Permanent link">&para;</a></h3>
+<p>To verify if the CCM is enabled, query the function aurora_ccm_status() with the following code using psql. </p>
+<p>Please refer the documentation on how to connect to PostgreSQL using psql here.
+(please replace the endpoint, port, username and the database name with your specific setup).</p>
+<p>a. <a href="https://console.aws.amazon.com/rds/" target="_blank"> Sign in to the AWS Management Console and open the Amazon RDS console</a> . 
+b.  In the navigation pane, choose Databases and click on the DB identifier with the cluster name you created as a part of the CloudFormation stack.
+<span class="image"><img alt="1-ccm-guide-13" src="1-ccm-guide-13.png?raw=true" /></span><br>
+c. Click on the selected cluster above and look under the section “Connectivity and Security”. You will see 2 different endpoints under the “Type” column. The one on the top will be the cluster endpoint (for read-write) and the other one will be reader endpoint (for read-only).<br>
+<span class="image"><img alt="1-ccm-guide-14" src="1-ccm-guide-14.png?raw=true" /></span><br>
+d. Choose the Writer DB instance of the Aurora PostgreSQL DB</p>
+<div class="codehilite"><pre><span></span>./psql -h &lt;cluster-endpoint&gt; -p &lt;port&gt;- U &lt;username&gt; -d &lt;dbname&gt;
+cd /home/ec2-user/postgresql-10.7/src/bin/psql
+export PATH=/home/ec2-user/postgresql-10.7/src/bin/:$PATH
+./psql -h  labstack-cluster.cluster-xxxxxxxxx.us-west-2.rds.amazonaws.com -p 5432 -U  masteruser -d mylab
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>mylab=&gt; select aurora_version(),version();
+ aurora_version |                                   version                                   
+----------------+-----------------------------------------------------------------------------
+ 2.3.5          | PostgreSQL 10.7 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 4.9.3, 64-bit
+(1 row)
+mylab=&gt; \x
+Expanded display is on.
+ccmdb=&gt; select * from aurora_ccm_status();
+- [ RECORD 1 ]--------------+---------
+buffers_sent_last_minute    | 2242000
+buffers_found_last_minute   | 2242003
+buffers_sent_last_scan      | 17920442
+buffers_found_last_scan     | 17923410
+buffers_sent_current_scan   | 14098000
+buffers_found_current_scan  | 14100964
+current_scan_progress       | 15877443
+</pre></div>
+
+
+<p>If the Cluster Cache management is not enabled. Querying aurora_ccm_status() will display the below output</p>
+<div class="codehilite"><pre><span></span>mylab=&gt; \x
+Expanded display is on.
+noccmdb=&gt; select * from aurora_ccm_status();
+ERROR:  Cluster Cache Manager is disabled
+noccmdb=&gt;
+</pre></div>
+
+
+<h2 id="4-benchmarking-with-ccm-enabled-before-failover">4. Benchmarking with CCM enabled (before Failover)<a class="headerlink" href="#4-benchmarking-with-ccm-enabled-before-failover" title="Permanent link">&para;</a></h2>
+<p>Please refer above table for the resource’s appropriate values for cluster endpoint, DB name etc...</p>
+<p>Please note that the scale factor 10000 is used for the data load in the sample CCMDB. For the Database created with the Cloudformation template we are using scale factor=100.</p>
+<div class="codehilite"><pre><span></span>Optional: - In order to reproduce the benchmarking used in the lab, we need to add more sample data to our benchmark. The below command is using scale factor of 10000.
+
+./pgbench -i --fillfactor=100 --scale=10000 --host=labstack-cluster.cluster-xxxxxxxxx.us-west-2.rds.amazonaws.com—username= masteruser mylab
+</pre></div>
+
+
+<p>Connect to the Writer node using cluster endpoint of the cluster we created.</p>
+<p>a. <a href="https://console.aws.amazon.com/rds/" target="_blank"> Sign in to the AWS Management Console and open the Amazon RDS console</a> .</p>
+<p>b. In the navigation pane, choose Databases and click on the DB identifier with the cluster name you created as a part of the CloudFormation stack.
+<span class="image"><img alt="1-ccm-guide-15" src="1-ccm-guide-15.png?raw=true" /></span><br></p>
+<p>c. Click on the selected cluster above and look under the section “Connectivity and Security”. You will see 2 different endpoints under the “Type” column. The one on the top will be the cluster endpoint (for read-write) and the other one will be reader endpoint (for read-only).
+<span class="image"><img alt="1-ccm-guide-16" src="1-ccm-guide-16.png?raw=true" /></span><br>
+d. Choose the Writer Endpoint of the Aurora PostgreSQL Cluster.</p>
+<div class="codehilite"><pre><span></span>./psql -h  labstack-cluster.cluster-xxxxxxxxx.us-west-2.rds.amazonaws.com -p 5432 -U  masteruser -d mylab
+</pre></div>
+
+
+<p>e. Choose the Writer Endpoint of the Aurora PostgreSQL Cluster.</p>
+<div class="codehilite"><pre><span></span>mylab=&gt; SELECT pg_size_pretty( pg_database_size(&#39;mylab&#39;));
+ pg_size_pretty 
+----------------
+ 1643 MB
+(1 row)
+</pre></div>
+
+
+<p>If optionally you have used the scale factor 10000</p>
+<div class="codehilite"><pre><span></span>mylab=&gt; SELECT pg_size_pretty( pg_database_size(&#39;mylab&#39;) );
+ pg_size_pretty 
+----------------
+ 171 GB
+(1 row) 
+</pre></div>
+
+
+<p><strong>Running the benchmarking</strong></p>
+<p>We are using <a href="https://www.postgresql.org/docs/10/pgbench.html" target="_blank">pgbench </a>  benchmarking option tpcb-like and using “@” to specify the probability of running read-only workload and read-write workload. In the below example we are running tpcb-like workload with 20X read-only workload and 1x read-write workload for 600 seconds.</p>
+<div class="codehilite"><pre><span></span><span class="p">.</span><span class="o">/</span><span class="n">pgbench</span>  <span class="o">--</span><span class="n">progress</span><span class="o">-</span><span class="n">timestamp</span> <span class="o">-</span><span class="n">M</span> <span class="n">prepared</span> <span class="o">-</span><span class="n">n</span> <span class="o">-</span><span class="n">T</span> <span class="mi">600</span> <span class="o">-</span><span class="n">P</span> <span class="mi">5</span>  <span class="o">-</span><span class="n">c</span> <span class="mi">50</span> <span class="o">-</span><span class="n">j</span> <span class="mi">50</span>  <span class="o">--</span><span class="n">host</span><span class="o">=</span><span class="n">labstack</span><span class="o">-</span><span class="n">cluster</span><span class="p">.</span><span class="n">cluster</span><span class="o">-</span><span class="n">xxxxxxxxx</span><span class="p">.</span><span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mf">2.</span><span class="n">rds</span><span class="p">.</span><span class="n">amazonaws</span><span class="p">.</span><span class="n">com</span> <span class="o">-</span><span class="n">b</span> <span class="n">tpcb</span><span class="o">-</span><span class="n">like</span><span class="mi">@1</span> <span class="o">-</span><span class="n">b</span> <span class="n">select</span><span class="o">-</span><span class="n">only</span><span class="mi">@20</span> <span class="o">--</span><span class="n">username</span><span class="o">=</span><span class="n">masteruser</span> <span class="n">mylab</span><span class="o">&gt;</span> <span class="n">ccm_enable_before_failover</span><span class="p">.</span><span class="k">out</span> 
+</pre></div>
+
+
+<h3 id="41-using-pg_buffercache-ccm-enabled">4.1 Using pg_buffercache (CCM enabled)<a class="headerlink" href="#41-using-pg_buffercache-ccm-enabled" title="Permanent link">&para;</a></h3>
+<p>Pg_buffercache extension provides a means to look into the contents of the buffer cache. We will be leveraging the pg_buffercache view to examine the content of the buffer cache (with the CCM enabled and CCM disabled) to illustrate the effect of the CCM. We will compare the content of the buffer cache of the Writer node with the Read-only node. </p>
+<p>With CCM enabled the content of the buffer cache of the writer node and the read-only will be similar due to the fact that in the CCM enabled cluster the Writer node will periodically sends buffer addresses of the frequently used buffers (defaults to usage count&gt;3) to the Read-only node. The content of the pg_buffercache view is generated with different dataset (Scale =10000) as compared to (scale=100) used in this workshop so you will be getting different results.</p>
+<p>Connect to the Writer node using the cluster endpoint of your cluster.</p>
+<p>a. <a href="https://console.aws.amazon.com/rds/" target="_blank"> Sign in to the AWS Management Console and open the Amazon RDS console</a> .<br>
+b.  In the navigation pane, choose Databases and click on the DB identifier with the cluster name you created as a part of the CloudFormation stack. <br>
+<span class="image"><img alt="1-ccm-guide-17" src="1-ccm-guide-17.png?raw=true" /></span><br>
+c.  Click on the selected cluster above and look under the section “Connectivity and Security”. You will see 2 different endpoints under the “Type” column. The one on the top will be the cluster endpoint (for read-write) and the other one will be reader endpoint (for read-only).
+<span class="image"><img alt="1-ccm-guide-18" src="1-ccm-guide-18.png?raw=true" /></span><br>
+d.  Choose the Writer Endpoint of the Aurora PostgreSQL Cluster.</p>
+<div class="codehilite"><pre><span></span>./psql -h  labstack-cluster.cluster-xxxxxxxxx.us-west-2.rds.amazonaws.com -p 5432 -U  masteruser -d mylab
+</pre></div>
+
+
+<p>e.  Create extension pg_buffercache on the Database.</p>
+<div class="codehilite"><pre><span></span>mylab=&gt; CREATE EXTENSION pg_buffercache;
+CREATE EXTENSION
+ccmdb=&gt; \dx pg_buffercache
+                    List of installed extensions
+      Name      | Version | Schema |           Description           
+----------------+---------+--------+---------------------------------
+ pg_buffercache | 1.3     | public | examine the shared buffer cache
+(1 row)
+
+-- Verify if we are connected to the Writer node.
+
+ccmdb=&gt; show transaction_read_only;
+-[ RECORD 1 ]---------+----
+transaction_read_only | off
+
+SELECT c.relname, count(*) AS buffers
+ FROM pg_buffercache b INNER JOIN pg_class c
+ ON b.relfilenode = pg_relation_filenode(c.oid) AND
+ b.reldatabase IN (0, (SELECT oid FROM pg_database
+ WHERE datname = current_database()))
+ GROUP BY c.relname
+ ORDER BY 2 DESC
+ LIMIT 10;
+
+           relname                      | buffers  
+-----------------------+----------+----------+----------
+ pgbench_accounts               | 18182376
+ pgbench_accounts_pkey          |  2741898
+ pgbench_history                    |    58807
+ pgbench_tellers                    |     7286
+ pgbench_branches               |     5137
+ pgbench_tellers_pkey           |     2197
+ pgbench_branches_pkey          |     1130
+ pg_attribute                       |       30
+ pg_statistic                       |       24
+ pg_proc                            |       18
+</pre></div>
+
+
+<p><strong>Connecting to the read replica</strong></p>
+<p>a. <a href="https://console.aws.amazon.com/rds/" target="_blank"> Sign in to the AWS Management Console and open the Amazon RDS console</a> .<br>
+b.  In the navigation pane, choose Databases and click on the DB identifier with the cluster name you created as a part of the CloudFormation stack.<br>
+<span class="image"><img alt="1-ccm-guide-19" src="1-ccm-guide-19.png?raw=true" /></span><br>
+c.  Click on the selected cluster above and look under the section “Connectivity and Security”. You will see 2 different endpoints under the “Type” column. The one on the top will be the cluster endpoint (for read-write) and the other one will be reader endpoint (for read-only).
+<span class="image"><img alt="1-ccm-guide-20" src="1-ccm-guide-20.png?raw=true" /></span><br>
+d.  Choose the Reader Endpoint of the Aurora PostgreSQL Cluster.</p>
+<div class="codehilite"><pre><span></span>./psql -h  labstack-cluster.cluster-ro-xxxxxxxxx.us-west-2.rds.amazonaws.com -p 5432 -U  masteruser -d mylab
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>ccmdb=&gt; \dx pg_buffercache
+                    List of installed extensions
+      Name      | Version | Schema |           Description           
+----------------+---------+--------+---------------------------------
+ pg_buffercache | 1.3     | public | examine the shared buffer cache
+(1 row)
+
+-- Verify if we are connected to the Read-only node.
+
+mylab=&gt; show transaction_read_only;
+-[ RECORD 1 ]---------+---
+transaction_read_only | on
+
+SELECT c.relname, count(*) AS buffers
+ FROM pg_buffercache b INNER JOIN pg_class c
+ ON b.relfilenode = pg_relation_filenode(c.oid) AND
+ b.reldatabase IN (0, (SELECT oid FROM pg_database
+ WHERE datname = current_database()))
+ GROUP BY c.relname
+ ORDER BY 2 DESC
+ LIMIT 10;
+          relname                       | buffers  
+-----------------------+----------+----------+----------
+ pgbench_accounts               | 18162144
+ pgbench_accounts_pkey          |  2741869
+ pgbench_history                    |    58804
+ pgbench_tellers                    |     7144
+ pgbench_branches               |     5028
+ pgbench_tellers_pkey           |     2156
+ pgbench_branches_pkey          |     1109
+ pg_attribute                       |       26
+ pg_statistic                       |       24
+ pg_operator                        |       15
+</pre></div>
+
+
+<h3 id="42-collecting-the-pgbench-benchmarking-metrics">4.2 Collecting the pgbench benchmarking metrics.<a class="headerlink" href="#42-collecting-the-pgbench-benchmarking-metrics" title="Permanent link">&para;</a></h3>
+<p>We initiated 600 seconds benchmarking on the Aurora PostgreSQL with CCM enabled above using the below command </p>
+<div class="codehilite"><pre><span></span><span class="p">.</span><span class="o">/</span><span class="n">pgbench</span>  <span class="o">--</span><span class="n">progress</span><span class="o">-</span><span class="n">timestamp</span> <span class="o">-</span><span class="n">M</span> <span class="n">prepared</span> <span class="o">-</span><span class="n">n</span> <span class="o">-</span><span class="n">T</span> <span class="mi">600</span> <span class="o">-</span><span class="n">P</span> <span class="mi">5</span>  <span class="o">-</span><span class="n">c</span> <span class="mi">50</span> <span class="o">-</span><span class="n">j</span> <span class="mi">50</span>  <span class="o">--</span><span class="n">host</span><span class="o">=</span><span class="n">labstack</span><span class="o">-</span><span class="n">cluster</span><span class="p">.</span><span class="n">cluster</span><span class="o">-</span><span class="n">xxxxxxxxx</span><span class="p">.</span><span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mf">2.</span><span class="n">rds</span><span class="p">.</span><span class="n">amazonaws</span><span class="p">.</span><span class="n">com</span> <span class="o">-</span><span class="n">b</span> <span class="n">tpcb</span><span class="o">-</span><span class="n">like</span><span class="mi">@1</span> <span class="o">-</span><span class="n">b</span> <span class="n">select</span><span class="o">-</span><span class="n">only</span><span class="mi">@20</span> <span class="o">--</span><span class="n">username</span><span class="o">=</span><span class="n">masteruser</span> <span class="n">mylab</span><span class="o">&gt;</span> <span class="n">ccm_enable_before_failover</span><span class="p">.</span><span class="k">out</span> 
+</pre></div>
+
+
+<p>After 600 seconds once, the benchmark is completed you can verify the pgbench output on the screen (on the psql console) or can refer the output file “ccm_enable_before_failover.out”. The summary output at the bottom will look like below. Please note that the output may be little bit different in your case.</p>
+<div class="codehilite"><pre><span></span>transaction type: multiple scripts
+scaling factor: 10000
+query mode: prepared
+number of clients: 500
+number of threads: 500
+duration: 600 s
+number of transactions actually processed: 192341828
+latency average = 1.558 ms
+latency stddev = 3.434 ms
+tps = 320517.529436 (including connections establishing)
+tps = 320766.435473 (excluding connections establishing)
+SQL script 1: &lt;builtin: TPC-B (sort of)&gt;
+ - weight: 1 (targets 4.8% of total)
+ - 9121117 transactions (4.7% of total, tps = 15199.387034)
+ - latency average = 15.840 ms
+ - latency stddev = 5.073 ms
+SQL script 2: &lt;builtin: select only&gt;
+ - weight: 20 (targets 95.2% of total)
+ - 179708569 transactions (93.4% of total, tps = 299465.525275)
+ - latency average = 0.851 ms
+ - latency stddev = 0.613 ms
+</pre></div>
+
+
+<h3 id="43-ccm-enabled-failover-benchmarking">4.3 CCM enabled failover benchmarking<a class="headerlink" href="#43-ccm-enabled-failover-benchmarking" title="Permanent link">&para;</a></h3>
+<p>We are Initiating the failover from the console after 600 seconds and running the same workload once the failover is completed. For initiating the failover please go the RDS console, select your cluster and click on the writer instance and go the actions and click “Failover”.
+<span class="image"><img alt="1-ccm-guide-21" src="1-ccm-guide-21.png?raw=true" /></span><br>
+<span class="image"><img alt="1-ccm-guide-22" src="1-ccm-guide-22.png?raw=true" /></span><br></p>
+<p>Once the failover is completed after about ~30 seconds. Verify the previous reader instance becomes the new writer.
+<span class="image"><img alt="1-ccm-guide-23" src="1-ccm-guide-23.png?raw=true" /></span><br>
+We will be running the same benchmarking as we did before the failover and then we will compare the pgbench metrics before and after the failover.</p>
+<div class="codehilite"><pre><span></span><span class="p">.</span><span class="o">/</span><span class="n">pgbench</span>  <span class="o">--</span><span class="n">progress</span><span class="o">-</span><span class="n">timestamp</span> <span class="o">-</span><span class="n">M</span> <span class="n">prepared</span> <span class="o">-</span><span class="n">n</span> <span class="o">-</span><span class="n">T</span> <span class="mi">600</span> <span class="o">-</span><span class="n">P</span> <span class="mi">5</span>  <span class="o">-</span><span class="n">c</span> <span class="mi">50</span> <span class="o">-</span><span class="n">j</span> <span class="mi">50</span>  <span class="o">--</span><span class="n">host</span><span class="o">=</span><span class="n">labstack</span><span class="o">-</span><span class="n">cluster</span><span class="p">.</span><span class="n">cluster</span><span class="o">-</span><span class="n">xxxxxxxxx</span><span class="p">.</span><span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mf">2.</span><span class="n">rds</span><span class="p">.</span><span class="n">amazonaws</span><span class="p">.</span><span class="n">com</span> <span class="o">-</span><span class="n">b</span> <span class="n">tpcb</span><span class="o">-</span><span class="n">like</span><span class="mi">@1</span> <span class="o">-</span><span class="n">b</span> <span class="n">select</span><span class="o">-</span><span class="n">only</span><span class="mi">@20</span> <span class="o">--</span><span class="n">username</span><span class="o">=</span><span class="n">masteruser</span> <span class="n">mylab</span><span class="o">&gt;</span> <span class="n">ccm_enable_after_failover</span><span class="p">.</span><span class="k">out</span>
+</pre></div>
+
+
+<p>After 600 seconds once, the benchmark is completed you can verify the pgbench output on the screen (on the psql console) or can refer the output file “ccm_enable_after_failover.out”. The summary output at the bottom will look like below. Please note that the output may be little bit different in your case.</p>
+<div class="codehilite"><pre><span></span>transaction type: multiple scripts
+scaling factor: 10000
+query mode: prepared
+number of clients: 500
+number of threads: 500
+duration: 600 s
+number of transactions actually processed: 190891585
+latency average = 1.570 ms
+latency stddev = 3.624 ms
+tps = 318119.106352 (including connections establishing)
+tps = 318350.153525 (excluding connections establishing)
+SQL script 1: &lt;builtin: TPC-B (sort of)&gt;
+ - weight: 1 (targets 4.8% of total)
+ - 9053479 transactions (4.7% of total, tps = 15087.541176)
+ - latency average = 16.704 ms
+ - latency stddev = 5.387 ms
+SQL script 2: &lt;builtin: select only&gt;
+ - weight: 20 (targets 95.2% of total)
+ - 178217587 transactions (93.4% of total, tps = 296998.002885)
+ - latency average = 0.821 ms
+ - latency stddev = 0.560 ms
+</pre></div>
+
+
+<h3 id="44-benchmarking-on-ccm-disabled-cluster">4.4 Benchmarking on CCM disabled cluster<a class="headerlink" href="#44-benchmarking-on-ccm-disabled-cluster" title="Permanent link">&para;</a></h3>
+<p><strong> Disabling the CCM</strong></p>
+<ol>
+<li>Disable the CCM on the Aurora PostgreSQL cluster by modifying the cluster parameter group file as show as above and set the value of the apg_ccm_enabled cluster parameter to 0.</li>
+<li>Modify the Amazon Aurora DB Cluster Parameters related to the CCM. Screenshots of some of the steps are shown below
+a. <a href="https://console.aws.amazon.com/rds/" target="_blank"> Sign in to the AWS Management Console and open the Amazon RDS console</a> .
+b. In the navigation pane, choose Parameter groups.
+<span class="image"><img alt="1-ccm-guide-24" src="1-ccm-guide-24.png?raw=true" /></span><br>
+c.  In the list, choose the parameter group for your Aurora PostgreSQL DB cluster.  Please refer the name of the DB cluster parameter group file created from the output section of the CloudFormation Stack. It is in the format <stack-name-apgcustom-clusterparamgroup-nnnn>. In this case the stack name is “labstack” and hence the DB cluster parameter group file is “labstack- apgcustom-clusterparamgroup-nnnn &gt;. The DB cluster must use a parameter group other than the default, because you can't change values in a default parameter group.
+For more information ,<a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html#USER_WorkingWithParamGroups.CreatingCluster" target="_blank"> see Creating a DB Cluster Parameter Group</a>.
+<span class="image"><img alt="1-ccm-guide-25" src="1-ccm-guide-25.png?raw=true" /></span><br>
+d.  Click on the DB cluster parameter group selected above and then click on “Edit Parameters”
+<span class="image"><img alt="1-ccm-guide-26" src="1-ccm-guide-26.png?raw=true" /></span><br>
+e.  Set the value of the apg_ccm_enabled cluster parameter to 0 and click on “Save changes” 
+<span class="image"><img alt="1-ccm-guide-27" src="1-ccm-guide-27.png?raw=true" /></span><br></li>
+<li>Verify if the Cluster Cache Management is disabled, query the function aurora_ccm_status() as shown below</li>
+</ol>
+<div class="codehilite"><pre><span></span>mylab=&gt; \x
+Expanded display is on.
+mylab=&gt; select * from aurora_ccm_status();
+ERROR:  Cluster Cache Manager is disabled
+mylab=&gt;
+</pre></div>
+
+
+<ol>
+<li>Stop and Start the Aurora PostgreSQL cluster
+Since we are using the same Aurora PostgreSQL cluster to the testing for the with CCM (enabled and disabled) and since earlier testing with CCM already warmed the buffer cache of the read and write Instance. Therefore, we are stopping and starting the cluster before running the benchmarking. 
+We could also reboot both the reader and the writer Instance, but this may not guarantee that the writer and reader come up with empty buffer cache.
+<strong>To stop the cluster</strong></li>
+</ol>
+<p>Verify the cluster status is shown as “Available”, then  click on the Actions and choose “stop”
+<span class="image"><img alt="1-ccm-guide-28" src="1-ccm-guide-28.png?raw=true" /></span><br>
+<strong>To start the cluster</strong>
+Once the cluster status changes to” stop”, click on the Actions and choose “start”
+<span class="image"><img alt="1-ccm-guide-29" src="1-ccm-guide-29.png?raw=true" /></span><br></p>
+<p><strong>Running the benchwork</strong>
+We are using <a href="https://www.postgresql.org/docs/10/pgbench.html" target="_blank">pgbench </a>  benchmarking option tpcb-like and using “@” to specify the probability of running read-only workload and read-write workload. In the below example we are running tpcb-like workload with 20X read-only workload and 1x read-write workload for 600 seconds.</p>
+<div class="codehilite"><pre><span></span><span class="p">.</span><span class="o">/</span><span class="n">pgbench</span>  <span class="o">--</span><span class="n">progress</span><span class="o">-</span><span class="n">timestamp</span> <span class="o">-</span><span class="n">M</span> <span class="n">prepared</span> <span class="o">-</span><span class="n">n</span> <span class="o">-</span><span class="n">T</span> <span class="mi">600</span> <span class="o">-</span><span class="n">P</span> <span class="mi">5</span>  <span class="o">-</span><span class="n">c</span> <span class="mi">50</span> <span class="o">-</span><span class="n">j</span> <span class="mi">50</span>  <span class="o">--</span><span class="n">host</span><span class="o">=</span><span class="n">labstack</span><span class="o">-</span><span class="n">cluster</span><span class="p">.</span><span class="n">cluster</span><span class="o">-</span><span class="n">xxxxxxxxx</span><span class="p">.</span><span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mf">2.</span><span class="n">rds</span><span class="p">.</span><span class="n">amazonaws</span><span class="p">.</span><span class="n">com</span> <span class="o">-</span><span class="n">b</span> <span class="n">tpcb</span><span class="o">-</span><span class="n">like</span><span class="mi">@1</span> <span class="o">-</span><span class="n">b</span> <span class="n">select</span><span class="o">-</span><span class="n">only</span><span class="mi">@20</span> <span class="o">--</span><span class="n">username</span><span class="o">=</span><span class="n">masteruser</span> <span class="n">mylab</span><span class="o">&gt;</span> <span class="n">ccm_disable_before_failover</span><span class="p">.</span><span class="k">out</span>
+</pre></div>
+
+
+<h3 id="45-using-pg_buffercache-ccm-disabled">4.5. Using pg_buffercache (CCM disabled)<a class="headerlink" href="#45-using-pg_buffercache-ccm-disabled" title="Permanent link">&para;</a></h3>
+<p><strong>Connect to the Writer node using the cluster endpoint of your cluster.</strong></p>
+<p>a. <a href="https://console.aws.amazon.com/rds/" target="_blank"> Sign in to the AWS Management Console and open the Amazon RDS console</a> . <br>
+b. In the navigation pane, choose Databases and click on the DB identifier with the cluster name you created as a part of the CloudFormation stack.
+<span class="image"><img alt="1-ccm-guide-30" src="1-ccm-guide-30.png?raw=true" /></span><br>
+c. Click on the selected cluster above and look under the section “Connectivity and Security”. You will see 2 different endpoints under the “Type” column. The one on the top will be the cluster endpoint (for read-write) and the other one will be reader endpoint (for read-only).
+<span class="image"><img alt="1-ccm-guide-31" src="1-ccm-guide-31.png?raw=true" /></span><br>
+d. Choose the Writer Endpoint of the Aurora PostgreSQL Cluster.</p>
+<div class="codehilite"><pre><span></span>./psql -h  labstack-cluster.cluster-xxxxxxxxx.us-west-2.rds.amazonaws.com -p 5432 -U  masteruser -d mylab
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>mylab=&gt; \dx pg_buffercache
+                    List of installed extensions
+      Name      | Version | Schema |           Description           
+----------------+---------+--------+---------------------------------
+ pg_buffercache | 1.3     | public | examine the shared buffer cache
+(1 row)
+
+
+-- Verify if we are connected to the Writer node.
+
+ccmdb=&gt; show transaction_read_only;
+-[ RECORD 1 ]---------+----
+transaction_read_only | off
+
+SELECT c.relname, count(*) AS buffers
+ FROM pg_buffercache b INNER JOIN pg_class c
+ ON b.relfilenode = pg_relation_filenode(c.oid) AND
+ b.reldatabase IN (0, (SELECT oid FROM pg_database
+ WHERE datname = current_database()))
+ GROUP BY c.relname
+ ORDER BY 2 DESC
+ LIMIT 10;
+
+           relname                      | buffers  
+-----------------------+----------+----------+----------
+         relname                        | buffers  
+-----------------------+----------+----------+----------
+ pgbench_accounts               | 15401635
+ pgbench_accounts_pkey          |  2741889
+ pgbench_history                    |    17024
+ pgbench_tellers                    |     4992
+ pgbench_branches               |     3647
+ pgbench_tellers_pkey           |     2200
+ pgbench_branches_pkey          |      930
+ pg_attribute                       |       31
+ pg_statistic                       |       20
+ pg_proc                            |       20
+(10 rows)
+</pre></div>
+
+
+<p><strong>Connect to the read replica</strong></p>
+<p>a. <a href="https://console.aws.amazon.com/rds/" target="_blank"> Sign in to the AWS Management Console and open the Amazon RDS console</a> . <br></p>
+<p>b. In the navigation pane, choose Databases and click on the DB identifier with the cluster name you created as a part of the CloudFormation stack.
+<span class="image"><img alt="1-ccm-guide-32" src="1-ccm-guide-32.png?raw=true" /></span><br>
+c.  Click on the selected cluster above and look under the section “Connectivity and Security”. You will see 2 different endpoints under the “Type” column. The one on the top will be the cluster endpoint (for read-write) and the other one will be reader endpoint (for read-only).
+<span class="image"><img alt="1-ccm-guide-33" src="1-ccm-guide-33.png?raw=true" /></span><br>
+d. Choose the Reader Endpoint of the Aurora PostgreSQL Cluster.</p>
+<div class="codehilite"><pre><span></span>./psql -h  labstack-cluster.cluster-ro-xxxxxxxxx.us-west-2.rds.amazonaws.com -p 5432 -U  masteruser -d mylab
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>ccmdb=&gt; \dx pg_buffercache
+                    List of installed extensions
+      Name      | Version | Schema |           Description           
+----------------+---------+--------+---------------------------------
+ pg_buffercache | 1.3     | public | examine the shared buffer cache
+(1 row)
+
+-- Verify if we are connected to the Read-only node.
+
+mylab=&gt; show transaction_read_only;
+-[ RECORD 1 ]---------+---
+transaction_read_only | on
+
+SELECT c.relname, count(*) AS buffers
+ FROM pg_buffercache b INNER JOIN pg_class c
+ ON b.relfilenode = pg_relation_filenode(c.oid) AND
+ b.reldatabase IN (0, (SELECT oid FROM pg_database
+ WHERE datname = current_database()))
+ GROUP BY c.relname
+ ORDER BY 2 DESC
+ LIMIT 10;
+          relname                       | buffers  
+-----------------------+----------+----------+----------
+pgbench_history                             |   11905
+ pg_attribute                               |      26
+ pg_class                                   |      11
+ pg_proc                                    |      10
+ pg_proc_oid_index                      |       8
+ pg_attribute_relid_attnum_index    |       7
+ pg_proc_proname_args_nsp_index     |       5
+ pg_index                                   |       4
+ pg_amproc                                  |       4
+ pg_class_relname_nsp_index             |       4
+(10 rows)
+</pre></div>
+
+
+<p>Collecting the 600 seconds pgbench benchmarking metrics.</p>
+<p>We initiated 600 seconds benchmarking on the Aurora PostgreSQL with CCM enabled above using the below command </p>
+<div class="codehilite"><pre><span></span><span class="p">.</span><span class="o">/</span><span class="n">pgbench</span>  <span class="o">--</span><span class="n">progress</span><span class="o">-</span><span class="n">timestamp</span> <span class="o">-</span><span class="n">M</span> <span class="n">prepared</span> <span class="o">-</span><span class="n">n</span> <span class="o">-</span><span class="n">T</span> <span class="mi">600</span> <span class="o">-</span><span class="n">P</span> <span class="mi">5</span>  <span class="o">-</span><span class="n">c</span> <span class="mi">50</span> <span class="o">-</span><span class="n">j</span> <span class="mi">50</span>  <span class="o">--</span><span class="n">host</span><span class="o">=</span><span class="n">labstack</span><span class="o">-</span><span class="n">cluster</span><span class="p">.</span><span class="n">cluster</span><span class="o">-</span><span class="n">xxxxxxxxx</span><span class="p">.</span><span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mf">2.</span><span class="n">rds</span><span class="p">.</span><span class="n">amazonaws</span><span class="p">.</span><span class="n">com</span> <span class="o">-</span><span class="n">b</span> <span class="n">tpcb</span><span class="o">-</span><span class="n">like</span><span class="mi">@1</span> <span class="o">-</span><span class="n">b</span> <span class="n">select</span><span class="o">-</span><span class="n">only</span><span class="mi">@20</span> <span class="o">--</span><span class="n">username</span><span class="o">=</span><span class="n">masteruser</span> <span class="n">mylab</span><span class="o">&gt;</span> <span class="n">ccm_disable_before_failover</span><span class="p">.</span><span class="k">out</span> 
+</pre></div>
+
+
+<p>After 600 seconds once, the benchmark is completed you can verify the pgbench output on the screen (on the psql console) or can refer the output file “ccm_disable_before_failover.out”. The summary output at the bottom will look like below. Please note that the output may be little bit different in your case.</p>
+<div class="codehilite"><pre><span></span>transaction type: multiple scripts
+scaling factor: 10000
+query mode: prepared
+number of clients: 500
+number of threads: 500
+duration: 600 s
+number of transactions actually processed: 192341828
+latency average = 1.558 ms
+latency stddev = 3.434 ms
+tps = 320517.529436 (including connections establishing)
+tps = 320766.435473 (excluding connections establishing)
+SQL script 1: &lt;builtin: TPC-B (sort of)&gt;
+ - weight: 1 (targets 4.8% of total)
+ - 9121117 transactions (4.7% of total, tps = 15199.387034)
+ - latency average = 15.840 ms
+ - latency stddev = 5.073 ms
+SQL script 2: &lt;builtin: select only&gt;
+ - weight: 20 (targets 95.2% of total)
+ - 179708569 transactions (93.4% of total, tps = 299465.525275)
+ - latency average = 0.851 ms
+ - latency stddev = 0.613 ms
+</pre></div>
+
+
+<p>We are Initiating the failover from the console after 600 seconds and resuming the same workload once the failover is completed. For initiating the failover please go the 
+After failover benchmarking</p>
+<p>We are Initiating the failover from the console after 600 seconds and running the same workload once the failover is completed. For initiating the failover please go the RDS console, select your cluster and click on the writer instance and go the actions and click “Failover”.
+<span class="image"><img alt="1-ccm-guide-34" src="1-ccm-guide-34.png?raw=true" /></span><br>
+<span class="image"><img alt="1-ccm-guide-35" src="1-ccm-guide-35.png?raw=true" /></span><br></p>
+<p>Once the failover is completed after about ~30 seconds. Verify the previous reader instance becomes the new writer.</p>
+<p><span class="image"><img alt="1-ccm-guide-36" src="1-ccm-guide-36.png?raw=true" /></span><br></p>
+<p>We will be running the same benchmarking as we did before the failover and then we will compare the pgbench metrics before and after the failover.</p>
+<div class="codehilite"><pre><span></span><span class="p">.</span><span class="o">/</span><span class="n">pgbench</span>  <span class="o">--</span><span class="n">progress</span><span class="o">-</span><span class="n">timestamp</span> <span class="o">-</span><span class="n">M</span> <span class="n">prepared</span> <span class="o">-</span><span class="n">n</span> <span class="o">-</span><span class="n">T</span> <span class="mi">600</span> <span class="o">-</span><span class="n">P</span> <span class="mi">5</span>  <span class="o">-</span><span class="n">c</span> <span class="mi">50</span> <span class="o">-</span><span class="n">j</span> <span class="mi">50</span>  <span class="o">--</span><span class="n">host</span><span class="o">=</span><span class="n">labstack</span><span class="o">-</span><span class="n">cluster</span><span class="p">.</span><span class="n">cluster</span><span class="o">-</span><span class="n">xxxxxxxxx</span><span class="p">.</span><span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mf">2.</span><span class="n">rds</span><span class="p">.</span><span class="n">amazonaws</span><span class="p">.</span><span class="n">com</span> <span class="o">-</span><span class="n">b</span> <span class="n">tpcb</span><span class="o">-</span><span class="n">like</span><span class="mi">@1</span> <span class="o">-</span><span class="n">b</span> <span class="n">select</span><span class="o">-</span><span class="n">only</span><span class="mi">@20</span> <span class="o">--</span><span class="n">username</span><span class="o">=</span><span class="n">masteruser</span> <span class="n">mylab</span><span class="o">&gt;</span> <span class="n">ccm_enable_after_failover</span><span class="p">.</span><span class="k">out</span>
+</pre></div>
+
+
+<p>After 600 seconds once, the benchmark is completed you can verify the pgbench output on the screen (on the psql console) or can refer the output file “ccm_enable_after_failover.out”. The summary output at the bottom will look like below. Please note that the output may be little bit different in your case.</p>
+<div class="codehilite"><pre><span></span>transaction type: multiple scripts
+scaling factor: 10000
+query mode: prepared
+number of clients: 500
+number of threads: 500
+duration: 600 s
+number of transactions actually processed: 85237916
+latency average = 3.518 ms
+latency stddev = 7.063 ms
+tps = 142047.852230 (including connections establishing)
+tps = 142129.718565 (excluding connections establishing)
+SQL script 1: &lt;builtin: TPC-B (sort of)&gt;
+ - weight: 1 (targets 4.8% of total)
+ - 4048031 transactions (4.7% of total, tps = 6745.989769)
+ - latency average = 19.971 ms
+ - latency stddev = 9.161 ms
+SQL script 2: &lt;builtin: select only&gt;
+ - weight: 20 (targets 95.2% of total)
+ - 80121228 transactions (94.0% of total, tps = 133520.959797)
+ - latency average = 2.728 ms
+ - latency stddev = 5.870 ms
+</pre></div>
+
+
+<h3 id="46-ccm-vs-no-ccm-benchmarking-results-for-illustration-only">4.6. CCM vs no CCM benchmarking results (for illustration only)<a class="headerlink" href="#46-ccm-vs-no-ccm-benchmarking-results-for-illustration-only" title="Permanent link">&para;</a></h3>
+<p>This benchmarking and the graph are only for illustrative purpose, this benchmarking is done on the r4.16xl instance size and with scale factor 10000 for data load.
+This workshop creates Aurora PostgreSQL Database on R5.16xlarge instance class and data is loaded using and scale factor 100 so you are expected to get different results.</p>
+<p>In the graph below, we are comparing the results from the benchmarking done on the CCM enabled and CCM disabled Aurora PostgreSQL clusters. The CCM enabled cluster was able to scale up to the average 90th Percentile of the Transaction per Second (TPS), whereas the CCM disabled cluster took about 357 seconds (990-633) to scale up to the 90th Percentile of the Transaction per Second</p>
+<p><span class="image"><img alt="1-ccm-guide-37" src="1-ccm-guide-37.png?raw=true" /></span><br></p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../qpm/" title="Query Plan Management" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Query Plan Management
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../migration/" title="Oracle to Aurora PostgreSQL migration using DMS and SCT" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Oracle to Aurora PostgreSQL migration using DMS and SCT
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            &copy; 2019, Amazon Web Services, Inc. or its affiliates. All rights reserved.
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://mylabs.data-builder.com/" class="md-footer-social__link fa fa-home"></a>
+    
+      <a href="https://aws.amazon.com/rds/aurora/postgresql-features/" class="md-footer-social__link fa fa-amazon"></a>
+    
+      <a href="https://mylabs.data-builder.com/" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.8e03edeb.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+    
+  </body>
+</html>
