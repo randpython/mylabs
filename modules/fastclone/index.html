@@ -1,0 +1,1304 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Workshop and lab content for Amazon Aurora PostgreSQL compatible databases. This code will contain a series of templates, instructional guides and sample code to educate users on how to use Amazon Aurora features.">
+      
+      
+        <link rel="canonical" href="https://mylabs.data-builder.com/modules/fastclone/">
+      
+      
+        <meta name="author" content="amazon-aurora-labs-for-mysql@amazon.com">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/aws-favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
+    
+    
+      
+        <title>Fast Cloning - Amazon Aurora Labs for PostgreSQL</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.1b62728e.css">
+      
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.268332fc.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../../assets/css/custom.css">
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#fast-cloning" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <!--
+  Copyright (c) 2016-2018 Martin Donath <martin.donath@squidfunk.com>
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+-->
+
+<!-- Application header -->
+<header class="md-header" data-md-component="header">
+
+    <!-- Top-level navigation -->
+    <nav class="md-header-nav md-grid">
+      <div class="md-flex">
+
+        <!-- Link to home -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <a href="https://aws.amazon.com/"
+              title="Amazon Web Services"
+              class="md-header-nav__button md-logo">
+            
+              <img src="../../assets/images/aws_smile_logo.png" width="40" height="24" />
+            
+          </a>
+        </div>
+
+        <!-- Button to toggle drawer -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <label class="md-icon md-icon--menu md-header-nav__button"
+              for="__drawer"></label>
+        </div>
+
+        <!-- Header title -->
+        <div class="md-flex__cell md-flex__cell--stretch">
+          <div class="md-flex__ellipsis md-header-nav__title"
+              data-md-component="title">
+            
+              
+                <span class="md-header-nav__topic">
+                  Amazon Aurora Labs for PostgreSQL
+                </span>
+                <span class="md-header-nav__topic">
+                  Fast Cloning
+                </span>
+              
+            
+          </div>
+        </div>
+
+        <!-- Button to open search dialogue -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          
+            
+              <label class="md-icon md-icon--search md-header-nav__button"
+                  for="__search"></label>
+
+              <!-- Search interface -->
+              
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+            
+          
+        </div>
+
+        <!-- Repository containing source -->
+        
+      </div>
+    </nav>
+  </header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../.." class="md-tabs__link">
+        Home
+      </a>
+    
+  </li>
+
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../" class="md-tabs__link">
+        Getting Started
+      </a>
+    
+  </li>
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../prerequisites/" class="md-tabs__link md-tabs__link--active">
+          Modules
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://mylabs.data-builder.com/" title="Amazon Aurora Labs for PostgreSQL" class="md-nav__button md-logo">
+      
+        <img src="../../assets/images/aws_smile_logo.png" width="48" height="48">
+      
+    </a>
+    Amazon Aurora Labs for PostgreSQL
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Getting Started" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Modules
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Modules
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../prerequisites/" title="Prerequisites" class="md-nav__link">
+      Prerequisites
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../create/" title="Creating a New Aurora Cluster" class="md-nav__link">
+      Creating a New Aurora Cluster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../connect/index.md" title="Connecting, Loading Data and Auto Scaling" class="md-nav__link">
+      Connecting, Loading Data and Auto Scaling
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Fast Cloning
+      </label>
+    
+    <a href="./" title="Fast Cloning" class="md-nav__link md-nav__link--active">
+      Fast Cloning
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-prerequisite" class="md-nav__link">
+    1. Prerequisite
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-creating-aurora-postgresql-cluster-with-cloudformation" class="md-nav__link">
+    2. Creating Aurora PostgreSQL cluster with Cloudformation
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-retrieving-database-credentials-from-secret-manager" class="md-nav__link">
+    2.1 Retrieving Database credentials from Secret Manager
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-cloudformation-resource-chart" class="md-nav__link">
+    2.2 Cloudformation Resource chart
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-connecting-to-the-ec2-bastion-instance" class="md-nav__link">
+    2.3 Connecting to the EC2 bastion Instance
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-setting-up-the-fast-clone-divergence-test" class="md-nav__link">
+    3. Setting up the Fast Clone divergence test
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-creating-and-verifying-performance-impact-of-the-fast-clone" class="md-nav__link">
+    4. Creating and verifying performance impact of the Fast Clone
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-running-the-pgbench-workload-on-the-primary-cluster" class="md-nav__link">
+    4.1. Running the pgbench workload on the primary cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-verify-the-environment-and-run-the-sample-divergence-test" class="md-nav__link">
+    4.2 Verify the environment and run the sample divergence test
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-stop-the-sample-data-generation" class="md-nav__link">
+    4.3. Stop the sample data generation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-create-fast-clone-cluster" class="md-nav__link">
+    4.4. Create Fast Clone Cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-start-the-sample-data-divergence-process-on-the-primary-cluster" class="md-nav__link">
+    4.5. Start the sample data divergence process on the primary cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-verify-the-data-divergence-on-the-clone-cluster" class="md-nav__link">
+    4.6. Verify the data divergence on the Clone Cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#47-run-the-pgbench-workload-on-the-clone-cluster" class="md-nav__link">
+    4.7. Run the pgbench workload on the Clone Cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#48-verify-the-pgbench-metrics-on-the-primary-and-the-clone-cluster" class="md-nav__link">
+    4.8. Verify the pgbench metrics on the primary and the clone cluster.
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#49-sample-graph-on-the-fast-clone-performance-impact" class="md-nav__link">
+    4.9. Sample graph on the fast clone performance impact
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../qpm/" title="Query Plan Management" class="md-nav__link">
+      Query Plan Management
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ccm/" title="Cluster Cache Management" class="md-nav__link">
+      Cluster Cache Management
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../migration/" title="Oracle to Aurora PostgreSQL migration using DMS and SCT" class="md-nav__link">
+      Oracle to Aurora PostgreSQL migration using DMS and SCT
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../das/" title="Database Activity Streaming" class="md-nav__link">
+      Database Activity Streaming
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-prerequisite" class="md-nav__link">
+    1. Prerequisite
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-creating-aurora-postgresql-cluster-with-cloudformation" class="md-nav__link">
+    2. Creating Aurora PostgreSQL cluster with Cloudformation
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-retrieving-database-credentials-from-secret-manager" class="md-nav__link">
+    2.1 Retrieving Database credentials from Secret Manager
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-cloudformation-resource-chart" class="md-nav__link">
+    2.2 Cloudformation Resource chart
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-connecting-to-the-ec2-bastion-instance" class="md-nav__link">
+    2.3 Connecting to the EC2 bastion Instance
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-setting-up-the-fast-clone-divergence-test" class="md-nav__link">
+    3. Setting up the Fast Clone divergence test
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-creating-and-verifying-performance-impact-of-the-fast-clone" class="md-nav__link">
+    4. Creating and verifying performance impact of the Fast Clone
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-running-the-pgbench-workload-on-the-primary-cluster" class="md-nav__link">
+    4.1. Running the pgbench workload on the primary cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-verify-the-environment-and-run-the-sample-divergence-test" class="md-nav__link">
+    4.2 Verify the environment and run the sample divergence test
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-stop-the-sample-data-generation" class="md-nav__link">
+    4.3. Stop the sample data generation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-create-fast-clone-cluster" class="md-nav__link">
+    4.4. Create Fast Clone Cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-start-the-sample-data-divergence-process-on-the-primary-cluster" class="md-nav__link">
+    4.5. Start the sample data divergence process on the primary cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-verify-the-data-divergence-on-the-clone-cluster" class="md-nav__link">
+    4.6. Verify the data divergence on the Clone Cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#47-run-the-pgbench-workload-on-the-clone-cluster" class="md-nav__link">
+    4.7. Run the pgbench workload on the Clone Cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#48-verify-the-pgbench-metrics-on-the-primary-and-the-clone-cluster" class="md-nav__link">
+    4.8. Verify the pgbench metrics on the primary and the clone cluster.
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#49-sample-graph-on-the-fast-clone-performance-impact" class="md-nav__link">
+    4.9. Sample graph on the fast clone performance impact
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="fast-cloning">Fast Cloning<a class="headerlink" href="#fast-cloning" title="Permanent link">&para;</a></h1>
+<h2 id="1-prerequisite">1. Prerequisite<a class="headerlink" href="#1-prerequisite" title="Permanent link">&para;</a></h2>
+<p><strong>Create an EC2 Key Pair</strong>: <br> </p>
+<p>You will need an EC2 key pair in order to log into the EC2 bastion instance<br></p>
+<p>To create a new key pair: </p>
+<ol>
+<li>Open the EC2 service console</li>
+<li>In the left-hand gutter under “Network &amp; Security” click “Key Pairs”</li>
+<li>Supply a name and click “Create”</li>
+<li>Download or otherwise save the .pem file</li>
+</ol>
+<h2 id="2-creating-aurora-postgresql-cluster-with-cloudformation">2. Creating Aurora PostgreSQL cluster with Cloudformation<a class="headerlink" href="#2-creating-aurora-postgresql-cluster-with-cloudformation" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2" target="_blank">Log in to your AWS console and go to the CloudFormation landing page</a></li>
+<li>Click create stack, select ‘Specify an Amazon S3 template URL’ and launch the CloudFormation stack from this <a href="https://tinyurl.com/my-cf-template" target="_blank">template</a></li>
+<li>Download and save this locally and use upload a template to S3 option and click on “Choose File” option to point to the location where you have saved the template.</li>
+<li>Here is a screenshot of the first page – 
+<span class="image"><img alt="1-qpm-cf1" src="1-qpm-cf1.png?raw=true" /></span>
+<br>
+<span class="image"><img alt="1-qpm-cf-2" src="1-qpm-cf-2.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-3" src="1-qpm-cf-3.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-4" src="1-qpm-cf-4.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-5" src="1-qpm-cf-5.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-6" src="1-qpm-cf-6.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-7" src="1-qpm-cf-7.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-8" src="1-qpm-cf-8.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-9" src="1-qpm-cf-9.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-10" src="1-qpm-cf-10.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-cf-11" src="1-qpm-cf-11.png?raw=true" /></span><br></li>
+</ol>
+<h3 id="21-retrieving-database-credentials-from-secret-manager">2.1 Retrieving Database credentials from Secret Manager<a class="headerlink" href="#21-retrieving-database-credentials-from-secret-manager" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>Search for the secret name as shown in the output of the stack and select the secret name.
+<span class="image"><img alt="1-qpm-secrets-1" src="1-qpm-secrets-1.png?raw=true" /></span><br> </p>
+</li>
+<li>
+<p>Click on the Retrieve secret value to get the Database user and the password to connect to the Aurora Database.
+<span class="image"><img alt="1-qpm-secrets-2" src="1-qpm-secrets-2.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-secrets-3" src="1-qpm-secrets-3.png?raw=true" /></span><br>
+<span class="image"><img alt="1-qpm-secrets-4" src="1-qpm-secrets-4.png?raw=true" /></span><br></p>
+</li>
+</ol>
+<h3 id="22-cloudformation-resource-chart">2.2 Cloudformation Resource chart<a class="headerlink" href="#22-cloudformation-resource-chart" title="Permanent link">&para;</a></h3>
+<p>Please note that the Database names and the Custom Cluster and Database Parameter groups shown below are only for illustrative purpose. Participants are required to use the appropriate resources created from the Cloudformation template.</p>
+<p><strong>Please refer the below table for the list of resources and the value</strong></p>
+<table>
+<thead>
+<tr>
+<th>Resource name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cluster Parameter Group</td>
+<td>refer CloudFormation template output section and refer the key value “apgcustomclusterparamgroup”</td>
+</tr>
+<tr>
+<td>Database Parameter Group</td>
+<td>refer CloudFormation template output section and refer the key value “apgcustomdbparamgroup”</td>
+</tr>
+<tr>
+<td>Cluster Endpoint</td>
+<td>refer CloudFormation template output section and refer the key value “clusterEndpoint”</td>
+</tr>
+<tr>
+<td>Reader Endpoint</td>
+<td>refer CloudFormation template output section and refer the key value “readerEndpoint”</td>
+</tr>
+<tr>
+<td>DB name</td>
+<td>mylab</td>
+</tr>
+<tr>
+<td>DB username</td>
+<td>masteruser</td>
+</tr>
+<tr>
+<td>DB password</td>
+<td>extract from the secrets Manager as shown above</td>
+</tr>
+<tr>
+<td>bastionEndpoint</td>
+<td>refer CloudFormation template output section and refer the key value “bastionEndpoint”</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-connecting-to-the-ec2-bastion-instance">2.3 Connecting to the EC2 bastion Instance<a class="headerlink" href="#23-connecting-to-the-ec2-bastion-instance" title="Permanent link">&para;</a></h3>
+<p>We are creating EC2 instance (Amazon Linux AMI-ID ami-0f2176987ee50226e) and bootstrapping the EC2 Instance to have pgbench and sysbench benchmarking tools to be installed.</p>
+<div class="codehilite"><pre><span></span>ssh -i &lt;keypair.pem&gt; ec2-user@&lt;bastionEndpoint&gt;
+</pre></div>
+
+
+<p>Replace the [<code>keypair.pem</code>] with the keypair file name input provided to the Cloud formation template. Replace the “bastionEndpoint” with the key value from the output section of the Cloud formation template.</p>
+<p>If you need to open an access for your laptop IP specifically, then whitelist your IP, by specifying your IP in the format <code>x.x.x.x/32</code> (<a href=" http://www.whatsmyip.org/" target="_blank">Lookup your IP </a>). If there are any issues in accessing the instance, you can always modify the security group to populate your IP address as My IP as mentioned <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html" target="_blank"> here</a>. </p>
+<h2 id="3-setting-up-the-fast-clone-divergence-test">3. Setting up the Fast Clone divergence test<a class="headerlink" href="#3-setting-up-the-fast-clone-divergence-test" title="Permanent link">&para;</a></h2>
+<p>The CloudFormation script used to spin up the stack automatically creates following objects in the Database "mylab"</p>
+<table>
+<thead>
+<tr>
+<th>Resource name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cloneeventtest</td>
+<td>Table to store the counter and the timestamp</td>
+</tr>
+<tr>
+<td>statusflag</td>
+<td>Table to store the status flag which controls the    start/stop counter</td>
+</tr>
+<tr>
+<td>eventerrormsg</td>
+<td>Table to store error messages</td>
+</tr>
+<tr>
+<td>cloneeventproc</td>
+<td>Function to add data to the cloneeventtest table based on the start counter flag</td>
+</tr>
+</tbody>
+</table>
+<p>In case you need to create these objects manually then you can connect to the Database using psql and run the below commands</p>
+<div class="codehilite"><pre><span></span>./psql -h &lt;cluster-endpoint&gt; -p &lt;port&gt;- U &lt;username&gt; -d &lt;dbname&gt;
+./psql -h  labstack-cluster.cluster-xxxxxxxxx.us-west-2.rds.amazonaws.com -p 5432 -U  masteruser -d mylab
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>mylab=&gt; CREATE TABLE cloneeventtest(
+mylab(&gt;     counter smallint,
+mylab(&gt;     seconds_elapsed int,
+mylab(&gt;     data TIMESTAMPTZ
+mylab(&gt; )
+mylab-&gt;         WITH (
+mylab(&gt;         OIDS=FALSE
+mylab(&gt;         );
+CREATE TABLE
+mylab=&gt; CREATE TABLE IF NOT EXISTS statusflag(
+mylab(&gt;     delflag CHARACTER VARYING(2)
+mylab(&gt; )
+mylab-&gt;         WITH (
+mylab(&gt;         OIDS=FALSE
+mylab(&gt;         );
+CREATE TABLE
+
+mylab=&gt; CREATE TABLE IF NOT EXISTS eventerrormsg(
+mylab(&gt;     err_msg CHARACTER VARYING(2000),
+mylab(&gt;     time TIMESTAMPTZ
+mylab(&gt; )
+mylab-&gt;         WITH (
+mylab(&gt;         OIDS=FALSE
+mylab(&gt;         );
+CREATE TABLE
+
+mylab=&gt; INSERT INTO statusflag VALUES(&#39;N&#39;);
+INSERT 0 1
+
+mylab=&gt; CREATE OR REPLACE FUNCTION cloneeventproc()
+mylab-&gt; RETURNS void
+mylab-&gt; AS
+mylab-&gt; $BODY$
+mylab$&gt; DECLARE
+mylab$&gt;     l_flag CHARACTER VARYING(2);
+mylab$&gt;     l_cntr smallint := 1;
+mylab$&gt;     l_sec int := 60;
+mylab$&gt;     l_current_time TIMESTAMPTZ :=now();
+mylab$&gt;     l_errmsg CHARACTER VARYING(350);
+mylab$&gt; BEGIN
+mylab$&gt;     WHILE TRUE LOOP
+mylab$&gt;         SELECT
+mylab$&gt;             delflag
+mylab$&gt;             INTO STRICT l_flag
+mylab$&gt;             FROM statusflag;
+mylab$&gt; 
+mylab$&gt;         IF l_flag = &#39;Y&#39; THEN
+mylab$&gt;             EXIT;
+mylab$&gt;         END IF;
+mylab$&gt;         INSERT INTO cloneeventtest
+mylab$&gt;         VALUES (l_cntr, l_sec, l_current_time);
+mylab$&gt;         l_cntr := l_cntr + 1;
+mylab$&gt;         l_sec := l_sec + 60;
+mylab$&gt;         l_current_time=l_current_time + (1 ||&#39; minutes&#39;)::interval;
+mylab$&gt;         PERFORM pg_sleep(60);
+mylab$&gt;         
+mylab$&gt;     END LOOP;
+mylab$&gt;     EXCEPTION
+mylab$&gt;         WHEN others THEN
+mylab$&gt;             INSERT INTO eventerrormsg
+mylab$&gt;      VALUES (l_errmsg, now());  
+mylab$&gt; commit;     
+mylab$&gt; END;
+mylab$&gt; $BODY$
+mylab-&gt; LANGUAGE  plpgsql;
+CREATE FUNCTION
+</pre></div>
+
+
+<h2 id="4-creating-and-verifying-performance-impact-of-the-fast-clone">4. Creating and verifying performance impact of the Fast Clone<a class="headerlink" href="#4-creating-and-verifying-performance-impact-of-the-fast-clone" title="Permanent link">&para;</a></h2>
+<p>To verify the performance impact of the clone cluster on the primary source cluster we will be performing follow steps</p>
+<p>a.  Start the pgbench workload (a PostgreSQL benchmarking tool) to generate a synthetic workload and run benchmarking on the primary cluster for 30 minutes. <br>
+b.  Execute the function “cloneeventproc” to start adding sample data on the source cluster.<br>
+c.  After 5 minutes or so kick off fast clone cluster creation. The pgbench workload will continue to execute.<br>
+d.  The clone cluster should be ready after about 15 minutes or so. Run the same pgbench workload on the clone cluster as the one running on the primary cluster (step #a)<br>
+e.  Verify the pgbench Transaction per seconds (TPS) metrics on the primary and the clone cluster.<br>
+f.  Verify the output from the sample table “cloneeventtest” on both the primary and the clone cluster to see the data divergence.<br></p>
+<h3 id="41-running-the-pgbench-workload-on-the-primary-cluster">4.1. Running the pgbench workload on the primary cluster<a class="headerlink" href="#41-running-the-pgbench-workload-on-the-primary-cluster" title="Permanent link">&para;</a></h3>
+<p>Before creating a Fast Clone of the primary cluster, we are going to start pgbench test to measure the Transaction per seconds (TPS) metrics on the primary cluster before the clone creation. </p>
+<div class="codehilite"><pre><span></span><span class="n">pgbench</span>  <span class="o">--</span><span class="n">progress</span><span class="o">-</span><span class="n">timestamp</span> <span class="o">-</span><span class="n">M</span> <span class="n">prepared</span> <span class="o">-</span><span class="n">n</span> <span class="o">-</span><span class="n">T</span> <span class="mi">1800</span> <span class="o">-</span><span class="n">P</span> <span class="mi">60</span>  <span class="o">-</span><span class="n">c</span> <span class="mi">8</span> <span class="o">-</span><span class="n">j</span> <span class="mi">8</span>  <span class="o">--</span><span class="n">host</span><span class="o">=</span><span class="n">labstack</span><span class="o">-</span><span class="n">cluster</span><span class="p">.</span><span class="n">cluster</span><span class="o">-</span><span class="n">xxxxxxxxx</span><span class="p">.</span><span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mf">2.</span><span class="n">rds</span><span class="p">.</span><span class="n">amazonaws</span><span class="p">.</span><span class="n">com</span> <span class="o">-</span><span class="n">b</span> <span class="n">tpcb</span><span class="o">-</span><span class="n">like</span><span class="mi">@1</span> <span class="o">-</span><span class="n">b</span> <span class="n">select</span><span class="o">-</span><span class="n">only</span><span class="mi">@20</span> <span class="o">--</span><span class="n">username</span><span class="o">=</span><span class="n">masteruser</span> <span class="n">mylab</span><span class="o">&gt;</span> <span class="n">Primary_results</span><span class="p">.</span><span class="n">log</span>
+</pre></div>
+
+
+<h3 id="42-verify-the-environment-and-run-the-sample-divergence-test">4.2 Verify the environment and run the sample divergence test<a class="headerlink" href="#42-verify-the-environment-and-run-the-sample-divergence-test" title="Permanent link">&para;</a></h3>
+<p>In order to verify the data divergence on the primary and the clone cluster we will be adding sample data using sample tables and the function created above in step#3.</p>
+<p>Verify the status flag is set to ‘N’ and there is no data in the table “cloneeventtest”. Execute the function cloneeventproc() to start adding sample data. This function will add a row to the table “cloneeventtest” every 60 seconds. </p>
+<div class="codehilite"><pre><span></span>psql -h labstack-cluster.cluster-cwkjlhbdms9s.us-west-2.rds.amazonaws.com -p 5432 -U masteruser -d mylab
+Password for user masteruser: 
+psql (10.7)
+Type &quot;help&quot; for help.
+
+mylab=&gt; select * from statusflag;
+ delflag 
+---------
+ N
+(1 row)
+
+mylab=&gt; select * from cloneeventtest;
+ counter | seconds_elapsed | data 
+---------+-----------------+------
+(0 rows)
+
+mylab=&gt; select cloneeventproc();
+ cloneeventproc 
+----------------
+</pre></div>
+
+
+<p>At this time (we call as time “T1”) the pgbench workload is running on the source DB cluster and also, we are adding sample data to the table on the primary cluster every 60 seconds.</p>
+<h3 id="43-stop-the-sample-data-generation">4.3. Stop the sample data generation<a class="headerlink" href="#43-stop-the-sample-data-generation" title="Permanent link">&para;</a></h3>
+<p>At time (After 5 minutes or so kick off fast clone cluster creation. T1+5 minutes we will stop the function execution by manually resetting the “delflag” column on the table “statusflag” to “Y” from another session (different than the session where we executed the function). The pgbench workload will continue to execute on the primary source cluster</p>
+<div class="codehilite"><pre><span></span>From session #2 
+[ec2-user@ip-10-0-0-204 ~]$ psql -h labstack-cluster.cluster-xxxxxxxxxx.us-west-2.rds.amazonaws.com -p 5432 -U masteruser -d mylab
+Password for user masteruser: 
+psql (10.7)
+Type &quot;help&quot; for help.
+
+mylab=&gt; update statusflag set delflag=&#39;Y&#39;;
+UPDATE 1
+
+Back to session #1
+mylab=&gt; select cloneeventproc();
+ cloneeventproc 
+----------------
+
+(1 row)
+
+mylab=&gt; select count(*) from cloneeventtest;
+ count 
+-------
+     5
+(1 row)
+
+mylab=&gt; show timezone;
+ TimeZone 
+----------
+ UTC
+(1 row)
+
+mylab=&gt; SET timezone = &#39;America/Los_Angeles&#39;;
+SET
+mylab=&gt; select * from cloneeventtest;
+ counter | seconds_elapsed |             data              
+---------+-----------------+-------------------------------
+       1 |              60 | 2020-01-20 13:57:13.473963-08
+       2 |             120 | 2020-01-20 13:58:13.473963-08
+       3 |             180 | 2020-01-20 13:59:13.473963-08
+       4 |             240 | 2020-01-20 14:00:13.473963-08
+       5 |             300 | 2020-01-20 14:01:13.473963-08
+(5 rows)
+</pre></div>
+
+
+<p><span class="image"><img alt="1-fastclone-1" src="1-fastclone-1.png?raw=true" /></span><br></p>
+<h3 id="44-create-fast-clone-cluster">4.4. Create Fast Clone Cluster<a class="headerlink" href="#44-create-fast-clone-cluster" title="Permanent link">&para;</a></h3>
+<p>Once the function execution is stopped (after time T1+5 minutes) we will start creating the Fast Clone of the primary cluster. The pgbench workload on the primary will continue on the primary cluster.</p>
+<p>will walk you through the process of <a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.html" target="_blank"> cloning a DB cluster</a>. Cloning creates a separate, independent DB cluster, with a consistent copy of your data set as of the time you cloned it. Database cloning uses a copy-on-write protocol, in which data is copied at the time that data changes, either on the source databases or the clone databases. The two clusters are isolated, and there is no performance impact on the source DB cluster from database operations on the clone, or the other way around.</p>
+<p>Following are the steps to configure the Database Fast clone on your Aurora PostgreSQL cluster</p>
+<p>a. <a href="https://console.aws.amazon.com/rds/" target="_blank"> Sign in to the AWS Management Console and open the Amazon RDS console</a> . <br> 
+b. In the navigation pane, choose Databases and click on the DB identifier with the cluster name you created as a part of the CloudFormation stack.<br>
+<span class="image"><img alt="1-fastclone-2" src="1-fastclone-2.png?raw=true" /></span><br></p>
+<p>Click on the selected cluster above and look under the section</p>
+<p><span class="image"><img alt="1-fastclone-3" src="1-fastclone-3.png?raw=true" /></span><br></p>
+<p>c.  Please refer the below table on the input parameters required on next screens  <br></p>
+<table>
+<thead>
+<tr>
+<th>Resource name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DB Engine</td>
+<td>Use default</td>
+</tr>
+<tr>
+<td>Database Instance class</td>
+<td>Use the same as the primary DB</td>
+</tr>
+<tr>
+<td>DB Instance Identifier</td>
+<td>Labstack-clone</td>
+</tr>
+<tr>
+<td>Database Parameter Group</td>
+<td>refer CloudFormation template output section and refer the key value “apgcustomdbparamgroup”</td>
+</tr>
+<tr>
+<td>Cluster Parameter Group</td>
+<td>refer CloudFormation template output section and refer the key value “apgcustomclusterparamgroup”</td>
+</tr>
+<tr>
+<td>VPC</td>
+<td>refer CloudFormation template output section and refer the key value “vpcid”</td>
+</tr>
+<tr>
+<td>Subnet Group</td>
+<td>Use default</td>
+</tr>
+<tr>
+<td>Public accessibility</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Availability Zone</td>
+<td>Use default</td>
+</tr>
+<tr>
+<td>Security Group</td>
+<td>Use default</td>
+</tr>
+<tr>
+<td>Database Port</td>
+<td>Use default</td>
+</tr>
+<tr>
+<td>IAM DB authentication</td>
+<td>Disable</td>
+</tr>
+<tr>
+<td>Log Exports</td>
+<td>Leave it unchecked.</td>
+</tr>
+<tr>
+<td>Auto Minor version upgrade</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p><span class="image"><img alt="1-fastclone-4" src="1-fastclone-4.png?raw=true" /></span><br>
+<span class="image"><img alt="1-fastclone-5" src="1-fastclone-5.png?raw=true" /></span><br>
+<span class="image"><img alt="1-fastclone-6" src="1-fastclone-6.png?raw=true" /></span><br>
+<span class="image"><img alt="1-fastclone-7" src="1-fastclone-7.png?raw=true" /></span><br>
+d. Once you click on the “Create Clone” the status column will show status as “Creating”. <br></p>
+<p><span class="image"><img alt="1-fastclone-8" src="1-fastclone-8.png?raw=true" /></span><br></p>
+<p>e.  The clone cluster should be ready after about 10-15 minutes or so. The status column will show as “Available” <br></p>
+<p><span class="image"><img alt="1-fastclone-9" src="1-fastclone-9.png?raw=true" /></span><br></p>
+<h3 id="45-start-the-sample-data-divergence-process-on-the-primary-cluster">4.5. Start the sample data divergence process on the primary cluster<a class="headerlink" href="#45-start-the-sample-data-divergence-process-on-the-primary-cluster" title="Permanent link">&para;</a></h3>
+<p>Once the Clone cluster creation process is kicked off, we will start the sample data generation process on the primary cluster. Any sample data added from this point onwards should only be available on the primary cluster and not on the clone cluster.</p>
+<div class="codehilite"><pre><span></span>psql -h labstack-cluster.cluster-xxxxxxxx.us-west-2.rds.amazonaws.com -p 5432 -U masteruser -d mylab
+Password for user masteruser: 
+psql (10.7)
+Type &quot;help&quot; for help.
+
+
+mylab=&gt; truncate cloneeventtest;
+TRUNCATE TABLE
+mylab=&gt; update statusflag set delflag=&#39;N&#39;;
+UPDATE 1
+mylab=&gt; 
+mylab=&gt; select count(*) from cloneeventtest;
+ count 
+-------
+     0
+(1 row)
+mylab=&gt; select cloneeventproc();
+ cloneeventproc 
+----------------
+</pre></div>
+
+
+<h3 id="46-verify-the-data-divergence-on-the-clone-cluster">4.6. Verify the data divergence on the Clone Cluster<a class="headerlink" href="#46-verify-the-data-divergence-on-the-clone-cluster" title="Permanent link">&para;</a></h3>
+<p>clone cluster should be ready after about 15 minutes or so (time T1+~10-15 minutes). To verify the data on the clone cluster, as we started creating the clone cluster approximately at time ~T1+5 minutes. </p>
+<p>The table “cloneeventtest” on the clone cluster should have the data point in time to the time when we spin up the clone cluster. </p>
+<div class="codehilite"><pre><span></span>From session #2 
+[ec2-user@ip-10-0-0-204 ~]$ psql -h labstack-clone-cluster.cluster-xxxxxxxxxx.us-west-2.rds.amazonaws.com -p 5432 -U masteruser -d mylab
+Password for user masteruser: 
+psql (10.7)
+Type &quot;help&quot; for help.
+
+mylab=&gt; select count(*) from cloneeventtest;
+ count 
+-------
+     5
+(1 row)
+
+mylab=&gt; show timezone;
+ TimeZone 
+----------
+ UTC
+(1 row)
+
+mylab=&gt; SET timezone = &#39;America/Los_Angeles&#39;;
+SET
+mylab=&gt; select * from cloneeventtest;
+ counter | seconds_elapsed |             data              
+---------+-----------------+-------------------------------
+       1 |              60 | 2020-01-20 13:57:13.473963-08
+       2 |             120 | 2020-01-20 13:58:13.473963-08
+       3 |             180 | 2020-01-20 13:59:13.473963-08
+       4 |             240 | 2020-01-20 14:00:13.473963-08
+       5 |             300 | 2020-01-20 14:01:13.473963-08
+(5 rows)
+</pre></div>
+
+
+<p><span class="image"><img alt="1-fastclone-10" src="1-fastclone-10.png?raw=true" /></span><br></p>
+<h3 id="47-run-the-pgbench-workload-on-the-clone-cluster">4.7. Run the pgbench workload on the Clone Cluster<a class="headerlink" href="#47-run-the-pgbench-workload-on-the-clone-cluster" title="Permanent link">&para;</a></h3>
+<p>We are going to start the same pgbench workload as we did on the primary cluster in step# 4.1. </p>
+<div class="codehilite"><pre><span></span><span class="n">pgbench</span>  <span class="o">--</span><span class="n">progress</span><span class="o">-</span><span class="n">timestamp</span> <span class="o">-</span><span class="n">M</span> <span class="n">prepared</span> <span class="o">-</span><span class="n">n</span> <span class="o">-</span><span class="n">T</span> <span class="mi">1800</span> <span class="o">-</span><span class="n">P</span> <span class="mi">60</span>  <span class="o">-</span><span class="n">c</span> <span class="mi">8</span> <span class="o">-</span><span class="n">j</span> <span class="mi">8</span>  <span class="o">--</span><span class="n">host</span><span class="o">=</span><span class="n">labstack</span><span class="o">-</span><span class="n">clone</span><span class="o">-</span><span class="n">cluster</span><span class="p">.</span><span class="n">cluster</span><span class="o">-</span><span class="n">xxxxxxxxx</span><span class="p">.</span><span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mf">2.</span><span class="n">rds</span><span class="p">.</span><span class="n">amazonaws</span><span class="p">.</span><span class="n">com</span> <span class="o">-</span><span class="n">b</span> <span class="n">tpcb</span><span class="o">-</span><span class="n">like</span><span class="mi">@1</span> <span class="o">-</span><span class="n">b</span> <span class="n">select</span><span class="o">-</span><span class="n">only</span><span class="mi">@20</span> <span class="o">--</span><span class="n">username</span><span class="o">=</span><span class="n">masteruser</span> <span class="n">mylab</span><span class="o">&gt;</span> <span class="n">clone_results</span><span class="p">.</span><span class="n">log</span>
+</pre></div>
+
+
+<h3 id="48-verify-the-pgbench-metrics-on-the-primary-and-the-clone-cluster">4.8. Verify the pgbench metrics on the primary and the clone cluster.<a class="headerlink" href="#48-verify-the-pgbench-metrics-on-the-primary-and-the-clone-cluster" title="Permanent link">&para;</a></h3>
+<p>Once the pgbench workload completed on both the primary and the clone cluster we can verify the TPS metrics from both the cluster by looking at the output file.</p>
+<div class="codehilite"><pre><span></span>[ec2-user@ip-xxxxxxxx ~]$ more Primary_results.log 
+transaction type: multiple scripts
+scaling factor: 100
+query mode: prepared
+number of clients: 8
+number of threads: 8
+duration: 1800 s
+number of transactions actually processed: 19494742
+latency average = 0.739 ms
+latency stddev = 1.361 ms
+tps = 10830.345301 (including connections establishing)
+tps = 10830.428982 (excluding connections establishing)
+SQL script 1: &lt;builtin: TPC-B (sort of)&gt;
+ - weight: 1 (targets 4.8% of total)
+ - 928533 transactions (4.8% of total, tps = 515.848479)
+ - latency average = 6.228 ms
+ - latency stddev = 2.127 ms
+SQL script 2: &lt;builtin: select only&gt;
+ - weight: 20 (targets 95.2% of total)
+ - 18561932 transactions (95.2% of total, tps = 10312.120725)
+ - latency average = 0.464 ms
+ - latency stddev = 0.371 ms
+</pre></div>
+
+
+<p><span class="image"><img alt="1-fastclone-11" src="1-fastclone-11.png?raw=true" /></span><br></p>
+<div class="codehilite"><pre><span></span>[ec2-user@ip-10-0-0-204 ~]$ more clone_results.log
+transaction type: multiple scripts
+scaling factor: 100
+query mode: prepared
+number of clients: 8
+number of threads: 8
+duration: 1800 s
+number of transactions actually processed: 19494742
+latency average = 0.739 ms
+latency stddev = 1.361 ms
+tps = 10830.345301 (including connections establishing)
+tps = 10830.428982 (excluding connections establishing)
+SQL script 1: &lt;builtin: TPC-B (sort of)&gt;
+ - weight: 1 (targets 4.8% of total)
+ - 928533 transactions (4.8% of total, tps = 515.848479)
+ - latency average = 6.228 ms
+ - latency stddev = 2.127 ms
+SQL script 2: &lt;builtin: select only&gt;
+ - weight: 20 (targets 95.2% of total)
+ - 18561932 transactions (95.2% of total, tps = 10312.120725)
+ - latency average = 0.464 ms
+ - latency stddev = 0.371 ms
+</pre></div>
+
+
+<p><span class="image"><img alt="1-fastclone-12" src="1-fastclone-12].png?raw=true" /></span><br></p>
+<h3 id="49-sample-graph-on-the-fast-clone-performance-impact">4.9. Sample graph on the fast clone performance impact<a class="headerlink" href="#49-sample-graph-on-the-fast-clone-performance-impact" title="Permanent link">&para;</a></h3>
+<p>Below is the sample comparison slide to show the performance impact of the clone</p>
+<p><span class="image"><img alt="1-fastclone-13" src="1-fastclone-13.png?raw=true" /></span><br></p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../create/" title="Creating a New Aurora Cluster" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Creating a New Aurora Cluster
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../qpm/" title="Query Plan Management" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Query Plan Management
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            &copy; 2019, Amazon Web Services, Inc. or its affiliates. All rights reserved.
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://mylabs.data-builder.com/" class="md-footer-social__link fa fa-home"></a>
+    
+      <a href="https://aws.amazon.com/rds/aurora/postgresql-features/" class="md-footer-social__link fa fa-amazon"></a>
+    
+      <a href="https://mylabs.data-builder.com/" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.8e03edeb.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+    
+  </body>
+</html>

@@ -414,7 +414,7 @@
 
 
   <li class="md-nav__item">
-    <a href="clone/index.md" title="Fast Cloning" class="md-nav__link">
+    <a href="fastclone/" title="Fast Cloning" class="md-nav__link">
       Fast Cloning
     </a>
   </li>
@@ -583,38 +583,38 @@
 <tr>
 <td>3</td>
 <td><a href="/modules/connect/"><strong>Connecting, Loading Data and Auto Scaling</strong></a></td>
-<td>Recommended, for provisioned clusters</td>
+<td>Recommended</td>
 <td>Connect to the DB cluster for the first time, load an initial data set and test read replica auto scaling. The initial data set may be used in subsequent labs.</td>
 </tr>
 <tr>
 <td>4</td>
-<td><a href="/modules/clone/"><strong>Cloning Clusters</strong></a></td>
-<td>Recommended, for provisioned clusters</td>
+<td><a href="/modules/fastclone/"><strong>Fast Cloning</strong></a></td>
+<td>Recommended</td>
 <td>Cloning an Aurora DB cluster and observing the divergence of the data set.</td>
 </tr>
 <tr>
 <td>5</td>
-<td><a href="/modules/backtrack/"><strong>Backtracking a Cluster</strong></a></td>
-<td>Recommended, for provisioned clusters</td>
-<td>Backtracking an Aurora DB cluster to fix an accidental DDL operation.</td>
+<td><a href="/modules/qpm/"><strong>Query Plan Management</strong></a></td>
+<td>Recommended</td>
+<td>To control execution plans for a set of statements that you want to manage.</td>
 </tr>
 <tr>
 <td>6</td>
-<td><a href="/modules/perf-insights/"><strong>Using Performance Insights</strong></a></td>
-<td>Recommended, for provisioned clusters</td>
-<td>Examining the performance of your DB instances using RDS Performance Insights</td>
+<td><a href="/modules/ccm/"><strong>Cluster Cache Management</strong></a></td>
+<td>Recommended</td>
+<td>Improves the performance of the new primary/writer instance after failover occurs.</td>
 </tr>
 <tr>
 <td>7</td>
-<td><a href="/modules/create-serverless/"><strong>Creating a Serverless Aurora Cluster</strong></a></td>
-<td>Recommended, for serverless clusters</td>
-<td>Create a new Amazon Aurora Serverless PostgreSQL DB cluster manually. You may skip the provisioned cluster labs if you are planning to operate a serverless workload.</td>
+<td><a href="/modules/migration/"><strong>Oracle to Aurora PostgreSQL migration using DMS and SCT</strong></a></td>
+<td>Recommended</td>
+<td>migration of a sample database from Oracle to Amazon Aurora PostgreSQL using the AWS Database Migration Service (AWS DMS) and the AWS Schema Conversion Tool (AWS SCT)</td>
 </tr>
 <tr>
 <td>8</td>
-<td><a href="/modules/connect-serverless/"><strong>Using Aurora Serverless with Lambda Functions</strong></a></td>
-<td>Recommended, for serverless clusters</td>
-<td>Connect to your serverless cluster using the RDS Data API and Lambda functions. Requires the previous lab.</td>
+<td><a href="/modules/das/"><strong>Database Activity Streaming</strong></a></td>
+<td>Recommended</td>
+<td>Monitoring database activity with Amazon Aurora with PostgreSQL compatibility is to use Database Activity Streams.</td>
 </tr>
 </tbody>
 </table>
@@ -654,10 +654,11 @@
 <h2 id="additional-software-needed-for-labs">Additional software needed for labs<a class="headerlink" href="#additional-software-needed-for-labs" title="Permanent link">&para;</a></h2>
 <p>The templates and scripts setting up the lab environment install the following software in the lab environment for the purposes of deploying and running the labs:</p>
 <ul>
-<li><a href="https://dev.mysql.com/doc/refman/5.6/en/programs-client.html">mysql-client</a> package. PostgreSQL open source software is provided under the GPL License.</li>
+<li><a href="https://www.postgresql.org/docs/10/pgbench.html">pgbench</a></li>
+<li><a href="https://www.pgadmin.org/">pgAdmin</a></li>
 <li><a href="https://github.com/akopytov/sysbench">sysbench</a> available using the GPL License.</li>
-<li><a href="https://github.com/datacharmer/test_db">test_db</a> available using the Creative Commons Attribution-Share Alike 3.0 Unported License.</li>
 <li><a href="https://github.com/Percona-Lab/sysbench-tpcc">Percona's sysbench-tpcc</a> available using the Apache License 2.0.</li>
+<li><a href="https://www.oracle.com/database/technologies/instant-client/downloads.html">Sql Plus:Oracle Client</a> </li>
 </ul>
                 
                   
