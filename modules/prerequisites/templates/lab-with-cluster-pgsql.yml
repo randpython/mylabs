@@ -787,30 +787,30 @@ Resources:
     DependsOn: [ dbNodeWriter,dbNodeSecondary ]          
 
 ## Create parameter groups for cluster nodes
-  pgNodeParams:
+  apgcustomdbparamgroup:
     Type: AWS::RDS::DBParameterGroup
     Properties:
-      Description: !Sub ${AWS::StackName}-node-params
+      Description: !Sub ${AWS::StackName}-dbparamgroup
       Family: aurora-postgresql10
       Parameters:
         log_rotation_age: '1440'
         log_rotation_size: '102400'
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-node-params
+          Value: !Sub ${AWS::StackName}-dbparamgroup
 
 ## Create cluster parameter group
-  cpgClusterParams:
+  apgcustomclusterparamgroup:
     Type: AWS::RDS::DBClusterParameterGroup
     Properties:
-      Description: !Sub ${AWS::StackName}-cluster-params
+      Description: !Sub ${AWS::StackName}-clusterparamgroup
       Family: aurora-postgresql10
       Parameters:
         rds.force_ssl: 0
         shared_preload_libraries: 'pg_stat_statements,pg_hint_plan'
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-cluster-params
+          Value: !Sub ${AWS::StackName}-clusterparamgroup
 
 ## Create a random generated password and store it as a secret
   secretClusterMasterUser:
@@ -834,7 +834,7 @@ Resources:
       EngineVersion : !Ref DBEngineVersion
       Port: 5432
       DBSubnetGroupName: !Ref dbSubnets
-      DBClusterParameterGroupName: !Ref cpgClusterParams
+      DBClusterParameterGroupName: !Ref apgcustomclusterparamgroup
       DBClusterIdentifier: !Sub ${AWS::StackName}-cluster
       BackupRetentionPeriod: 7
       MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref secretClusterMasterUser, ':SecretString:username}}' ]]
@@ -999,7 +999,7 @@ Resources:
       DBInstanceIdentifier: !Sub ${AWS::StackName}-node-01
       CopyTagsToSnapshot: true
       DBInstanceClass: !FindInMap [ RegionalSettings, !Ref "AWS::Region", nodeType ]
-      DBParameterGroupName: !Ref pgNodeParams
+      DBParameterGroupName: !Ref apgcustomdbparamgroup
       Engine: aurora-postgresql
       EngineVersion : !Ref DBEngineVersion
       MonitoringInterval: 1
@@ -1020,7 +1020,7 @@ Resources:
       DBInstanceIdentifier: !Sub ${AWS::StackName}-node-02
       CopyTagsToSnapshot: true
       DBInstanceClass: !FindInMap [ RegionalSettings, !Ref "AWS::Region", nodeType ]
-      DBParameterGroupName: !Ref pgNodeParams
+      DBParameterGroupName: !Ref apgcustomdbparamgroup
       EngineVersion : !Ref DBEngineVersion
       Engine: aurora-postgresql
       MonitoringInterval: 1
@@ -1137,12 +1137,12 @@ Outputs:
   secretArn:
     Description: Database Credentials Secret ARN
     Value: !Ref secretClusterMasterUser
-  pgNodeParamsgroup:
-    Description: Database Parameter Group
-    Value: !Ref pgNodeParams
-  cpgClusterParamsgroup:
+  apgcustomclusterparamgroup:
     Description: Cluster Parameter Group
-    Value: !Ref cpgClusterParams
+    Value: !Ref apgcustomclusterparamgroup
+  apgcustomdbparamgroup:
+    Description: Database Parameter Group
+    Value: !Ref apgcustomdbparamgroup
   DatabaseName:
     Description: Database Name
     Value: !FindInMap [ ClusterSettings, global, dbSchema ]
