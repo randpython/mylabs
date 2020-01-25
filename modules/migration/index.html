@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/aws-favicon.ico">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
     
     
       
@@ -46,12 +46,12 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.0284f74d.css">
       
       
     
     
-      <script src="../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../assets/javascripts/modernizr.74668098.js"></script>
     
     
       
@@ -205,7 +205,7 @@
         
   <li class="md-tabs__item">
     
-      <a href="../.." class="md-tabs__link">
+      <a href="../.." title="Home" class="md-tabs__link">
         Home
       </a>
     
@@ -215,7 +215,7 @@
         
   <li class="md-tabs__item">
     
-      <a href="../" class="md-tabs__link">
+      <a href="../" title="Getting Started" class="md-tabs__link">
         Getting Started
       </a>
     
@@ -227,7 +227,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="../prerequisites/" class="md-tabs__link md-tabs__link--active">
+        <a href="../prerequisites/" title="Modules" class="md-tabs__link md-tabs__link--active">
           Modules
         </a>
       
@@ -239,7 +239,7 @@
   </div>
 </nav>
       
-      <main class="md-main" role="main">
+      <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -408,21 +408,21 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites-before-you-start" class="md-nav__link">
+  <a href="#prerequisites-before-you-start" title="Prerequisites before you start:" class="md-nav__link">
     Prerequisites before you start:
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#schema-conversion" class="md-nav__link">
+  <a href="#schema-conversion" title="Schema Conversion" class="md-nav__link">
     Schema Conversion
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#data-migration" class="md-nav__link">
+  <a href="#data-migration" title="Data Migration" class="md-nav__link">
     Data Migration
   </a>
   
@@ -430,14 +430,14 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#create-a-source-endpoint" class="md-nav__link">
+  <a href="#create-a-source-endpoint" title="Create a source endpoint" class="md-nav__link">
     Create a source endpoint
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#create-a-target-endpoint" class="md-nav__link">
+  <a href="#create-a-target-endpoint" title="Create a target endpoint" class="md-nav__link">
     Create a target endpoint
   </a>
   
@@ -449,7 +449,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#create-a-migraiton-task" class="md-nav__link">
+  <a href="#create-a-migraiton-task" title="Create a migraiton task" class="md-nav__link">
     Create a migraiton task
   </a>
   
@@ -457,7 +457,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#start-moving-data" class="md-nav__link">
+  <a href="#start-moving-data" title="Start Moving Data" class="md-nav__link">
     Start Moving Data
   </a>
   
@@ -517,21 +517,21 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites-before-you-start" class="md-nav__link">
+  <a href="#prerequisites-before-you-start" title="Prerequisites before you start:" class="md-nav__link">
     Prerequisites before you start:
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#schema-conversion" class="md-nav__link">
+  <a href="#schema-conversion" title="Schema Conversion" class="md-nav__link">
     Schema Conversion
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#data-migration" class="md-nav__link">
+  <a href="#data-migration" title="Data Migration" class="md-nav__link">
     Data Migration
   </a>
   
@@ -539,14 +539,14 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#create-a-source-endpoint" class="md-nav__link">
+  <a href="#create-a-source-endpoint" title="Create a source endpoint" class="md-nav__link">
     Create a source endpoint
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#create-a-target-endpoint" class="md-nav__link">
+  <a href="#create-a-target-endpoint" title="Create a target endpoint" class="md-nav__link">
     Create a target endpoint
   </a>
   
@@ -558,7 +558,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#create-a-migraiton-task" class="md-nav__link">
+  <a href="#create-a-migraiton-task" title="Create a migraiton task" class="md-nav__link">
     Create a migraiton task
   </a>
   
@@ -566,7 +566,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#start-moving-data" class="md-nav__link">
+  <a href="#start-moving-data" title="Start Moving Data" class="md-nav__link">
     Start Moving Data
   </a>
   
@@ -927,49 +927,49 @@ Note: if you check “select RDS DB Instance” you can select your particular i
 </ol>
 <p>Note – We are doing 2, 3 and 4 above as the schema has been pre-created on the target with lowercase (PostgreSQL convention). Your task JSON should look like this:</p>
 <div class="codehilite"><pre><span></span>{
-    &quot;rules&quot;: [
+    <span class="s2">&quot;</span><span class="s">rules</span><span class="s2">&quot;</span>: [
         {
-            &quot;rule-type&quot;: &quot;selection&quot;,
-            &quot;rule-id&quot;: &quot;1&quot;,
-            &quot;rule-name&quot;: &quot;1&quot;,
-            &quot;object-locator&quot;: {
-                &quot;schema-name&quot;: &quot;DMS_SAMPLE&quot;,
-                &quot;table-name&quot;: &quot;%&quot;
+            <span class="s2">&quot;</span><span class="s">rule-type</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">selection</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">rule-id</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">1</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">rule-name</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">1</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">object-locator</span><span class="s2">&quot;</span>: {
+                <span class="s2">&quot;</span><span class="s">schema-name</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">DMS_SAMPLE</span><span class="s2">&quot;</span>,
+                <span class="s2">&quot;</span><span class="s">table-name</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">%</span><span class="s2">&quot;</span>
             },
-            &quot;rule-action&quot;: &quot;include&quot;
+            <span class="s2">&quot;</span><span class="s">rule-action</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">include</span><span class="s2">&quot;</span>
         },
         {
-            &quot;rule-type&quot;: &quot;transformation&quot;,
-            &quot;rule-id&quot;: &quot;2&quot;,
-            &quot;rule-name&quot;: &quot;2&quot;,
-            &quot;rule-target&quot;: &quot;schema&quot;,
-            &quot;object-locator&quot;: {
-                &quot;schema-name&quot;: &quot;DMS_SAMPLE&quot;
+            <span class="s2">&quot;</span><span class="s">rule-type</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">transformation</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">rule-id</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">2</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">rule-name</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">2</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">rule-target</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">schema</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">object-locator</span><span class="s2">&quot;</span>: {
+                <span class="s2">&quot;</span><span class="s">schema-name</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">DMS_SAMPLE</span><span class="s2">&quot;</span>
             },
-            &quot;rule-action&quot;: &quot;convert-lowercase&quot;
+            <span class="s2">&quot;</span><span class="s">rule-action</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">convert-lowercase</span><span class="s2">&quot;</span>
         },
         {
-            &quot;rule-type&quot;: &quot;transformation&quot;,
-            &quot;rule-id&quot;: &quot;3&quot;,
-            &quot;rule-name&quot;: &quot;3&quot;,
-            &quot;rule-target&quot;: &quot;table&quot;,
-            &quot;object-locator&quot;: {
-                &quot;schema-name&quot;: &quot;DMS_SAMPLE&quot;,
-                &quot;table-name&quot;: &quot;%&quot;
+            <span class="s2">&quot;</span><span class="s">rule-type</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">transformation</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">rule-id</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">3</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">rule-name</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">3</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">rule-target</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">table</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">object-locator</span><span class="s2">&quot;</span>: {
+                <span class="s2">&quot;</span><span class="s">schema-name</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">DMS_SAMPLE</span><span class="s2">&quot;</span>,
+                <span class="s2">&quot;</span><span class="s">table-name</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">%</span><span class="s2">&quot;</span>
             },
-            &quot;rule-action&quot;: &quot;convert-lowercase&quot;
+            <span class="s2">&quot;</span><span class="s">rule-action</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">convert-lowercase</span><span class="s2">&quot;</span>
         },
         {
-            &quot;rule-type&quot;: &quot;transformation&quot;,
-            &quot;rule-id&quot;: &quot;4&quot;,
-            &quot;rule-name&quot;: &quot;4&quot;,
-            &quot;rule-target&quot;: &quot;column&quot;,
-            &quot;object-locator&quot;: {
-                &quot;schema-name&quot;: &quot;DMS_SAMPLE&quot;,
-                &quot;table-name&quot;: &quot;%&quot;,
-                &quot;column-name&quot;: &quot;%&quot;
+            <span class="s2">&quot;</span><span class="s">rule-type</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">transformation</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">rule-id</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">4</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">rule-name</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">4</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">rule-target</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">column</span><span class="s2">&quot;</span>,
+            <span class="s2">&quot;</span><span class="s">object-locator</span><span class="s2">&quot;</span>: {
+                <span class="s2">&quot;</span><span class="s">schema-name</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">DMS_SAMPLE</span><span class="s2">&quot;</span>,
+                <span class="s2">&quot;</span><span class="s">table-name</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">%</span><span class="s2">&quot;</span>,
+                <span class="s2">&quot;</span><span class="s">column-name</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">%</span><span class="s2">&quot;</span>
             },
-            &quot;rule-action&quot;: &quot;convert-lowercase&quot;
+            <span class="s2">&quot;</span><span class="s">rule-action</span><span class="s2">&quot;</span>: <span class="s2">&quot;</span><span class="s">convert-lowercase</span><span class="s2">&quot;</span>
         }
     ]
 }
@@ -1073,7 +1073,7 @@ Add new server and run the query to verify the tables and the number of rows.
       
     </div>
     
-      <script src="../../assets/javascripts/application.8e03edeb.js"></script>
+      <script src="../../assets/javascripts/application.245445c6.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
