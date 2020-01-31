@@ -3,12 +3,10 @@
 ## Infrastructure template without an Aurora cluster for lab exercises
 ##
 ## Changelog:
-## 2019-05-13 - Initial release
 ##
 ## Dependencies:
 ## none
 ##
-## License:
 ## This sample code is made available under the MIT-0 license. See the LICENSE file.
 
 AWSTemplateFormatVersion: 2010-09-09
@@ -349,256 +347,12 @@ Resources:
         - Key: Name
           Value: labstack-bastion-host
       SecurityGroupIngress:
-            - # Amazon corp ip range
+            - # Custom IP address range
               IpProtocol: tcp
               FromPort: '22'
               ToPort: '22'
-              CidrIp: 52.46.82.0/23
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp:  54.240.217.0/27
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 177.72.241.160/27 
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 72.21.198.64/29 
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.194.0/24 
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.222.12.0/23
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22' 
-              CidrIp: 54.239.6.0/25
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 72.21.199.80/28
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 52.82.204.0/23
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.198.64/26
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.239.116.0/23
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.197.0/25
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 52.94.86.0/23
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 72.21.217.0/24
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 205.251.233.32/28
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 52.94.38.0/23
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 176.32.127.128/25
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 205.251.233.48/29
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 52.95.24.0/23
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 177.72.242.96/27
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.196.128/28
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.199.64/27
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.199.0/26
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 205.251.237.112/28
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.196.0/25
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 52.119.146.0/23
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 205.251.233.160/28
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 205.251.237.0/26
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 177.72.241.96/27
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 205.251.237.176/28
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.230.128/25
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 172.31.0.0/24
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 205.251.233.176/29
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 52.27.190.0/23
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 64.39.96.0/20
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 205.251.234.32/28
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.239.2.128/27
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 52.95.72.0/23
-            - # Amazon corp ip range 
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.239.98.0/23
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.222.11.0/24
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.200.0/24
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.198.0/27
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.222.61.16/28
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 205.251.237.80/28    
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 72.21.196.64/29
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.230.240/29 
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.230.184/29 
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.230.176/29 
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.217.8/29 
-            - # Amazon corp ip range
-              IpProtocol: tcp
-              FromPort: '22'
-              ToPort: '22'
-              CidrIp: 54.240.217.16/29  
+              CidrIp: 204.246.162.31/32
+  
 
 ## Create DB security group
   dbSecGroupCluster:
@@ -867,12 +621,12 @@ Resources:
           name: SysBenchTpccPrepare
           inputs:
             runCommand:
-            - 'echo "DROP SCHEMA IF EXISTS {{ dbSchema }}; CREATE SCHEMA {{ dbSchema }};" | mysql -h{{ clusterEndpoint }} -u{{ dbUser }} -p"{{ dbPassword }}" && cd /home/ubuntu/sysbench-tpcc && ./tpcc.lua --mysql-host={{ clusterEndpoint }} --mysql-user={{ dbUser }} --mysql-password="{{ dbPassword }}" --mysql-db={{ dbSchema }} --threads={{ numThreads }} --tables={{ numTables }} --scale={{ numScale }} --time={{ runTime }} --db-driver={{ dbDriver }} prepare'
+            - 'echo "DROP SCHEMA IF EXISTS ; CREATE SCHEMA ;" | mysql -h -u -p"" && cd /home/ubuntu/sysbench-tpcc && ./tpcc.lua --mysql-host= --mysql-user= --mysql-password="" --mysql-db= --threads= --tables= --scale= --time= --db-driver= prepare'
         - action: aws:runShellScript
           name: SysBenchTpccRun
           inputs:
             runCommand:
-            - 'cd /home/ubuntu/sysbench-tpcc && ./tpcc.lua --mysql-host={{ clusterEndpoint }} --mysql-user={{ dbUser }} --mysql-password="{{ dbPassword }}" --mysql-db={{ dbSchema }} --threads={{ numThreads }} --tables={{ numTables }} --scale={{ numScale }} --time={{ runTime }} --db-driver={{ dbDriver }} run'
+            - 'cd /home/ubuntu/sysbench-tpcc && ./tpcc.lua --mysql-host= --mysql-user= --mysql-password="" --mysql-db= --threads= --tables= --scale= --time= --db-driver= run'
 
 
 ## Outputs
