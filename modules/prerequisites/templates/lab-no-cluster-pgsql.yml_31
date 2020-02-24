@@ -1,14 +1,18 @@
 ---
-## Amazon Aurora Labs for Postgresql
-## Infrastructure template with an Aurora cluster for lab exercises
+## Amazon Aurora Labs for PostgreSQL
+## Infrastructure template without an Aurora cluster for lab exercises
 ##
+## Changelog:
+## 2019-05-13 - Initial release
 ##
 ## Dependencies:
 ## none
 ##
+## License:
+## This sample code is made available under the MIT-0 license. See the LICENSE file.
 
 AWSTemplateFormatVersion: 2010-09-09
-Description: Amazon Aurora Labs for Aurora Postgresql
+Description: Amazon Aurora Labs for Aurora PostgreSQL
 
 ## Parameters
 Parameters:
@@ -18,17 +22,10 @@ Parameters:
   ec2KeyPair:
     Type: AWS::EC2::KeyPair::KeyName
     Description: EC2 key pair for instance access
-  DBEngineVersion:
-    Description: Select Database Engine Version
-    Type: String
-    Default: 10.7
-    AllowedValues:
-      - 10.7
 
 ## Conditions
 Conditions:
   cond3AZs: !Equals [ !FindInMap [ RegionalSettings, !Ref "AWS::Region", azs ], "3" ]
-
 
 ## Mappings
 Mappings:
@@ -131,6 +128,9 @@ Mappings:
     global:
       dbSchema: mylab
       dbDriver: pgsql
+      dbVersion: 10.7
+      dbEngine: aurora-postgresql
+      dbFamily: aurora-postgresql10
     scaling:
       maxCapacity: 2
       minCapacity: 1
@@ -141,7 +141,6 @@ Mappings:
       numThreads: '4'
       numTables: '8'
       numWarehouses: '2'
-
 
 ## Resources
 Resources:
@@ -156,7 +155,7 @@ Resources:
       CidrBlock: !FindInMap [ NetworkSettings, global, vpcCidr ]
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-vpc
+          Value: labstack-vpc
 
 ## Create an IGW & attach it to the VPC
   vpcIgw:
@@ -164,7 +163,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-igw
+          Value: labstack-igw
   attachIgwVpc:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
@@ -181,7 +180,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-pub-sub-1
+          Value: labstack-pub-sub-1
   sub2Public:
     Type: AWS::EC2::Subnet
     Properties:
@@ -191,7 +190,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-pub-sub-2
+          Value: labstack-pub-sub-2
   sub3Public:
     Type: AWS::EC2::Subnet
     Condition: cond3AZs
@@ -202,7 +201,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-pub-sub-3
+          Value: labstack-pub-sub-3
 
 ## Associate the public subnets with a public route table
   rtbPublic:
@@ -211,7 +210,7 @@ Resources:
       VpcId: !Ref vpc
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-public-rtb
+          Value: labstack-public-rtb
   rteToIgw:
     Type: AWS::EC2::Route
     DependsOn: attachIgwVpc
@@ -246,7 +245,7 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-prv-sub-1
+          Value: labstack-prv-sub-1
   sub2Private:
     Type: AWS::EC2::Subnet
     Properties:
@@ -256,7 +255,7 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-prv-sub-2
+          Value: labstack-prv-sub-2
   sub3Private:
     Type: AWS::EC2::Subnet
     Condition: cond3AZs
@@ -267,7 +266,7 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-prv-sub-3
+          Value: labstack-prv-sub-3
 
 ## Create a NAT Gateway & EIP
   natEip:
@@ -288,7 +287,7 @@ Resources:
       VpcId: !Ref vpc
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-nat-rtb
+          Value: labstack-nat-rtb
   rteToNgw:
     Type: AWS::EC2::Route
     Properties:
@@ -333,40 +332,284 @@ Resources:
   dbSubnets:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
-      DBSubnetGroupDescription: !Sub ${AWS::StackName}-db-subnet-group
+      DBSubnetGroupDescription: labstack-db-subnet-group
       SubnetIds: [ !Ref sub1Private, !Ref sub2Private, !If [ cond3AZs, !Ref sub3Private, !Ref "AWS::NoValue" ] ]
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-db-subnet-group
+          Value: labstack-db-subnet-group
 
 ## Create bastion security group
   bastionSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: !Ref vpc
-      GroupName: !Sub ${AWS::StackName}-bastion-host
+      GroupName: labstack-bastion-host
       GroupDescription: Aurora Lab SSH Security Group
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-bastion-host
+          Value: labstack-bastion-host
       SecurityGroupIngress:
-            - # Custom ip range
+            - # Amazon corp ip range
               IpProtocol: tcp
               FromPort: '22'
               ToPort: '22'
-              CidrIp: 204.246.162.31/32         
-          
+              CidrIp: 52.46.82.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp:  54.240.217.0/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 177.72.241.160/27 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 72.21.198.64/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.194.0/24 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.222.12.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22' 
+              CidrIp: 54.239.6.0/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 72.21.199.80/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.82.204.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.198.64/26
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.239.116.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.197.0/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.94.86.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 72.21.217.0/24
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.233.32/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.94.38.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 176.32.127.128/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.233.48/29
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.95.24.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 177.72.242.96/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.196.128/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.199.64/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.199.0/26
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.237.112/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.196.0/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.119.146.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.233.160/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.237.0/26
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 177.72.241.96/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.237.176/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.230.128/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 172.31.0.0/24
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.233.176/29
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.27.190.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 64.39.96.0/20
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.234.32/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.239.2.128/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.95.72.0/23
+            - # Amazon corp ip range 
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.239.98.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.222.11.0/24
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.200.0/24
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.198.0/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.222.61.16/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.237.80/28    
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 72.21.196.64/29
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.230.240/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.230.184/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.230.176/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.217.8/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.217.16/29  
 
 ## Create DB security group
   dbSecGroupCluster:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: !Ref vpc
-      GroupName: !Sub ${AWS::StackName}-PostgreSQL-internal
+      GroupName: labstack-pgsql-internal
       GroupDescription: Aurora Lab Database Firewall
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-PostgreSQL-internal
+          Value: labstack-pgsql-internal
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 5432
@@ -378,7 +621,7 @@ Resources:
   roleEnhancedMonitoring:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ${AWS::StackName}-monitor-${AWS::Region}
+      RoleName: !Sub labstack-monitor-${AWS::Region}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -395,7 +638,7 @@ Resources:
   roleServiceIntegration:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ${AWS::StackName}-integrate-${AWS::Region}
+      RoleName: !Sub labstack-integrate-${AWS::Region}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -427,7 +670,7 @@ Resources:
   roleBastionHost:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ${AWS::StackName}-bastion-${AWS::Region}
+      RoleName: !Sub labstack-bastion-${AWS::Region}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -452,6 +695,7 @@ Resources:
                   - ssm:*
                   - kms:*
                   - secretsmanager:*
+                  - rds-db:connect
                   - kinesis:*
                 Resource: "*"
   profileBastionHost:
@@ -471,7 +715,7 @@ Resources:
       KeyName: !Ref ec2KeyPair
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-bastion-host
+          Value: labstack-bastion-host
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
@@ -529,34 +773,8 @@ Resources:
           PGPASSWORD=$username
           export PGPASSWORD
           cd /home/ec2-user/postgresql-10.7/src/bin/pgbench
-          nohup ./pgbench -i --fillfactor=100 --scale=100 --host=${dbCluster.Endpoint.Address} --username=masteruser mylab &>> /tmp/nohup.out
-    DependsOn: [ dbNodeWriter,dbNodeSecondary ]          
 
-## Create parameter groups for cluster nodes
-  apgcustomdbparamgroup:
-    Type: AWS::RDS::DBParameterGroup
-    Properties:
-      Description: !Sub ${AWS::StackName}-dbparamgroup
-      Family: aurora-postgresql10
-      Parameters:
-        log_rotation_age: '1440'
-        log_rotation_size: '102400'
-      Tags:
-        - Key: Name
-          Value: !Sub ${AWS::StackName}-dbparamgroup
 
-## Create cluster parameter group
-  apgcustomclusterparamgroup:
-    Type: AWS::RDS::DBClusterParameterGroup
-    Properties:
-      Description: !Sub ${AWS::StackName}-clusterparamgroup
-      Family: aurora-postgresql10
-      Parameters:
-        rds.force_ssl: 0
-        shared_preload_libraries: 'pg_stat_statements,pg_hint_plan'
-      Tags:
-        - Key: Name
-          Value: !Sub ${AWS::StackName}-clusterparamgroup
 
 ## Create a random generated password and store it as a secret
   secretClusterMasterUser:
@@ -570,234 +788,33 @@ Resources:
         ExcludeCharacters: '"@/\$`&'
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-secret
+          Value: labstack-dbpasswd-secret
 
-## Create Aurora cluster
-  dbCluster:
-    Type: AWS::RDS::DBCluster
+## Create parameter groups for cluster nodes
+  pgNodeParams:
+    Type: AWS::RDS::DBParameterGroup
     Properties:
-      Engine: aurora-postgresql
-      EngineVersion : !Ref DBEngineVersion
-      Port: 5432
-      DBSubnetGroupName: !Ref dbSubnets
-      DBClusterParameterGroupName: !Ref apgcustomclusterparamgroup
-      DBClusterIdentifier: !Sub ${AWS::StackName}-cluster
-      BackupRetentionPeriod: 7
-      MasterUsername: !Join ['', ['' ]]
-      MasterUserPassword: !Join ['', ['' ]]
-      DatabaseName: !FindInMap [ ClusterSettings, global, dbSchema ]
-      StorageEncrypted: true
-      VpcSecurityGroupIds: [ !Ref dbSecGroupCluster ]
+      Description: labstack-node-params
+      Family: !FindInMap [ ClusterSettings, global, dbFamily ]
+      Parameters:
+        log_rotation_age: '1440'
+        log_rotation_size: '102400'
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-cluster
+          Value: labstack-node-params
 
-## Create role for use with role assignment to Aurora cluster and log export via custom resource
-  roleClusterEnhancements:
-    Type: AWS::IAM::Role
+## Create cluster parameter group
+  cpgClusterParams:
+    Type: AWS::RDS::DBClusterParameterGroup
     Properties:
-      RoleName: !Sub ${AWS::StackName}-change-${AWS::Region}
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action:
-              - sts:AssumeRole
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-      Policies:
-        - PolicyName: inline-policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: 'arn:aws:logs:*:*:*'
-              - Effect: Allow
-                Action:
-                  - rds:AddRoleToDBCluster
-                  - rds:RemoveRoleFromDBCluster
-                  - rds:DescribeDBClusters
-                Resource: '*'
-              - Effect: Allow
-                Action:
-                  - iam:PassRole
-                  - iam:GetRole
-                Resource: !GetAtt roleServiceIntegration.Arn
-
-## Create Lambda function to implement role assignment and log export for Aurora cluster
-  funcClusterEnhancements:
-    Type: AWS::Lambda::Function
-    Properties:
-      FunctionName: !Sub ${AWS::StackName}-cluster-changes
-      Description: Custom Resource to assign the IAM roles to an Aurora cluster, and export logs to CloudWatch Logs, since CloudFormation doesn't do it natively
-      Handler: index.handler
-      Role: !GetAtt roleClusterEnhancements.Arn
-      Runtime: python3.6
-      Timeout: 30
+      Description: labstack-cluster-params
+      Family: !FindInMap [ ClusterSettings, global, dbFamily ]
+      Parameters:
+        rds.force_ssl: 0
+        shared_preload_libraries: 'pg_stat_statements,pg_hint_plan'
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-cluster-changes
-      Environment:
-        Variables:
-          REGION: !Ref "AWS::Region"
-      Code:
-        ZipFile: |
-          # Dependencies
-          from os import environ
-          import cfnresponse
-          import boto3
-
-          print("[INFO]", "Initialize function")
-
-          session = boto3.session.Session(region_name=environ["REGION"])
-          rds = session.client('rds')
-
-          # Lambda handler function / main function
-          def handler(event, context):
-              print("[INFO]", "Invocation start")
-
-              # globals
-              global rds
-
-              # init response
-              response_status = cfnresponse.FAILED
-              response_data = {}
-              aurora_existing_roles = []
-              aurora_new_roles = []
-
-              # try/catch
-              try:
-                  # get cluster properties
-                  aurora_cluster = event["ResourceProperties"]["Cluster"]
-                  response = rds.describe_db_clusters(DBClusterIdentifier=aurora_cluster)
-                  if "DBClusters" not in response or not response["DBClusters"]:
-                      raise ValueError("Cluster does not exist, or bad API response: %s" % aurora_cluster)
-
-                  # get existing role associations
-                  if "AssociatedRoles" in response["DBClusters"][0]:
-                      for role in response["DBClusters"][0]["AssociatedRoles"]:
-                          aurora_existing_roles.append(role["RoleArn"])
-
-                  # get new roles
-                  if "Role" in event["ResourceProperties"]:
-                      aurora_new_roles.append(event["ResourceProperties"]["Role"])
-
-                  # figure out roles we need to add and delete
-                  roles_to_add = set(aurora_new_roles).difference(aurora_existing_roles)
-                  roles_to_del = set(aurora_existing_roles).difference(aurora_new_roles)
-
-                  # only make changes if changes are needed
-                  if roles_to_add and roles_to_del:
-                      # this is currently not well supported by the RDS API (multiple subsequent calls)
-                      raise ValueError("Cannot make multiple role changes at once on the cluster: %s" % aurora_cluster)
-                  elif len(roles_to_add) > 1 or len(roles_to_del) > 1:
-                      # this is currently not well supported by the RDS API (multiple subsequent calls)
-                      raise ValueError("Cannot make multiple role changes at once on the cluster: %s" % aurora_cluster)
-                  elif roles_to_add or roles_to_del:
-                      # deleting roles first
-                      for arn in roles_to_del:
-                          rds.remove_role_from_db_cluster(DBClusterIdentifier=aurora_cluster, RoleArn=arn)
-                          print("[INFO]", "Removed role %s from cluster %s" % (arn, aurora_cluster))
-
-                      # adding new roles
-                      for arn in roles_to_add:
-                          rds.add_role_to_db_cluster(DBClusterIdentifier=aurora_cluster, RoleArn=arn)
-                          print("[INFO]", "Added role %s to cluster %s" % (arn, aurora_cluster))
-
-                  # if we got here, set response to success
-                  response_data["DBClusterId"] = response["DBClusters"][0]["DBClusterIdentifier"]
-                  response_data["DBClusterScalableTarget"] = "cluster:%s" % response["DBClusters"][0]["DBClusterIdentifier"]
-                  response_status = cfnresponse.SUCCESS
-              except Exception as e:
-                  print("[ERROR]", e)
-
-              # try/catch
-              try:
-                  # send response to CloudFormation
-                  cfnresponse.send(event, context, response_status, response_data)
-              except Exception as e:
-                  print("[ERROR]", e)
-                  response_status = cfnresponse.FAILED
-
-              print("[INFO]", "Invocation end")
-
-              return response_status
-
-## Custom resource to assign cluster IAM role
-##  resClusterEnhancements:
-##    Type: Custom::resClusterEnhancements
-##    Properties:
-##      ServiceToken: !GetAtt funcClusterEnhancements.Arn
-##      Cluster: !Ref dbCluster
-##      Role: !GetAtt roleServiceIntegration.Arn
-
-## Deploy the first cluster node (always the writer)
-  dbNodeWriter:
-    Type: AWS::RDS::DBInstance
-#    DependsOn: [ resClusterEnhancements ]
-    Properties:
-      DBClusterIdentifier: !Ref dbCluster
-      DBInstanceIdentifier: !Sub ${AWS::StackName}-node-01
-      CopyTagsToSnapshot: true
-      DBInstanceClass: !FindInMap [ RegionalSettings, !Ref "AWS::Region", nodeType ]
-      DBParameterGroupName: !Ref apgcustomdbparamgroup
-      Engine: aurora-postgresql
-      EngineVersion : !Ref DBEngineVersion
-      MonitoringInterval: 1
-      MonitoringRoleArn: !GetAtt roleEnhancedMonitoring.Arn
-      PubliclyAccessible: false
-      EnablePerformanceInsights: true
-      PerformanceInsightsRetentionPeriod: 7
-      Tags:
-        - Key: Name
-          Value: !Sub ${AWS::StackName}-node-01
-
-## Deploy a reader node
-  dbNodeSecondary:
-    Type: AWS::RDS::DBInstance
-    DependsOn: [ dbNodeWriter ]
-    Properties:
-      DBClusterIdentifier: !Ref dbCluster
-      DBInstanceIdentifier: !Sub ${AWS::StackName}-node-02
-      CopyTagsToSnapshot: true
-      DBInstanceClass: !FindInMap [ RegionalSettings, !Ref "AWS::Region", nodeType ]
-      DBParameterGroupName: !Ref apgcustomdbparamgroup
-      EngineVersion : !Ref DBEngineVersion
-      Engine: aurora-postgresql
-      MonitoringInterval: 1
-      MonitoringRoleArn: !GetAtt roleEnhancedMonitoring.Arn
-      PubliclyAccessible: false
-      EnablePerformanceInsights: true
-      PerformanceInsightsRetentionPeriod: 7
-      Tags:
-        - Key: Name
-          Value: !Sub ${AWS::StackName}-node-02
-
-## Role to overcome current limitations in CFN ScalableTarget implemetation
-## This role is *NOT* actively used by any resource and service, but must be present
-  roleScalableTarget:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub ${AWS::StackName}-aas-target-${AWS::Region}
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action:
-              - sts:AssumeRole
-            Principal:
-              Service:
-                - rds.application-autoscaling.amazonaws.com
-
-## Register the scalable target
-## Bug fix: when the stack name contains uppercase letters,
-## the DB cluster identifier is actually lowercased, but the resource ID
-## still contains uppercase, so you get a mismatch on the scalable target ResourceId
+          Value: labstack-cluster-params
 
 ## Create sysbench prep SSM document
   ssmDocSysbenchTest:
@@ -806,7 +823,7 @@ Resources:
       DocumentType: Command
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-sysbench-test
+          Value: labstack-sysbench-test
       Content:
         schemaVersion: '2.2'
         description: SysBench Percona TPCC-LIKE Preparation
@@ -814,15 +831,12 @@ Resources:
           clusterEndpoint:
             type: String
             description: Aurora Cluster Endpoint
-            default: !GetAtt dbCluster.Endpoint.Address
           dbUser:
             type: String
             description: DB User
-            default: !Join ['', ['' ]]
           dbPassword:
             type: String
             description: DB Password
-            default: !Join ['', ['' ]]
           dbSchema:
             type: String
             description: DB Schema
@@ -850,47 +864,31 @@ Resources:
             default: !FindInMap [ ClusterSettings, sysbench, numWarehouses ]
         mainSteps:
         - action: aws:runShellScript
-          name: SysBenchTpcPostgresql
+          name: SysBenchTpccPrepare
           inputs:
             runCommand:
-            - 'cd /home/ec2-user/postgresql-10.7/src/bin/pgbench && ./pgbench -i --fillfactor=90 --scale=100 --host= --user-name= --password="" '
+            - 'echo "DROP SCHEMA IF EXISTS {{ dbSchema }}; CREATE SCHEMA {{ dbSchema }};" | mysql -h{{ clusterEndpoint }} -u{{ dbUser }} -p"{{ dbPassword }}" && cd /home/ubuntu/sysbench-tpcc && ./tpcc.lua --mysql-host={{ clusterEndpoint }} --mysql-user={{ dbUser }} --mysql-password="{{ dbPassword }}" --mysql-db={{ dbSchema }} --threads={{ numThreads }} --tables={{ numTables }} --scale={{ numScale }} --time={{ runTime }} --db-driver={{ dbDriver }} prepare'
+        - action: aws:runShellScript
+          name: SysBenchTpccRun
+          inputs:
+            runCommand:
+            - 'cd /home/ubuntu/sysbench-tpcc && ./tpcc.lua --mysql-host={{ clusterEndpoint }} --mysql-user={{ dbUser }} --mysql-password="{{ dbPassword }}" --mysql-db={{ dbSchema }} --threads={{ numThreads }} --tables={{ numTables }} --scale={{ numScale }} --time={{ runTime }} --db-driver={{ dbDriver }} run'
+
+
 ## Outputs
 Outputs:
   vpcId:
     Description: Aurora Lab VPC
     Value: !Ref vpc
-  bastionEndpoint:
-    Description: Bastion Host Endpoint
-    Value: !GetAtt bastionHost.PublicDnsName
   bastionInstance:
     Description: Bastion Instance ID
     Value: !Ref bastionHost
-  clusterEndpoint:
-    Description: Aurora Cluster Endpoint
-    Value: !GetAtt dbCluster.Endpoint.Address
-  readerEndpoint:
-    Description: Aurora Reader Endpoint
-    Value: !GetAtt dbCluster.ReadEndpoint.Address
-  loadTestRunDoc:
-    Description: Load Test Execution Command Document
-    Value: !Ref ssmDocSysbenchTest
   dbSubnetGroup:
     Description: Database Subnet Group
     Value: !Ref dbSubnets
   dbSecurityGroup:
     Description: Database Security Group
     Value: !Ref dbSecGroupCluster
-  secretArn:
-    Description: Database Credentials Secret ARN
-    Value: !Ref secretClusterMasterUser
-  apgcustomclusterparamgroup:
-    Description: Cluster Parameter Group
-    Value: !Ref apgcustomclusterparamgroup
-  apgcustomdbparamgroup:
-    Description: Database Parameter Group
-    Value: !Ref apgcustomdbparamgroup
-  DatabaseName:
-    Description: Database Name
-    Value: !FindInMap [ ClusterSettings, global, dbSchema ]
-
-
+  loadTestRunDoc:
+    Description: Load Test Execution Command Document
+    Value: !Ref ssmDocSysbenchTest

@@ -1,28 +1,25 @@
 ---
-## Amazon Aurora Labs for MySQL
+## Amazon Aurora Labs for PostgreSQL
 ## Infrastructure template without an Aurora cluster for lab exercises
 ##
 ## Changelog:
-## 2019-05-13 - Initial release
-## 2019-05-29 - Changed how AZ selection works
-## 2019-09-18 - Updated AMIs, Remove SSH access, bootstrap script changes for SSM
-## 2019-09-19 - Fixed resource names to enable EE
-## 2019-09-23 - Removed !Sub references on static names to pass linter
 ##
 ## Dependencies:
 ## none
 ##
-## License:
 ## This sample code is made available under the MIT-0 license. See the LICENSE file.
 
 AWSTemplateFormatVersion: 2010-09-09
-Description: Amazon Aurora Labs for MySQL
+Description: Amazon Aurora Labs for Aurora PostgreSQL
 
 ## Parameters
 Parameters:
   vpcAZs:
     Type: "List<AWS::EC2::AvailabilityZone::Name>"
     Description: List of Availability Zones to use for the subnets in the VPC. Must pick 3 AZs in regions with 3 or more AZs.
+  ec2KeyPair:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: EC2 key pair for instance access
 
 ## Conditions
 Conditions:
@@ -32,103 +29,106 @@ Conditions:
 Mappings:
   RegionalSettings:
     us-east-1:
-      bastionAmi: ami-024582e76075564db
+      bastionAmi: ami-035b3c7efe6d061d5
       bastionType: m5.large
       nodeType: db.r5.large
       name: Ohio
       azs: "3"
     us-east-2:
-      bastionAmi: ami-090a9429be63ca087
+      bastionAmi: ami-02f706d959cedf892
       bastionType: m5.large
       nodeType: db.r5.large
       name: N. Virginia
       azs: "3"
     us-west-1:
-      bastionAmi: ami-0c6eca62e6c7dacff
+      bastionAmi: ami-0fcdcdb074d2bac5f
       bastionType: m5.large
       nodeType: db.r5.large
       name: N. California
       azs: "2"
     us-west-2:
-      bastionAmi: ami-09c08e9cd8d9c1b93
+      bastionAmi: ami-0f2176987ee50226e
       bastionType: m5.large
       nodeType: db.r5.large
       name: Oregon
       azs: "3"
     ca-central-1:
-      bastionAmi: ami-0e76f0489f3cca311
+      bastionAmi: ami-01b60a3259250381b
       bastionType: m5.large
       nodeType: db.r5.large
       name: Montreal
       azs: "2"
     eu-central-1:
-      bastionAmi: ami-0fd6d676e2e90dc7b
+      bastionAmi: ami-090f10efc254eaf55
       bastionType: m5.large
       nodeType: db.r5.large
       name: Frankfurt
       azs: "3"
     eu-west-1:
-      bastionAmi: ami-08f053fa3d25478f4
+      bastionAmi: ami-08d658f84a6d84a80
       bastionType: m5.large
       nodeType: db.r5.large
       name: Ireland
       azs: "3"
     eu-west-2:
-      bastionAmi: ami-012d95ddd53c98e0e
+      bastionAmi: ami-07dc734dc14746eab
       bastionType: m5.large
       nodeType: db.r5.large
       name: London
       azs: "3"
     eu-west-3:
-      bastionAmi: ami-0001c7938b8e89312
+      bastionAmi: ami-03bca18cb3dc173c9
       bastionType: m5.large
       nodeType: db.r5.large
       name: Paris
       azs: "3"
     ap-southeast-1:
-      bastionAmi: ami-0f8c65cdcc35d0a72
+      bastionAmi: ami-0dad20bd1b9c8c004
       bastionType: m5.large
       nodeType: db.r5.large
       name: Singapore
       azs: "3"
     ap-southeast-2:
-      bastionAmi: ami-056280928f86f80a8
+      bastionAmi: ami-0b76c3b150c6b1423
       bastionType: m5.large
       nodeType: db.r5.large
       name: Sydney
       azs: "3"
     ap-south-1:
-      bastionAmi: ami-03d48fdf7c142da15
+      bastionAmi: ami-007d5db58754fa284
       bastionType: m5.large
       nodeType: db.r5.large
       name: Mumbai
       azs: "3"
     ap-northeast-1:
-      bastionAmi: ami-0193f3ddafc2d8921
+      bastionAmi: ami-0eb48a19a8d81e20b
       bastionType: m5.large
       nodeType: db.r5.large
       name: Tokyo
       azs: "3"
     ap-northeast-2:
-      bastionAmi: ami-0b0d9551c4775f4e4
+      bastionAmi: ami-078e96948945fc2c9
       bastionType: m5.large
       nodeType: db.r5.large
       name: Seoul
       azs: "3"
   NetworkSettings:
     global:
-      vpcCidr: 172.31.0.0/16
-      subPub1Cidr: 172.31.0.0/24
-      subPub2Cidr: 172.31.1.0/24
-      subPub3Cidr: 172.31.2.0/24
-      subPrv1Cidr: 172.31.10.0/24
-      subPrv2Cidr: 172.31.11.0/24
-      subPrv3Cidr: 172.31.12.0/24
+      vpcCidr: 10.0.0.0/16
+      subPub1Cidr: 10.0.0.0/24
+      subPub2Cidr: 10.0.1.0/24
+      subPub3Cidr: 10.0.2.0/24
+      subPrv1Cidr: 10.0.10.0/24
+      subPrv2Cidr: 10.0.11.0/24
+      subPrv3Cidr: 10.0.12.0/24
       sshSourceCidr: 0.0.0.0/0
   ClusterSettings:
     global:
       dbSchema: mylab
-      dbDriver: mysql
+      dbDriver: pgsql
+      dbVersion: 10.7
+      dbEngine: aurora-postgresql
+      dbFamily: aurora-postgresql10
     scaling:
       maxCapacity: 2
       minCapacity: 1
@@ -346,23 +346,30 @@ Resources:
       Tags:
         - Key: Name
           Value: labstack-bastion-host
+      SecurityGroupIngress:
+            - # Custom IP address range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 204.246.162.31/32
+  
 
 ## Create DB security group
   dbSecGroupCluster:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: !Ref vpc
-      GroupName: labstack-mysql-internal
+      GroupName: labstack-pgsql-internal
       GroupDescription: Aurora Lab Database Firewall
       Tags:
         - Key: Name
-          Value: labstack-mysql-internal
+          Value: labstack-pgsql-internal
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 3306
-          ToPort: 3306
+          FromPort: 5432
+          ToPort: 5432
           SourceSecurityGroupId: !Ref bastionSecGroup
-          Description: Allows MySQL access from bastion host
+          Description: Allows PostgreSQL access from bastion host
 
 ## Create enhanced monitoring role
   roleEnhancedMonitoring:
@@ -443,6 +450,7 @@ Resources:
                   - kms:*
                   - secretsmanager:*
                   - rds-db:connect
+                  - kinesis:*
                 Resource: "*"
   profileBastionHost:
     Type: AWS::IAM::InstanceProfile
@@ -458,6 +466,7 @@ Resources:
       SubnetId: !Ref sub1Public
       InstanceType: !FindInMap [ RegionalSettings, !Ref "AWS::Region", bastionType ]
       SecurityGroupIds: [ !Ref bastionSecGroup ]
+      KeyName: !Ref ec2KeyPair
       Tags:
         - Key: Name
           Value: labstack-bastion-host
@@ -472,77 +481,78 @@ Resources:
       IamInstanceProfile: !Ref profileBastionHost
       UserData:
         Fn::Base64: !Sub |
-          #!/bin/bash -xe
+          #!/bin/bash
+          cd /home/ec2-user/
+          yum -y install autoconf readline-devel gcc zlib-devel
+          wget https://ftp.postgresql.org/pub/source/v10.7/postgresql-10.7.tar.gz
+          tar -xzf postgresql-10.7.tar.gz
+          cd postgresql-10.7
+          wget https://s3.amazonaws.com/aurora-pgbench-patches/pgbench-init-timing.patch
+          yum -y install patch
+          patch -p1 -b  < pgbench-init-timing.patch
+          wget https://s3.amazonaws.com/aurora-pgbench-patches/pgbench10-ppoll.patch
+          patch -p1 -b < pgbench10-ppoll.patch
+          yum -y install autoconf
+          autoconf
+          ./configure
+          make -j 4 all
+          make install
+          cd /home/ec2-user/
+          curl https://codeload.github.com/akopytov/sysbench/tar.gz/b23a7db377916e424cb555108dc5f784f615993b|tar xz
+          mv sysbench-b23a7db377916e424cb555108dc5f784f615993b sysbench
+          cd sysbench
+          yum -y install automake
+          yum -y install libtool
+          ./autogen.sh 
+          CFLAGS="-L/usr/local/pgsql/lib/ -I /usr/local/pgsql/include/" | ./configure --with-pgsql --without-mysql --with-pgsql-includes=/usr/local/pgsql/include/ --with-pgsql-libs=/usr/local/pgsql/lib/
+          make install
+          cd sysbench/tests
+          make install
+          export LD_LIBRARY_PATH=/usr/local/pgsql/lib
+          python get-pip.py --user
+          pip install awscli --upgrade --user
+          pip install boto3
+          pip install aws_encryption_sdk
+          yum install -y jq
+          username=$(aws secretsmanager get-secret-value --secret-id ${secretClusterMasterUser} --query SecretString  --region ${AWS::Region} --output text | jq -r .password)
+          echo "the password is: $username" > /tmp/mypassword
+          export PATH=/home/ec2-user/postgresql-10.7/src/bin/pgbench:$PATH
+          export PATH=/home/ec2-user/postgresql-10.7/src/bin/psql:$PATH
+          echo "export PATH=/home/ec2-user/postgresql-10.7/src/bin/pgbench:$PATH" >> /home/ec2-user/.bash_profile
+          echo "export PATH=/home/ec2-user/postgresql-10.7/src/bin/psql:$PATH" >> /home/ec2-user/.bash_profile
+          curl https://d2yoo9plh0ksz8.cloudfront.net/my_script.py > /home/ec2-user/das-script.py
+          chown ec2-user:ec2-user /home/ec2-user/das-script.py
+          chomod u+x  /home/ec2-user/das-script.py          
+          export username
+          PGPASSWORD=$username
+          export PGPASSWORD
+          cd /home/ec2-user/postgresql-10.7/src/bin/pgbench
 
-          # update & upgrade packages
-          apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
-          echo "* updated and upgraded packages" >> /debug.log
 
-          # update SSM agent
-          snap remove amazon-ssm-agent
-          wget https://s3.us-east-2.amazonaws.com/amazon-ssm-us-east-2/latest/debian_amd64/amazon-ssm-agent.deb
-          DEBIAN_FRONTEND=noninteractive dpkg -i amazon-ssm-agent.deb
-          echo "* update ssm-agent to latest" >> /debug.log
 
-          # install jq
-          apt-get -y install jq
-          echo "* installed jq package" >> /debug.log
-
-          # install mysql client tools
-          apt-get -y install mysql-client
-          mysql --version >> /debug.log
-          echo "* installed mysql-client package" >> /debug.log
-
-          # install sysbench
-          curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.deb.sh | sudo bash
-          apt-get update
-          apt-get -y install sysbench
-          sysbench --version >> /debug.log
-          echo "* installed sysbench package" >> /debug.log
-
-          # install percona tpcc-like test suite
-          git clone https://github.com/Percona-Lab/sysbench-tpcc.git /home/ubuntu/sysbench-tpcc
-          chown -R ubuntu:ubuntu /home/ubuntu/sysbench-tpcc
-          echo "* cloned percona/sysbench-tpcc repo" >> /debug.log
-
-          # download demo databases
-          git clone https://github.com/datacharmer/test_db.git /home/ubuntu/samples
-          chown -R ubuntu:ubuntu /home/ubuntu/samples
-          echo "* cloned test databases repo" >> /debug.log
-
-          # install python pip and aws cli
-          apt-get -y install python3-pip
-          pip3 install pymysql
-          pip3 install awscli
-          cd /home/ubuntu
-          curl -O https://[[website]]/scripts/loadtest.py
-          chown -R ubuntu:ubuntu /home/ubuntu/loadtest.py
-          echo "* pulled load test script" >> /debug.log
-
-          # configure AWS CLI
-          mkdir /home/ubuntu/.aws
-          touch /home/ubuntu/.aws/config
-          echo "[default]" >> /home/ubuntu/.aws/config
-          echo "region = ${AWS::Region}" >> /home/ubuntu/.aws/config
-          chown -R ubuntu:ubuntu /home/ubuntu/.aws/config
-          echo "* configured aws cli" >> /debug.log
-
-          # reboot
-          echo "* bootstrap complete, rebooting" >> /debug.log
-          shutdown -r now
+## Create a random generated password and store it as a secret
+  secretClusterMasterUser:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: !Sub "Master user credentials for ${AWS::StackName}-cluster"
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "masteruser"}'
+        GenerateStringKey: 'password'
+        PasswordLength: 10
+        ExcludeCharacters: '"@/\$`&'
+      Tags:
+        - Key: Name
+          Value: labstack-dbpasswd-secret
 
 ## Create parameter groups for cluster nodes
   pgNodeParams:
     Type: AWS::RDS::DBParameterGroup
     Properties:
       Description: labstack-node-params
-      Family: aurora5.6
+      Family: !FindInMap [ ClusterSettings, global, dbFamily ]
       Parameters:
-        innodb_stats_persistent_sample_pages: "256"
-        slow_query_log: "1"
-        long_query_time: "10"
-        log_output: FILE
+        log_rotation_age: '1440'
+        log_rotation_size: '102400'
       Tags:
         - Key: Name
           Value: labstack-node-params
@@ -552,9 +562,10 @@ Resources:
     Type: AWS::RDS::DBClusterParameterGroup
     Properties:
       Description: labstack-cluster-params
-      Family: aurora5.6
+      Family: !FindInMap [ ClusterSettings, global, dbFamily ]
       Parameters:
-        aws_default_s3_role: !GetAtt roleServiceIntegration.Arn
+        rds.force_ssl: 0
+        shared_preload_libraries: 'pg_stat_statements,pg_hint_plan'
       Tags:
         - Key: Name
           Value: labstack-cluster-params
@@ -610,12 +621,12 @@ Resources:
           name: SysBenchTpccPrepare
           inputs:
             runCommand:
-            - 'echo "DROP SCHEMA IF EXISTS {{ dbSchema }}; CREATE SCHEMA {{ dbSchema }};" | mysql -h{{ clusterEndpoint }} -u{{ dbUser }} -p"{{ dbPassword }}" && cd /home/ubuntu/sysbench-tpcc && ./tpcc.lua --mysql-host={{ clusterEndpoint }} --mysql-user={{ dbUser }} --mysql-password="{{ dbPassword }}" --mysql-db={{ dbSchema }} --threads={{ numThreads }} --tables={{ numTables }} --scale={{ numScale }} --time={{ runTime }} --db-driver={{ dbDriver }} prepare'
+            - 'echo "DROP SCHEMA IF EXISTS ; CREATE SCHEMA ;" | mysql -h -u -p"" && cd /home/ubuntu/sysbench-tpcc && ./tpcc.lua --mysql-host= --mysql-user= --mysql-password="" --mysql-db= --threads= --tables= --scale= --time= --db-driver= prepare'
         - action: aws:runShellScript
           name: SysBenchTpccRun
           inputs:
             runCommand:
-            - 'cd /home/ubuntu/sysbench-tpcc && ./tpcc.lua --mysql-host={{ clusterEndpoint }} --mysql-user={{ dbUser }} --mysql-password="{{ dbPassword }}" --mysql-db={{ dbSchema }} --threads={{ numThreads }} --tables={{ numTables }} --scale={{ numScale }} --time={{ runTime }} --db-driver={{ dbDriver }} run'
+            - 'cd /home/ubuntu/sysbench-tpcc && ./tpcc.lua --mysql-host= --mysql-user= --mysql-password="" --mysql-db= --threads= --tables= --scale= --time= --db-driver= run'
 
 
 ## Outputs

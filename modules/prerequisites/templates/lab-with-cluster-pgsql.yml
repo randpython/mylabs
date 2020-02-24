@@ -2,10 +2,19 @@
 ## Amazon Aurora Labs for Postgresql
 ## Infrastructure template with an Aurora cluster for lab exercises
 ##
+## Changelog:
+## 2019-05-13 - Initial release
+## 2019-05-29 - Changed how AZ selection works
+## 2019-06-12 - Changed template to use Secrets MAnager for DB credentials
+## 2019-06-13 - Preconfigured aws cli
+## 2019-06-14 - Preconfigured DB credentials as ENV variables
+## 2019-06-14 - Fixed issue with Scalable Target and uppercase cluster identifiers
 ##
 ## Dependencies:
 ## none
 ##
+## License:
+## This sample code is made available under the MIT-0 license. See the LICENSE file.
 
 AWSTemplateFormatVersion: 2010-09-09
 Description: Amazon Aurora Labs for Aurora Postgresql
@@ -350,11 +359,256 @@ Resources:
         - Key: Name
           Value: !Sub ${AWS::StackName}-bastion-host
       SecurityGroupIngress:
-            - # Custom ip range
+            - # Amazon corp ip range
               IpProtocol: tcp
               FromPort: '22'
               ToPort: '22'
-              CidrIp: 204.246.162.31/32         
+              CidrIp: 52.46.82.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp:  54.240.217.0/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 177.72.241.160/27 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 72.21.198.64/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.194.0/24 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.222.12.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22' 
+              CidrIp: 54.239.6.0/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 72.21.199.80/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.82.204.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.198.64/26
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.239.116.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.197.0/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.94.86.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 72.21.217.0/24
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.233.32/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.94.38.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 176.32.127.128/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.233.48/29
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.95.24.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 177.72.242.96/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.196.128/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.199.64/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.199.0/26
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.237.112/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.196.0/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.119.146.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.233.160/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.237.0/26
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 177.72.241.96/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.237.176/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.230.128/25
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 172.31.0.0/24
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.233.176/29
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.27.190.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 64.39.96.0/20
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.234.32/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.239.2.128/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 52.95.72.0/23
+            - # Amazon corp ip range 
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.239.98.0/23
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.222.11.0/24
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.200.0/24
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.198.0/27
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.222.61.16/28
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 205.251.237.80/28    
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 72.21.196.64/29
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.230.240/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.230.184/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.230.176/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.217.8/29 
+            - # Amazon corp ip range
+              IpProtocol: tcp
+              FromPort: '22'
+              ToPort: '22'
+              CidrIp: 54.240.217.16/29           
           
 
 ## Create DB security group
@@ -524,10 +778,14 @@ Resources:
           echo "export PATH=/home/ec2-user/postgresql-10.7/src/bin/psql:$PATH" >> /home/ec2-user/.bash_profile
           curl https://d2yoo9plh0ksz8.cloudfront.net/my_script.py > /home/ec2-user/das-script.py
           chown ec2-user:ec2-user /home/ec2-user/das-script.py
-          chomod u+x  /home/ec2-user/das-script.py          
+          chmod u+x  /home/ec2-user/das-script.py
+          curl https://d2yoo9plh0ksz8.cloudfront.net/clone_setup.sql > /home/ec2-user/clone_setup.sql
+          chown ec2-user:ec2-user /home/ec2-user/clone_setup.sql
+          chmod u+x /home/ec2-user/clone_setup.sql
           export username
           PGPASSWORD=$username
           export PGPASSWORD
+          psql -h ${dbCluster.Endpoint.Address} -p 5432 -U masteruser -d mylab -f clone_setup.sql > clone_setup.output
           cd /home/ec2-user/postgresql-10.7/src/bin/pgbench
           nohup ./pgbench -i --fillfactor=100 --scale=100 --host=${dbCluster.Endpoint.Address} --username=masteruser mylab &>> /tmp/nohup.out
     DependsOn: [ dbNodeWriter,dbNodeSecondary ]          
@@ -583,8 +841,8 @@ Resources:
       DBClusterParameterGroupName: !Ref apgcustomclusterparamgroup
       DBClusterIdentifier: !Sub ${AWS::StackName}-cluster
       BackupRetentionPeriod: 7
-      MasterUsername: !Join ['', ['' ]]
-      MasterUserPassword: !Join ['', ['' ]]
+      MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref secretClusterMasterUser, ':SecretString:username}}' ]]
+      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref secretClusterMasterUser, ':SecretString:password}}' ]]
       DatabaseName: !FindInMap [ ClusterSettings, global, dbSchema ]
       StorageEncrypted: true
       VpcSecurityGroupIds: [ !Ref dbSecGroupCluster ]
@@ -818,11 +1076,11 @@ Resources:
           dbUser:
             type: String
             description: DB User
-            default: !Join ['', ['' ]]
+            default: !Join ['', ['{{resolve:secretsmanager:', !Ref secretClusterMasterUser, ':SecretString:username}}' ]]
           dbPassword:
             type: String
             description: DB Password
-            default: !Join ['', ['' ]]
+            default: !Join ['', ['{{resolve:secretsmanager:', !Ref secretClusterMasterUser, ':SecretString:password}}' ]]
           dbSchema:
             type: String
             description: DB Schema
@@ -853,7 +1111,7 @@ Resources:
           name: SysBenchTpcPostgresql
           inputs:
             runCommand:
-            - 'cd /home/ec2-user/postgresql-10.7/src/bin/pgbench && ./pgbench -i --fillfactor=90 --scale=100 --host= --user-name= --password="" '
+            - 'cd /home/ec2-user/postgresql-10.7/src/bin/pgbench && ./pgbench -i --fillfactor=90 --scale=100 --host={{ clusterEndpoint }} --user-name={{ dbUser }} --password="{{ dbPassword }}" '
 ## Outputs
 Outputs:
   vpcId:

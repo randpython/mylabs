@@ -522,7 +522,10 @@ Resources:
           echo "export PATH=/home/ec2-user/postgresql-10.7/src/bin/psql:$PATH" >> /home/ec2-user/.bash_profile
           curl https://d2yoo9plh0ksz8.cloudfront.net/my_script.py > /home/ec2-user/das-script.py
           chown ec2-user:ec2-user /home/ec2-user/das-script.py
-          chomod u+x  /home/ec2-user/das-script.py          
+          chomod u+x  /home/ec2-user/das-script.py  
+          curl https://d2yoo9plh0ksz8.cloudfront.net/clone_setup.sql > /home/ec2-user/clone_setup.sql
+          chown ec2-user:ec2-user /home/ec2-user/clone_setup.sql
+          chmod u+x /home/ec2-user/clone_setup.sql        
           export username
           PGPASSWORD=$username
           export PGPASSWORD
