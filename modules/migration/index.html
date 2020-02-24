@@ -595,6 +595,10 @@
                 
                 
                 <h1 id="oracle-to-aurora-postgresql-migration-using-dms-and-sct">Oracle to Aurora PostgreSQL migration using DMS and SCT<a class="headerlink" href="#oracle-to-aurora-postgresql-migration-using-dms-and-sct" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This lab is independent from the Aurora PostgreSQL lab and it creates its own infrastructure (VPC’s .Subnets, security group etc, Source Oracle Database, Target Aurora PostgreSQL Database etc,). In order to use this lab you are required to run the cloudformation from this module only. Once the clouformation stack is complete then you can proceed to the rest of this module.</p>
+</div>
 <p>The following instructions help you launch an AWS CloudFormation stack, which sets up the resources required for this lab. Once the resources are launched you are guided through the migration of a sample database from Oracle to Amazon Aurora PostgreSQL using the AWS Database Migration Service (AWS DMS) and the AWS Schema Conversion Tool (AWS SCT). The resources launched by the CloudFormation stack include:</p>
 <ol>
 <li>An Oracle RDS source within a VPC with all networking resources configured with a sample database installed from <a href="https://github.com/awslabs/aws-database-migration-samples" target="_blank"> github</a></li>

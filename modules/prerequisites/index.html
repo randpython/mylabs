@@ -595,6 +595,35 @@
 </tr>
 </tbody>
 </table>
+<p>Open the <a href="https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks" target="_blank">CloudFormation service console</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Region Check</p>
+<p>Ensure you are still working in the correct region, especially if you are following the links above to open the service console at the right screen.</p>
+</div>
+<p>Click <strong>Create Stack</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The CloudFormation console has been upgraded recently. Depending on your previous usage of the CloudFormation console UI, you may see the old design or the new design, you may also be presented with a prompt to toggle between them. In this lab we are using the new design for reference, although the steps will work similarly in the old console design as well, if you are more familiar with it.</p>
+</div>
+<p><span class="image"><img alt="Create Stack" src="2-create-stack.png?raw=true" /></span></p>
+<p>Select the radio button named <strong>Upload a template</strong>, then <strong>Choose file</strong> and select the template file you downloaded previously named and then click <strong>Next</strong>.</p>
+<p><span class="image"><img alt="Upload Template" src="2-upload-template.png?raw=true" /></span></p>
+<p>In the field named <strong>Stack Name</strong> , enter the value labstack. For the ec2Keypair click on the dropdown and choose the keypair you wish to use. If using Event Engine then select <strong> ee-default-keypair </strong>.   If you need to create a new EC2 key pair then refer creating a key pair on EC2 documentation. </p>
+<p>For the <strong>vpcAZs</strong> parameter select 3 availability zones (AZs) from the dropdown. If your desired region only supports 2 AZs, please select just the two AZs available. Click <strong> Next </strong>.</p>
+<p><span class="image"><img alt="new-stack-screens-01" src="new-stack-screens-01.png?raw=true" /></span></p>
+<p><span class="image"><img alt="new-stack-screens-02" src="new-stack-screens-02.png?raw=true" /></span></p>
+<p><span class="image"><img alt="new-stack-screens-03" src="new-stack-screens-03.png?raw=true" /></span></p>
+<p>On the Configure stack options leave the default and click on <strong>Next</strong></p>
+<p><span class="image"><img alt="new-stack-screens-04" src="new-stack-screens-04.png?raw=true" /></span></p>
+<p>On the next screen Review the parameters and scroll to the bottom, check the box that reads: I acknowledge that AWS CloudFormation might create IAM resources with custom names and then click <strong>Create Stack</strong></p>
+<p><span class="image"><img alt="new-stack-screens-05" src="new-stack-screens-05.png?raw=true" /></span>
+<br>
+<span class="image"><img alt="new-stack-screens-06" src="new-stack-screens-06.png?raw=true" /></span></p>
+<p>Once the CloudFormation stack shows <strong>CREATE_COMPLETE</strong> you can verify the all the resources created by the Stack under the <strong>Outputs</strong> tab</p>
+<p><span class="image"><img alt="new-stack-screens-07" src="new-stack-screens-07.png?raw=true" /></span>
+<br>
+<br>
+<span class="image"><img alt="new-stack-screens-08" src="new-stack-screens-08.png?raw=true" /></span></p>
                 
                   
                 
