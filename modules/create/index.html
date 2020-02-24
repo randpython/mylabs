@@ -392,18 +392,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../connect/index.md" title="Connecting, Loading Data and Auto Scaling" class="md-nav__link">
-      Connecting, Loading Data and Auto Scaling
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../fastclone/" title="Fast Cloning" class="md-nav__link">
       Fast Cloning
     </a>
@@ -562,10 +550,14 @@
 <p><span class="image"><img alt="Engine Options" src="11-engine-options.png?raw=true" /></span></p>
 <p>In the <strong>Database features</strong> section, select <strong>One writer and multiple readers</strong>, and in the <strong>Templates</strong> section, select <strong>Production</strong>. The selections so far will instruct AWS to create an Aurora PostgreSQL database cluster with the most recent version of the PostgreSQL 10.7 compatible engine in a highly available configuration with one writer and one reader database instance in the cluster.</p>
 <p>In the <strong>Settings</strong> section give your database cluster a recognizable identifier, such as <code>labstack-cluster</code>. Configure the name and password of the master database user, with the most elevated permissions in the database. We recommend to use the user name <code>masteruser</code> for consistency with subsequent labs and a password of your choosing. For simplicity ensure the check box <strong>Auto generate a password</strong> is <strong>not checked</strong>.</p>
-<p><span class="image"><img alt="Database Settings" src="1-db-settings.png?raw=true" /></span></p>
-<p>In the <strong>Connectivity</strong> section, expand the sub-section called <strong>Additional connectivity configuration</strong>. This section allows you to specify where the database cluster will be deployed within your defined network configuration. To simplify the labs, the CloudFormation stack you deployed in the preceding <a href="/modules/prerequisites/">Prerequisites</a> module, has configured a VPC that includes all resources needed for an Aurora database cluster. This includes the VPC itself, subnets, DB subnet groups, security groups and several other networking constructs. All you need to do is select the appropriate existing connectivity controls in this section.</p>
+<p><span class="image"><img alt="Database Settings" src="1-db-settings.png?raw=true" /></span>
+For the DB Instance size choose the default DB Instance class “db.r5.large”. For the Availability and durability choose the default option to deploy Multi-AZ deployment by choosing “Create an Aurora Replica/Reader node in a different AZ (recommended for scaled availability)”
+<span class="image"><img alt="Database Settings" src="1-db-1.png?raw=true" /></span>
+In the <strong>Connectivity</strong> section, expand the sub-section called <strong>Additional connectivity configuration</strong>. This section allows you to specify where the database cluster will be deployed within your defined network configuration. To simplify the labs, the CloudFormation stack you deployed in the preceding <a href="/modules/prerequisites/">Prerequisites</a> module, has configured a VPC that includes all resources needed for an Aurora database cluster. This includes the VPC itself, subnets, DB subnet groups, security groups and several other networking constructs. All you need to do is select the appropriate existing connectivity controls in this section.</p>
 <p>Pick the <strong>Virtual Private Cloud (VPC)</strong> named after the CloudFormation stack name, such as <code>labstack-vpc</code>. Similarly make sure the selected <strong>Subnet Group</strong> also matches the stack name (e.g. <code>labstack-dbsubnets-[hash]</code>). Make sure the cluster <strong>Publicly accessible</strong> option is set to <strong>No</strong>. The lab environment also configured a <strong>VPC security group</strong> that allows your lab workspace EC2 instance to connect to the database. Make sure the <strong>Choose existing</strong> security group option is selected and from the dropdown pick the security group with a name ending in <code>-pgsql-internal</code> (eg. <code>labstack-pgsql-internal</code>). Please remove any other security groups, such as <code>default</code> from the selection.</p>
 <p><span class="image"><img alt="Connectivity" src="11-connectivity.png?raw=true" /></span></p>
+<p>For Database authentication choose the default option to use “Password authentication” </p>
+<p><span class="image"><img alt="Connectivity" src="1-db-2.png?raw=true" /></span></p>
 <p>Next, expand the <strong>Additional configuration</strong> section. Set the <strong>Initial database name</strong> to <code>mylab</code>. For the <strong>DB cluster parameter group</strong> and <strong>DB parameter group</strong> selectors, choose the groups with the stack name in their name (e.g. <code>labstack-[...]</code>). Choose a <code>7 days</code> <strong>Backup retention period</strong>. Check the box to <strong>Enable encryption</strong> and select the <code>[default] aws/rds</code> for the <strong>Master key</strong>.</p>
 <p><span class="image"><img alt="Advanced configuration" src="11-advanced-1.png?raw=true" /></span></p>
 <p>Check the box to <strong>Enable Performance Insights</strong> with a <strong>Retention period of <code>Default (7 days)</code> and use the <code>[default] aws/rds</code> </strong>Master key<strong> for monitoring data encryption. Next, check the </strong>Enable Enhanced Monitoring<strong> box, and select a </strong>Granularity<strong> of <code>1 second</code>. For </strong>Log exports<strong> check the </strong>Postgresql log** boxes.</p>
