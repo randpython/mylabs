@@ -361,20 +361,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#3-assigning-an-iam-role-to-the-db-cluster" class="md-nav__link">
-    3. Assigning an IAM role to the DB cluster
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-creating-a-replica-auto-scaling-policy" class="md-nav__link">
-    4. Creating a replica auto scaling policy
-  </a>
-  
-</li>
-      
       
       
       
@@ -485,20 +471,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#3-assigning-an-iam-role-to-the-db-cluster" class="md-nav__link">
-    3. Assigning an IAM role to the DB cluster
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-creating-a-replica-auto-scaling-policy" class="md-nav__link">
-    4. Creating a replica auto scaling policy
-  </a>
-  
-</li>
-      
       
       
       
@@ -519,7 +491,7 @@
                 <h1 id="creating-a-new-aurora-cluster">Creating a New Aurora Cluster<a class="headerlink" href="#creating-a-new-aurora-cluster" title="Permanent link">&para;</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you are familiar with the basic concepts of Amazon Aurora MySQL, and have created a cluster in the past, you may skip this module, by using provisioning the lab environment using the <a href="https://[[website]]/templates/lab-with-cluster.yml"><strong>lab-with-cluster.yml</strong></a> CloudFormation template, so the DB cluster is provisioned for you. Skip to <a href="/modules/connect/">Connecting, Loading Data and Auto Scaling</a>.</p>
+<p>If you are familiar with the basic concepts of Amazon Aurora MySQL, and have created a cluster in the past, you may skip this module, by using provisioning the lab environment using the <a href="https://[[website]]/templates/lab-with-cluster-psql.yml"><strong>lab-with-cluster-psql.yml</strong></a> CloudFormation template, so the DB cluster is provisioned for you. </p>
 </div>
 <p>This lab will walk you through the steps of creating an Amazon Aurora database cluster manually, and configuring app the parameters required for the cluster components. At the end of this lab you will have a database cluster ready to be used in subsequent labs.</p>
 <p>This lab contains the following tasks:</p>
@@ -580,17 +552,6 @@ reader</strong> DB instances and should be used to offload read operations to re
 <p><span class="image"><img alt="DB Cluster Status" src="22-db-cluster-status.png?raw=true" /></span></p>
 <p>The <strong>Endpoints</strong> section in the <strong>Connectivity and security</strong> tab of the details page displays the endpoints. Note these values down, as you will use them later.</p>
 <p><span class="image"><img alt="DB Cluster Endpoints" src="22-db-cluster-details.png?raw=true" /></span></p>
-<h2 id="3-assigning-an-iam-role-to-the-db-cluster">3. Assigning an IAM role to the DB cluster<a class="headerlink" href="#3-assigning-an-iam-role-to-the-db-cluster" title="Permanent link">&para;</a></h2>
-<p>Once created, you should assign an IAM role to the DB cluster, in order to allow the cluster access to Amazon S3 for importing and exporting data. The IAM role has already been created using CloudFormation when you created the lab environment. On the same DB cluster detail page as before, in the <strong>Manage IAM roles</strong> section, choose the IAM role named after the stack name, ending in <code>-integrate-[region]</code> (e.g. <code>labstack-integrate-[region]</code>). Then click <strong>Add role</strong>.</p>
-<p><span class="image"><img alt="DB Cluster Add Role" src="33-add-role.png?raw=true" /></span></p>
-<p>Once the operation completes the <strong>Status</strong> of the role will change from <code>Pending</code> to <code>Active</code>.</p>
-<h2 id="4-creating-a-replica-auto-scaling-policy">4. Creating a replica auto scaling policy<a class="headerlink" href="#4-creating-a-replica-auto-scaling-policy" title="Permanent link">&para;</a></h2>
-<p>Finally, you will add a read replica auto scaling configuration to the DB cluster. This will allow the DB cluster to scale the number of reader DB instances that operate in the DB cluster at any given point in time based on the load.</p>
-<p>In the top right corner of the details page, click on <strong>Actions</strong> and then on <strong>Add replica auto scaling</strong>.</p>
-<p><span class="image"><img alt="DB Cluster Add Auto Scaling" src="4-add-as-policy.png?raw=true" /></span></p>
-<p>Provide a <strong>Policy name</strong> based on the stack name, such as <code>labstack-autoscale-readers</code>. For the <strong>Target metric</strong> choose <strong>Average CPU utilization of Aurora Replicas</strong>. Enter a <strong>Target value</strong> of <code>20</code> percent. In a production use case this value may need to be set much higher, but we are using a lower value for demonstration purposes. Next, expand the <strong>Additional configuration</strong> section, and change both the <strong>Scale in cooldown period</strong> and <strong>Scale out cooldown period</strong> to a value of <code>180</code> seconds. This will reduce the time you have to wait between scaling operations in subsequent labs.</p>
-<p>In the <strong>Cluster capacity details</strong> section, set the <strong>Minimum capacity</strong> to <code>1</code> and <strong>Maximum capacity</strong> to <code>2</code>. In a production use case you may need to use different values, but for demonstration purposes, and to limit the cost of associated with the labs we limit the number of readers to two. Next click <strong>Add policy</strong>.</p>
-<p><span class="image"><img alt="Auto Scaling Configuration" src="4-as-policy-config.png?raw=true" /></span></p>
                 
                   
                 
