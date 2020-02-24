@@ -424,6 +424,26 @@
     1. Prerequisite
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-create-an-ec2-key-pair" class="md-nav__link">
+    1.1 Create an EC2 Key Pair: 
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-create-kms-key" class="md-nav__link">
+    1.2  Create KMS Key: 
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -556,6 +576,26 @@
     1. Prerequisite
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-create-an-ec2-key-pair" class="md-nav__link">
+    1.1 Create an EC2 Key Pair: 
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-create-kms-key" class="md-nav__link">
+    1.2  Create KMS Key: 
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -670,7 +710,7 @@
 <p class="admonition-title">Note</p>
 <p>If you started with module - "Creating a New Aurora Cluster" please skip to the next step/section as you have already created the EC2 key pair which  you can use for this lab.</p>
 </div>
-<p><strong>Create an EC2 Key Pair</strong>: <br></p>
+<h3 id="11-create-an-ec2-key-pair">1.1 <strong>Create an EC2 Key Pair</strong>: <br><a class="headerlink" href="#11-create-an-ec2-key-pair" title="Permanent link">&para;</a></h3>
 <p>You will need an EC2 key pair in order to log into the EC2 bastion instance<br></p>
 <p>To create a new key pair:</p>
 <ol>
@@ -679,6 +719,25 @@
 <li>Supply a name and click “Create”</li>
 <li>Download or otherwise save the .pem file</li>
 </ol>
+<h3 id="12-create-kms-key">1.2  <strong>Create KMS Key</strong>: <br><a class="headerlink" href="#12-create-kms-key" title="Permanent link">&para;</a></h3>
+<p>Database Activity Streaming requires the Master Key to encrypt the key that in turn encrypts the database activity logged. The Default AWS RDS KMS key can’t be used as the Master key. Therefore, we need to create a new customer managed KMS key to configure the Database Activity Streaming.</p>
+<p>On the AWS console search for KMS and click on Key Management Service. Select the Customer Managed Keys on the left-hand side and click on Create Key</p>
+<p><span class="image"><img alt="1-kms-1" src="1-kms-1.png?raw=true" /></span><br>
+<span class="image"><img alt="1-kms-3" src="1-kms-2.png?raw=true" /></span><br>
+<span class="image"><img alt="1-kms-3" src="1-kms-3.png?raw=true" /></span><br></p>
+<p>On the next screen under Configure key choose Symmetric key type and click Next</p>
+<p><span class="image"><img alt="1-kms-4" src="1-kms-4.png?raw=true" /></span><br></p>
+<p>On the next screen under Add Labels give the name for the key under the field Alias such as cmk-apg-lab</p>
+<p>Under Description field type a description for the key such as Customer managed Key for Aurora PostgreSQL Database Activity Streaming (DAS) lab and click Next</p>
+<p><span class="image"><img alt="1-kms-5" src="1-kms-5.png?raw=true" /></span><br></p>
+<p>On the next screen under the Key Administrators search for the account name (IAM user) you are using to connect to the AWS console. The IAM user name can be seen on the top right-hand side of the console. In this case the IAM user name is TeamRole. Check the box with the IAM user and click Next.</p>
+<p><span class="image"><img alt="1-kms-6" src="1-kms-6.png?raw=true" /></span><br></p>
+<p>On the next screen under the Define Key usage permissions search for the account name (IAM user) you are using to connect to the AWS console. The IAM user name can be seen on the top right-hand side of the console. In this case the IAM user name is TeamRole. Check the box with the IAM user and click Next.</p>
+<p><span class="image"><img alt="1-kms-7" src="1-kms-7.png?raw=true" /></span><br></p>
+<p>On the next screen review the policy and click Finish</p>
+<p><span class="image"><img alt="1-kms-8" src="1-kms-8.png?raw=true" /></span><br></p>
+<p>Verify the newly created KMS key on the KMS dashboard </p>
+<p><span class="image"><img alt="1-kms-9" src="1-kms-9.png?raw=true" /></span><br></p>
 <h2 id="2-creating-aurora-postgresql-cluster-with-cloudformation">2. Creating Aurora PostgreSQL cluster with Cloudformation<a class="headerlink" href="#2-creating-aurora-postgresql-cluster-with-cloudformation" title="Permanent link">&para;</a></h2>
 <ol>
 <li><a href="https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2" target="_blank">Log in to your AWS console and go to the CloudFormation landing page</a></li>

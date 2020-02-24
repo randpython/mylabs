@@ -343,8 +343,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-creating-a-lab-environment-using-aws-cloudformation" class="md-nav__link">
-    2. Creating a lab environment using AWS CloudFormation
+  <a href="#2-creating-a-lab-environment-with-no-aurora-cluster-using-aws-cloudformation" class="md-nav__link">
+    2. Creating a lab environment with no Aurora Cluster using AWS CloudFormation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-creating-a-lab-environment-with-the-aurora-cluster-using-aws-cloudformation" class="md-nav__link">
+    3. Creating a lab environment with the Aurora Cluster using AWS CloudFormation
   </a>
   
 </li>
@@ -477,8 +484,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-creating-a-lab-environment-using-aws-cloudformation" class="md-nav__link">
-    2. Creating a lab environment using AWS CloudFormation
+  <a href="#2-creating-a-lab-environment-with-no-aurora-cluster-using-aws-cloudformation" class="md-nav__link">
+    2. Creating a lab environment with no Aurora Cluster using AWS CloudFormation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-creating-a-lab-environment-with-the-aurora-cluster-using-aws-cloudformation" class="md-nav__link">
+    3. Creating a lab environment with the Aurora Cluster using AWS CloudFormation
   </a>
   
 </li>
@@ -512,13 +526,13 @@
 <p><span class="image"><img alt="AWS Management Console Login" src="1-login.png?raw=true" /></span></p>
 <p>If you are running these labs in a formal, instructional setting, please use the AWS region provided. Ensure the correct AWS region is selected in the top right corner, if not use that dropdown to choose the correct region. The labs are designed to work in any of the regions where Amazon Aurora PostgreSQL compatible is available. However, not all features and capabilities of Amazon Aurora may be available in all supported regions at this time.</p>
 <p><span class="image"><img alt="AWS Management Console Region Selection" src="1-region-select.png?raw=true" /></span></p>
-<h2 id="2-creating-a-lab-environment-using-aws-cloudformation">2. Creating a lab environment using AWS CloudFormation<a class="headerlink" href="#2-creating-a-lab-environment-using-aws-cloudformation" title="Permanent link">&para;</a></h2>
+<h2 id="2-creating-a-lab-environment-with-no-aurora-cluster-using-aws-cloudformation">2. Creating a lab environment with no Aurora Cluster using AWS CloudFormation<a class="headerlink" href="#2-creating-a-lab-environment-with-no-aurora-cluster-using-aws-cloudformation" title="Permanent link">&para;</a></h2>
 <p>To simplify the getting started experience with the labs, we have created foundational templates for <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> that provision the resources needed for the lab environment. These templates are designed to deploy a consistent networking infrastructure, and client-side experience of software packages and components used in the lab.</p>
 <div class="admonition warning">
 <p class="admonition-title">Formal Event</p>
 <p>If you are running these labs in a formal instructional event, the lab environment may have been initialized on your behalf. If unsure, please verify with the event support staff.</p>
 </div>
-<p>Please download the most appropriate CloudFormation template based on the labs you want to run:</p>
+<p>Cloudformation template for creating the DB cluster manually. </p>
 <table>
 <thead>
 <tr>
@@ -533,17 +547,11 @@
 <td><strong>I will create the DB cluster manually</strong></td>
 <td><a href="templates/lab-no-cluster-pgsql.yml">lab-no-cluster-pgsql.yml</a></td>
 <td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=labstack&templateURL=https://auroraworkshopassets.s3-us-west-2.amazonaws.com/templates/lab-no-cluster-pgsql.yml" target="_blank"><img src="/assets/images/cloudformation-launch-stack.png" alt="Launch Stack"></a></td>
-<td>Use when you wish to provision the initial cluster manually by following <a href="../create/">Lab 1. - Creating a New Aurora Cluster</a></td>
-</tr>
-<tr>
-<td><strong>Provision the DB cluster for me</strong></td>
-<td><a href="templates/lab-with-cluster-pgsql.yml">lab-with-cluster-pgsql.yml</a></td>
-<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=labstack&templateURL=https://auroraworkshopassets.s3-us-west-2.amazonaws.com/templates/lab-with-cluster-pgsql.yml" target="_blank"><img src="/assets/images/cloudformation-launch-stack.png" alt="Launch Stack"></a></td>
-<td>Use when you wish to skip the initial cluster creation lab, and have the DB cluster provisioned for you, so you can continue from <a href="../connect/">Lab 2. - Cluster Endpoints and Read Replica Auto Scaling</a></td>
+<td>Use when you wish to provision the initial cluster manually.Follow the below section to create the VPC and other infrastructure first. Once the Infrastructure is created then following <a href="../create/">Lab 1. - Creating a New Aurora Cluster</a></td>
 </tr>
 </tbody>
 </table>
-<p>If you downloaded the template, save it in a memorable location such as your desktop, you will need to reference it later.</p>
+<p>Please download the  CloudFormation template (lab-no-cluster-pgsql.yml) and save it in a memorable location such as your desktop, you will need to reference it later.</p>
 <p>Open the <a href="https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks" target="_blank">CloudFormation service console</a>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Region Check</p>
@@ -558,7 +566,8 @@
 <p>Select the radio button named <strong>Upload a template</strong>, then <strong>Choose file</strong> and select the template file you downloaded previously named and then click <strong>Next</strong>.</p>
 <p><span class="image"><img alt="Upload Template" src="2-upload-template.png?raw=true" /></span></p>
 <p>In the field named <strong>Stack Name</strong>, enter the value <code>labstack</code>. For the <strong>vpcAZs</strong> parameter select 3 availability zones (AZs) from the dropdown. If your desired region only supports 2 AZs, please select just the two AZs available. Click <strong>Next</strong>.</p>
-<p><span class="image"><img alt="Configure Stack Options" src="2-stack-params.png?raw=true" /></span></p>
+<p><span class="image"><img alt="Configure Stack Options" src="fist_screen.png?raw=true" /></span></p>
+<p><span class="image"><img alt="Configure Stack Options" src="second-screen.png?raw=true" /></span></p>
 <p>On the <strong>Configure stack options</strong> page, leave the defaults as they are, scroll to the bottom and click <strong>Next</strong>.</p>
 <p><span class="image"><img alt="Advanced Options" src="2-no-advanced-opts.png?raw=true" /></span></p>
 <p>On the <strong>Review labstack</strong> page, scroll to the bottom, check the box that reads: <strong>I acknowledge that AWS CloudFormation might create IAM resources with custom names</strong> and then click <strong>Create</strong>.</p>
@@ -566,7 +575,26 @@
 <p>The stack will take approximatively 20 minutes to provision, you can monitor the status on the <strong>Stack detail</strong> page. You can monitor the progress of the stack creation process by refreshing the <strong>Events</strong> tab. The latest event in the list will indicate <code>CREATE_COMPLETE</code> for the stack resource.</p>
 <p><span class="image"><img alt="Stack Status" src="2-stack-status.png?raw=true" /></span></p>
 <p>Once the status of the stack is <code>CREATE_COMPLETE</code>, click on the <strong>Outputs</strong> tab. The values here will be critical to the completion of the remainder of the lab.  Please take a moment to save these values somewhere that you will have easy access to them during the remainder of the lab. The names that appear in the <strong>Key</strong> column are referenced directly in the instructions in subsequent steps, using the parameter format: <mark>[outputKey]</mark></p>
-<p><span class="image"><img alt="Stack Outputs" src="2-stack-outputs.png?raw=true" /></span></p>
+<p><span class="image"><img alt="Stack Outputs" src="output_screen.png?raw=true" /></span></p>
+<h2 id="3-creating-a-lab-environment-with-the-aurora-cluster-using-aws-cloudformation">3. Creating a lab environment with the Aurora Cluster using AWS CloudFormation<a class="headerlink" href="#3-creating-a-lab-environment-with-the-aurora-cluster-using-aws-cloudformation" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Download Template</th>
+<th>One-Click Launch</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Provision the DB cluster for me</strong></td>
+<td><a href="templates/lab-with-cluster-pgsql.yml">lab-with-cluster-pgsql.yml</a></td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=labstack&templateURL=https://auroraworkshopassets.s3-us-west-2.amazonaws.com/templates/lab-with-cluster-pgsql.yml" target="_blank"><img src="/assets/images/cloudformation-launch-stack.png" alt="Launch Stack"></a></td>
+<td>Use when you wish to skip the initial cluster creation lab and wish to use Cloudformation template to have the DB cluster provisioned for you.Follow the below section to run the cloudformation template. Once the cloudformation stack is completed then continue to  <a href="../connect/">Lab 2. - Cluster Endpoints and Read Replica Auto Scaling</a> or Lab 3 and so on.</td>
+</tr>
+</tbody>
+</table>
                 
                   
                 
