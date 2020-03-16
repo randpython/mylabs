@@ -413,8 +413,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#23-connecting-to-the-ec2-bastion-instance" class="md-nav__link">
-    2.3 Connecting to the EC2 bastion Instance
+  <a href="#23-connecting-to-the-ec2-bastion-instance-with-systems-manager" class="md-nav__link">
+    2.3 Connecting to the EC2 bastion Instance with Systems Manager
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-connecting-to-the-ec2-bastion-instance" class="md-nav__link">
+    2.4 Connecting to the EC2 bastion Instance
   </a>
   
 </li>
@@ -596,8 +603,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#23-connecting-to-the-ec2-bastion-instance" class="md-nav__link">
-    2.3 Connecting to the EC2 bastion Instance
+  <a href="#23-connecting-to-the-ec2-bastion-instance-with-systems-manager" class="md-nav__link">
+    2.3 Connecting to the EC2 bastion Instance with Systems Manager
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-connecting-to-the-ec2-bastion-instance" class="md-nav__link">
+    2.4 Connecting to the EC2 bastion Instance
   </a>
   
 </li>
@@ -802,7 +816,43 @@
 </tr>
 </tbody>
 </table>
-<h3 id="23-connecting-to-the-ec2-bastion-instance">2.3 Connecting to the EC2 bastion Instance<a class="headerlink" href="#23-connecting-to-the-ec2-bastion-instance" title="Permanent link">&para;</a></h3>
+<h3 id="23-connecting-to-the-ec2-bastion-instance-with-systems-manager">2.3 Connecting to the EC2 bastion Instance with Systems Manager<a class="headerlink" href="#23-connecting-to-the-ec2-bastion-instance-with-systems-manager" title="Permanent link">&para;</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We recommend using AWS Systems Manager to connect to the EC2 Instance as Session Manager provides secure and auditable instance management without the need to open inbound ports, maintain bastion hosts, or manage SSH keys. If you preferred to use EC2 Instance using SSH key access then proceed to section 2.4 instead</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Region Check</p>
+<p>Ensure you are still working in the correct region, especially if you are following the links above to open the service console at the right screen.</p>
+</div>
+<ol>
+<li>Connect to your workstation instance</li>
+</ol>
+<p>Open the Systems Manager: Session Manager service console. Click <strong>Configure Preferences</strong>.</p>
+<p>Ensure you are still working in the correct region, especially if you are following the links above to open the service console at the right screen.</p>
+<p>On the AWS console search for Systems Manager and click on <strong>Systems Manager</strong> Service. Select the <strong>Session Manager</strong> on the left-hand side.</p>
+<p><span class="image"><img alt="1-ssm1_1" src="../prerequisites/ssm1_1.png?raw=true" /></span><br></p>
+<p><span class="image"><img alt="1-ssm1_2" src="../prerequisites/ssm1_2.png?raw=true" /></span><br></p>
+<p>Click on the Start session </p>
+<p><span class="image"><img alt="1-ssm1_3" src="../prerequisites/ssm1_3.png?raw=true" /></span><br></p>
+<p>Click on <strong>Start session</strong></p>
+<p>Select the Instance name which was created part of the Cloudformation template, the name of the Instance has the naming convention <Stack name-bastion-host> </p>
+<p><span class="image"><img alt="1-ssm1_4" src="../prerequisites/ssm1_4.png?raw=true" /></span><br></p>
+<p>Click on <strong>Start session</strong> again to go the EC2 instance screen.</p>
+<p>By default the system manager connects as <strong>ssmuser</strong> . All the lab work has been performed as <strong>ec2-user</strong> . We need to switch to the <strong>ec2-user</strong> </p>
+<div class="codehilite"><pre><span></span>sh-4.2$ whoami
+ssm-user
+sh-4.2$ sudo su -
+Last login: Thu Feb 27 02:28:24 UTC 2020 on pts/1
+[root@ip-x.x.x.x ~]# su - ec2-user
+Last login: Wed Feb 26 18:04:46 UTC 2020 on pts/0
+[ec2-user@x.x.x.x ~]$ whoami
+ec2-user
+</pre></div>
+
+
+<p><span class="image"><img alt="1-ssm1_5" src="../prerequisites/ssm1_5.png?raw=true" /></span><br></p>
+<h3 id="24-connecting-to-the-ec2-bastion-instance">2.4 Connecting to the EC2 bastion Instance<a class="headerlink" href="#24-connecting-to-the-ec2-bastion-instance" title="Permanent link">&para;</a></h3>
 <p>We are creating EC2 instance (Amazon Linux AMI-ID ami-0f2176987ee50226e) and bootstrapping the EC2 Instance to have pgbench and sysbench benchmarking tools to be installed.</p>
 <div class="codehilite"><pre><span></span>ssh -i &lt;keypair.pem&gt; ec2-user@&lt;bastionEndpoint&gt;
 </pre></div>
