@@ -785,7 +785,7 @@ Resources:
           export username
           PGPASSWORD=$username
           export PGPASSWORD
-          psql -h ${dbCluster.Endpoint.Address} -p 5432 -U masteruser -d mylab -f /home/ec2-user/clone_setup.sql > /tmp/clone_setup.output
+          psql -h ${dbCluster.Endpoint.Address} -p 5432 -U masteruser -d mylab -f clone_setup.sql > clone_setup.output
           cd /home/ec2-user/postgresql-10.7/src/bin/pgbench
           nohup ./pgbench -i --fillfactor=100 --scale=100 --host=${dbCluster.Endpoint.Address} --username=masteruser mylab &>> /tmp/nohup.out
     DependsOn: [ dbNodeWriter,dbNodeSecondary ]          
