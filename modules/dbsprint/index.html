@@ -1,0 +1,776 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Workshop and lab content for Amazon Aurora PostgreSQL compatible databases. This code will contain a series of templates, instructional guides and sample code to educate users on how to use Amazon Aurora features.">
+      
+      
+        <link rel="canonical" href="https://mylabs.data-builder.com/modules/dbsprint/">
+      
+      
+        <meta name="author" content="amazon-aurora-labs-for-mysql@amazon.com">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/aws-favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
+    
+    
+      
+        <title>Amazon Aurora Labs for PostgreSQL</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.1b62728e.css">
+      
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.268332fc.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../../assets/css/custom.css">
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#getting-started-with-amazon-aurora-postgresql" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <!--
+  Copyright (c) 2016-2018 Martin Donath <martin.donath@squidfunk.com>
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+-->
+
+<!-- Application header -->
+<header class="md-header" data-md-component="header">
+
+    <!-- Top-level navigation -->
+    <nav class="md-header-nav md-grid">
+      <div class="md-flex">
+
+        <!-- Link to home -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <a href="https://aws.amazon.com/"
+              title="Amazon Web Services"
+              class="md-header-nav__button md-logo">
+            
+              <img src="../../assets/images/aws_smile_logo.png" width="40" height="24" />
+            
+          </a>
+        </div>
+
+        <!-- Button to toggle drawer -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <label class="md-icon md-icon--menu md-header-nav__button"
+              for="__drawer"></label>
+        </div>
+
+        <!-- Header title -->
+        <div class="md-flex__cell md-flex__cell--stretch">
+          <div class="md-flex__ellipsis md-header-nav__title"
+              data-md-component="title">
+            
+              
+                <span class="md-header-nav__topic">
+                  Amazon Aurora Labs for PostgreSQL
+                </span>
+                <span class="md-header-nav__topic">
+                  DB Sprint
+                </span>
+              
+            
+          </div>
+        </div>
+
+        <!-- Button to open search dialogue -->
+        <div class="md-flex__cell md-flex__cell--shrink">
+          
+            
+              <label class="md-icon md-icon--search md-header-nav__button"
+                  for="__search"></label>
+
+              <!-- Search interface -->
+              
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+            
+          
+        </div>
+
+        <!-- Repository containing source -->
+        
+      </div>
+    </nav>
+  </header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+        
+
+<nav class="md-tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../.." class="md-tabs__link md-tabs__link--active">
+        Home
+      </a>
+    
+  </li>
+
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../" class="md-tabs__link md-tabs__link--active">
+        Getting Started
+      </a>
+    
+  </li>
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../prerequisites/" class="md-tabs__link">
+          Labs
+        </a>
+      
+    </li>
+  
+
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="./" class="md-tabs__link md-tabs__link--active">
+        DB Sprint
+      </a>
+    
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://mylabs.data-builder.com/" title="Amazon Aurora Labs for PostgreSQL" class="md-nav__button md-logo">
+      
+        <img src="../../assets/images/aws_smile_logo.png" width="48" height="48">
+      
+    </a>
+    Amazon Aurora Labs for PostgreSQL
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Getting Started" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Labs
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Labs
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../prerequisites/" title="Prerequisites" class="md-nav__link">
+      Prerequisites
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../create/" title="Creating a New Aurora Cluster" class="md-nav__link">
+      Creating a New Aurora Cluster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../fastclone/" title="Fast Cloning" class="md-nav__link">
+      Fast Cloning
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../qpm/" title="Query Plan Management" class="md-nav__link">
+      Query Plan Management
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ccm/" title="Cluster Cache Management" class="md-nav__link">
+      Cluster Cache Management
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../migration/" title="Oracle to Aurora PostgreSQL migration using DMS and SCT" class="md-nav__link">
+      Oracle to Aurora PostgreSQL migration using DMS and SCT
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../das/" title="Database Activity Streaming" class="md-nav__link">
+      Database Activity Streaming
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        DB Sprint
+      </label>
+    
+    <a href="./" title="DB Sprint" class="md-nav__link md-nav__link--active">
+      DB Sprint
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-sign-in-to-the-provided-aws-account" class="md-nav__link">
+    1. Sign in to the provided AWS account
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-create-the-db-cluster" class="md-nav__link">
+    2. Create the DB cluster
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-connect-to-the-workstation-instance-using-aws-systems-manager" class="md-nav__link">
+    3. Connect to the workstation instance using AWS Systems Manager
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-connect-to-the-db-cluster" class="md-nav__link">
+    4. Connect to the DB cluster
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-sign-in-to-the-provided-aws-account" class="md-nav__link">
+    1. Sign in to the provided AWS account
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-create-the-db-cluster" class="md-nav__link">
+    2. Create the DB cluster
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-connect-to-the-workstation-instance-using-aws-systems-manager" class="md-nav__link">
+    3. Connect to the workstation instance using AWS Systems Manager
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-connect-to-the-db-cluster" class="md-nav__link">
+    4. Connect to the DB cluster
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="getting-started-with-amazon-aurora-postgresql">Getting Started with Amazon Aurora PostgreSQL<a class="headerlink" href="#getting-started-with-amazon-aurora-postgresql" title="Permanent link">&para;</a></h1>
+<p>In this lab, learn how to create your first Amazon Aurora PostgreSQL DB cluster, connect to it and run SQL queries to it. This lab contains the following tasks:</p>
+<ol>
+<li>Sign in to the provided AWS account</li>
+<li>Create the DB cluster</li>
+<li>Connecting to the workstation instance using AWS Systems Manager</li>
+<li>Connect to the DB cluster</li>
+</ol>
+<p>A lab environment has already been provisioned for you, this environment contains a standard networking configuration, supporting resources, and an Amazon EC2 instance. You will use the pre-configured resources and deploy the database into that environment. The EC2 instance will act as a workstation you will use to connect to the database.</p>
+<p>Let's get started!</p>
+<h2 id="1-sign-in-to-the-provided-aws-account">1. Sign in to the provided AWS account<a class="headerlink" href="#1-sign-in-to-the-provided-aws-account" title="Permanent link">&para;</a></h2>
+<p>At the beginning of the workshop you have been provided with a <strong>12-character access code</strong>. This access code grants you permission to use a dedicated AWS account for the purposes of this workshop.</p>
+<p>Go to <a href="https://dashboard.eventengine.run/" target="_blank"><strong>https://dashboard.eventengine.run/</strong></a>, enter the access code and click <strong>Proceed</strong>.</p>
+<p><span class="image"><img alt="EventEngine Login" src="ee-login.png?raw=true" /></span></p>
+<p>On the <strong>Team Dashboard</strong>, please click <strong>AWS Console</strong> to log into the AWS Management Console.</p>
+<p><span class="image"><img alt="EventEngine Dashboard" src="ee-dashboard.png?raw=true" /></span></p>
+<p>Click <strong>Open Console</strong>. For the purposes of this workshop, you will not need to use command line and API access credentials.</p>
+<p><span class="image"><img alt="EventEngine Open Console" src="ee-open-console.png?raw=true" /></span></p>
+<h2 id="2-create-the-db-cluster">2. Create the DB cluster<a class="headerlink" href="#2-create-the-db-cluster" title="Permanent link">&para;</a></h2>
+<p>Open the <a href="https://us-west-2.console.aws.amazon.com/rds/home?region=us-west-2" target="_blank">Amazon RDS service console</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Region Check</p>
+<p>Ensure you are still working in the correct region, especially if you are following the links above to open the service console at the right screen.</p>
+</div>
+<p>Click <strong>Create database</strong> to start the configuration process</p>
+<p><span class="image"><img alt="Create Database" src="rds-create-database.png?raw=true" /></span></p>
+<p>In the <strong>Choose a database creation method</strong> section, ensure the <strong>Standard Create</strong> option is selected.</p>
+<p>Next, in the <strong>Engine options</strong> section, choose the <strong>Amazon Aurora</strong> engine type, the <strong>Amazon Aurora with PostgreSQL compatibility</strong> edition, the <strong>Aurora PostgreSQL (compatible with PostgreSQL 10.12)</strong> version.</p>
+<p><span class="image"><img alt="Select Engine Option" src="rds-engine-opts.png?raw=true" /></span></p>
+<p>In the <strong>Templates</strong> section, select <strong>Production</strong>. The selections so far will instruct AWS to create an Aurora PostgreSQL database cluster with the most recent version of the PostgreSQL 10.12 compatible engine in a highly available configuration with one writer and one reader database instance in the cluster.</p>
+<p>Next, in the <strong>Settings</strong> section, set the <strong>DB cluster identifier</strong> to <code>auroralab-postgresql-cluster</code>. Configure the name and password of the master database user, with the most elevated permissions in the database. We recommend to use the user name <code>masteruser</code> and a password of your choosing. For simplicity ensure the check box <strong>Auto generate a password</strong> is <strong>not checked</strong>. Please make sure you note down the password for future reference.</p>
+<details class="tip"><summary>Automatically generating passwords</summary><p>Aurora has an out of the box integration with <a href="https://aws.amazon.com/secrets-manager/" target="_blank">AWS Secrets Manager</a> to manage your database credentials including master user. For simplicity, we are asking you to provide the password in this lab. You can also create and store the password of master user in AWS Secrets Manager, and configure your applications to retrieve it from there as needed and based on permissions to access the secret.</p>
+</details>
+<p><span class="image"><img alt="Select Cluster Settings" src="rds-engine-settings.png?raw=true" /></span></p>
+<p>In the <strong>DB instance size</strong> section, select <strong>Memory Optimized classes</strong>, and choose <code>r5.large</code> in the size drop-down.</p>
+<p>In the <strong>Availability &amp; durability</strong> section, choose <strong>Create an Aurora Replica/Reader node in a different AZ</strong>. This configuration is recommended for production workloads, and allows for minimal downtime failovers. In the event of an outage of the writer node in the cluster, a reader is promoted to be the new writer automatically, which minimizes the impact of the failure.</p>
+<p><span class="image"><img alt="Select Instance Size" src="rds-engine-size.png?raw=true" /></span></p>
+<p>In the <strong>Connectivity</strong> section, expand the sub-section called <strong>Additional connectivity</strong> configuration. This section allows you to specify where the database cluster will be deployed within your defined network configuration. To simplify the labs, we have configured all the networking resources for you. This includes the VPC itself, subnets, DB subnet groups, security groups and a workstation host. You will need to select the appropriate existing connectivity controls in this section.</p>
+<p>Pick the <strong>Virtual Private Cloud (VPC)</strong> named <code>auroralab-vpc</code>. The <strong>Subnet Group</strong> will be selected automatically once you choose the right VPC, please verify the selection is correct. The name of the DB subnet group should start with <code>mod-</code>.</p>
+<p>Make sure the cluster <strong>Publicly accessible</strong> option is set to <strong>No</strong>. The lab environment also configured a <strong>VPC security group</strong> that allows your lab workspace EC2 instance to connect to the database. Make sure the <strong>Choose existing</strong> security group option is selected, and from the dropdown pick the security group named <code>auroralab-database-sg</code>. Please remove any other security groups, such as <code>default</code> from the selection.</p>
+<div class="admonition warning">
+<p class="admonition-title">Public Access</p>
+<p>As a best practice, do not to enable public accesibility for your databases. If you need to enable for business reasons, make sure you are whitelisting specific IP ranges in your DB security groups to connect from internet.</p>
+</div>
+<p><span class="image"><img alt="Select Connectivity" src="rds-engine-connect.png?raw=true" /></span></p>
+<p>Leave the default password authentication for <strong>Database Authentication</strong> option.</p>
+<p>Next, expand the <strong>Additional configuration</strong> section. Leave the DB instance identifier to default value. Set the Initial database name to <strong>mylab</strong>. For the DB cluster parameter group and DB parameter group selectors, choose the groups with the name <code>mod-xxx-pgxx</code>. Choose a <code>1 day</code> <strong>Backup retention period</strong>.</p>
+<details class="tip"><summary>What are Parameter Groups?</summary><p>Aurora provides default parameter groups for each major version. for e.g. default.aurora-postgresql10 that contains pre-configured parameters that apply to most use cases. As a best practice, you should create custom parameter groups based on this, and further adjust and baseline parameters for your workload. This lab uses custom parameter groups to demonstrate this concept.</p>
+</details>
+<p><span class="image"><img alt="Select Advanced Options" src="rds-engine-adv1.png?raw=true" /></span></p>
+<p>Check the box to <strong>Enable encryption</strong> and select <code>[default] aws/rds</code> for the <strong>Master key</strong>.</p>
+<p>Next, Check the box to <strong>Enable Performance Insights</strong> with a <strong>Retention period of <code>Default (7 days)</code> and use the <code>[default] aws/rds</code> </strong>Master key<strong> for monitoring data encryption. Next, check the </strong>Enable Enhanced Monitoring<strong> box, and select a </strong>Granularity** of <code>1 second</code>.</p>
+<p><span class="image"><img alt="Select Advanced Options" src="rds-engine-adv2.png?raw=true" /></span></p>
+<p>Also in the <strong>Advanced configuration</strong> section, for <strong>Log exports</strong> check the <strong>Postgresql log</strong>. De-select the check box <strong>Enable delete protection</strong>. In a production use case, you will want to leave that option checked, but for testing purposes, un-checking this option will make it easier to clean up the resources once you have completed the labs.</p>
+<details class="tip"><summary>What is Log Export?</summary><p>Aurora provides options to export the engine logs to CloudWatch Logs for long term retention and analysis purpose. One of the options to then visualize the logs is by <a href="https://aws.amazon.com/blogs/database/analyze-postgresql-logs-with-amazon-elasticsearch-service/" target="_blank">streaming the logs to the Amazon ElasticSearch Service</a>.</p>
+</details>
+<p>Click <strong>Create database</strong> to provision the DB cluster. It will take 5 to 10 minutes for provisioning the DB cluster.</p>
+<p><span class="image"><img alt="Create DB Cluster" src="rds-engine-create.png?raw=true" /></span></p>
+<p>Meanwhile, let's understand the configuration options selected. You have created a DB cluster with the following characteristics:</p>
+<ul>
+<li>Aurora PostgreSQL 10.12 compatible</li>
+<li>Cluster composed of a writer and a reader DB instance in different Availability zones (highly available) deployed in a VPC</li>
+<li>Automatically backed up continuously, retaining backups for 1 day</li>
+<li>Using data at rest encryption</li>
+<li>With Enhanced Monitoring and Performance Insights enabled</li>
+</ul>
+<p>Once the DB cluster status and the status of all member DB instances (nodes) shows as <code>Available</code> you can continue below.</p>
+<p>In order to connect to the DB cluster and start using it in subsequent labs, you need to retrieve the DB cluster endpoints. There are two endpoints created by default. The <strong>Cluster Endpoint</strong> will always point to the <strong>writer</strong> DB instance of the cluster, and should be used for both writes and reads. The <strong>Reader Endpoint</strong> will always resolve to one of the <strong>reader</strong> DB instances and should be used to offload read operations to read replicas. In the RDS console, go to the DB cluster detail view by clicking on the cluster DB identifier.</p>
+<p><span class="image"><img alt="DB Cluster Status" src="rds-cluster-status.png?raw=true" /></span></p>
+<p>The <strong>Endpoints</strong> section in the <strong>Connectivity and security</strong> tab of the details page displays the endpoints. Note these values down, as you will use them later.</p>
+<p><span class="image"><img alt="DB Cluster Endpoints" src="rds-cluster-details.png?raw=true" /></span></p>
+<h2 id="3-connect-to-the-workstation-instance-using-aws-systems-manager">3. Connect to the workstation instance using AWS Systems Manager<a class="headerlink" href="#3-connect-to-the-workstation-instance-using-aws-systems-manager" title="Permanent link">&para;</a></h2>
+<p>Open the <a href="https://us-west-2.console.aws.amazon.com/systems-manager/session-manager?region=us-west-2" target="_blank">Systems Manager: Session Manager service console</a> and click <strong>Start session</strong>.</p>
+<p><span class="image"><img alt="SSM Listing" src="ssm-listing.png?raw=true" /></span><br></p>
+<p>Select the instance named <code>auroralab-postgres-bastion</code>, then click <strong>Start session</strong>.</p>
+<p><span class="image"><img alt="SSM Select Instance" src="ssm-select.png?raw=true" /></span><br></p>
+<p>By default Session Manager connects using the login <strong>ssm-user</strong>. You need to switch to <strong>ec2-user</strong> using the following command:</p>
+<div class="codehilite"><pre><span></span>sudo su -l ec2-user
+</pre></div>
+
+
+<p>You can verify that you are using the correct <strong>ec2-user</strong> account by using the following command:</p>
+<div class="codehilite"><pre><span></span>whoami
+</pre></div>
+
+
+<p><span class="image"><img alt="SSM Terminal" src="ssm-terminal.png?raw=true" /></span><br></p>
+<p>Next, update the <code>$PATH</code> environment variable with the location of the PostgreSQL client tools:</p>
+<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span>/home/ec2-user/postgresql-10.7/src/bin/:/home/ec2-user/postgresql-10.7/src/bin/pgbench:<span class="nv">$PATH</span>
+</pre></div>
+
+
+<h2 id="4-connect-to-the-db-cluster">4. Connect to the DB cluster<a class="headerlink" href="#4-connect-to-the-db-cluster" title="Permanent link">&para;</a></h2>
+<p>Connect to the Aurora database just like you would to any other PostgreSQL database, using a compatible client tool. In this lab you will be using the <code>psql</code> command line tool to connect.</p>
+<p>Run the command below, replacing the <mark>[Aurora Cluster Endpoint]</mark> placeholder with the cluster endpoint of the DB cluster you created earlier (see task <strong>2. Create the DB cluster</strong>).</p>
+<div class="codehilite"><pre><span></span>psql -h <span class="o">[</span>Aurora Cluster Endpoint<span class="o">]</span> -p <span class="m">5432</span> -U masteruser -d mylab
+</pre></div>
+
+
+<p>Once connected you can issue SQL commands to the database. List the available databases, check the instance name for the writer and verify if you are connected to the writer (<code>off</code> means writer) using the following commands:</p>
+<div class="codehilite"><pre><span></span><span class="err">\</span><span class="n">l</span>
+<span class="k">SELECT</span> <span class="n">server_id</span> <span class="k">FROM</span> <span class="n">aurora_replica_status</span><span class="p">()</span> <span class="k">WHERE</span> <span class="n">session_id</span> <span class="o">=</span> <span class="s1">&#39;MASTER_SESSION_ID&#39;</span><span class="p">;</span>
+<span class="k">SHOW</span> <span class="n">transaction_read_only</span><span class="p">;</span>
+</pre></div>
+
+
+<p>After you have verified the connectivity to writer node of the DB clsuter, create sample tables in Aurora using the following SQL commands.</p>
+<div class="codehilite"><pre><span></span><span class="c1">-- products table</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">products</span> <span class="p">(</span>
+    <span class="n">product_no</span> <span class="nb">integer</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="n">name</span> <span class="nb">text</span><span class="p">,</span>
+    <span class="n">price</span> <span class="nb">numeric</span>
+<span class="p">);</span>
+<span class="c1">-- orders table</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">orders</span> <span class="p">(</span>
+    <span class="n">order_id</span> <span class="nb">integer</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="n">product_no</span> <span class="nb">integer</span> <span class="k">references</span> <span class="n">products</span><span class="p">,</span>
+    <span class="n">quantity</span> <span class="nb">integer</span><span class="p">,</span>
+    <span class="n">order_date</span> <span class="k">timestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">without</span> <span class="n">time</span> <span class="k">zone</span>
+<span class="p">);</span>
+<span class="c1">-- insert products</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">products</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Apple&#39;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">products</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Samsung&#39;</span><span class="p">,</span> <span class="mi">800</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">products</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Lenovo&#39;</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">products</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;Oneplus&#39;</span><span class="p">,</span> <span class="mi">800</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">products</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;Xiaomi&#39;</span><span class="p">,</span> <span class="mi">300</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">products</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;LG&#39;</span><span class="p">,</span> <span class="mi">700</span><span class="p">);</span>
+<span class="c1">-- insert orders</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">orders</span>
+<span class="k">SELECT</span> <span class="n">s</span><span class="p">,</span> <span class="n">floor</span><span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)::</span><span class="nb">int</span><span class="p">,</span>
+  <span class="n">floor</span><span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)::</span><span class="nb">int</span> <span class="p">,</span>
+  <span class="p">(</span><span class="k">timestamp</span> <span class="s1">&#39;2019-09-20 10:00:00&#39;</span> <span class="o">+</span>
+  <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="k">timestamp</span> <span class="s1">&#39;2019-09-22 20:00:00&#39;</span> <span class="o">-</span> <span class="k">timestamp</span> <span class="s1">&#39;2019-09-20 10:00:00&#39;</span><span class="p">))::</span><span class="k">timestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">without</span> <span class="n">time</span> <span class="k">zone</span>
+<span class="k">FROM</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100000</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">;</span>
+<span class="k">COMMIT</span><span class="p">;</span>
+<span class="c1">--quit</span>
+<span class="err">\</span><span class="n">q</span>
+</pre></div>
+
+
+<p>Next, let us connect to the reader node and run some queries. To connect to reader, you should use the <strong>Aurora Reader Endpoint</strong>. Run the command below, replacing the <mark>[Aurora Reader Endpoint]</mark> placeholder with the reader endpoint of the DB cluster you created earlier (see task <strong>2. Create the DB cluster</strong>).</p>
+<div class="codehilite"><pre><span></span>psql -h <span class="o">[</span>Aurora Reader Endpoint<span class="o">]</span> -p <span class="m">5432</span> -U masteruser -d mylab
+</pre></div>
+
+
+<p>Verify you are connected to a reader and check the replica lag using the following commands:</p>
+<div class="codehilite"><pre><span></span><span class="k">SELECT</span> <span class="n">server_id</span> <span class="k">FROM</span> <span class="n">aurora_replica_status</span><span class="p">()</span> <span class="k">WHERE</span> <span class="n">session_id</span> <span class="o">&lt;&gt;</span> <span class="s1">&#39;MASTER_SESSION_ID&#39;</span><span class="p">;</span>
+<span class="k">SHOW</span> <span class="n">transaction_read_only</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="n">server_id</span><span class="p">,</span> <span class="k">CASE</span> <span class="k">WHEN</span> <span class="n">session_id</span> <span class="o">=</span> <span class="s1">&#39;MASTER_SESSION_ID&#39;</span> <span class="k">THEN</span> <span class="s1">&#39;Writer&#39;</span> <span class="k">ELSE</span> <span class="s1">&#39;Reader&#39;</span> <span class="k">END</span> <span class="k">AS</span> <span class="k">role</span><span class="p">,</span> <span class="n">replica_lag_in_msec</span> <span class="k">as</span> <span class="n">aurora_replica_lag_in_ms</span><span class="p">,</span> <span class="n">now</span><span class="p">()</span> <span class="k">as</span> <span class="k">current_timestamp</span><span class="p">,</span> <span class="n">last_update_timestamp</span> <span class="k">FROM</span> <span class="n">aurora_replica_status</span><span class="p">();</span>  
+</pre></div>
+
+
+<p>Run a sample query to find the total order quantities from the sample tables:</p>
+<div class="codehilite"><pre><span></span><span class="k">SELECT</span> <span class="n">a</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">product</span><span class="p">,</span> <span class="k">sum</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">quantity</span><span class="p">)</span> <span class="k">as</span> <span class="n">quantity</span> <span class="k">FROM</span> <span class="n">products</span> <span class="n">a</span><span class="p">,</span> <span class="n">orders</span> <span class="n">b</span> <span class="k">WHERE</span> <span class="n">a</span><span class="p">.</span><span class="n">product_no</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">product_no</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">a</span><span class="p">.</span><span class="n">name</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">quantity</span> <span class="k">DESC</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Disconnect from the database server using:</p>
+<div class="codehilite"><pre><span></span><span class="err">\</span><span class="n">q</span>
+</pre></div>
+
+
+<p><strong>Congratulations!</strong> You have successfully completed this lab.</p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../das/" title="Database Activity Streaming" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Database Activity Streaming
+              </span>
+            </div>
+          </a>
+        
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            &copy; 2019, Amazon Web Services, Inc. or its affiliates. All rights reserved.
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://mylabs.data-builder.com/" class="md-footer-social__link fa fa-home"></a>
+    
+      <a href="https://aws.amazon.com/rds/aurora/postgresql-features/" class="md-footer-social__link fa fa-amazon"></a>
+    
+      <a href="https://mylabs.data-builder.com/" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.8e03edeb.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+    
+  </body>
+</html>
